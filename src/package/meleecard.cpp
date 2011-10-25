@@ -2,6 +2,7 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
+#include "settings.h"
 
 //----------------------------------------------------------Bang
 
@@ -2988,6 +2989,18 @@ public:
     }
 };
 
+//----------------------------------------------------------cheat
+
+CheatCard::CheatCard(){
+    target_fixed = true;
+    will_throw = false;
+}
+
+void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    if(Config.FreeChoose)
+        room->obtainCard(source, subcards.first());
+}
+
 //----------------------------------------------------------end
 
 MeleeCardPackage::MeleeCardPackage()
@@ -3252,9 +3265,9 @@ MeleeCardPackage::MeleeCardPackage()
     addMetaObject<SpiderQueenSkillCard>();
     addMetaObject<BlunderbussSkillCard>();
         
+    addMetaObject<CheatCard>();
+
     type = CardPack;
-    
-    
 }
 
 ADD_PACKAGE(MeleeCard)

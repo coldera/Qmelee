@@ -1,4 +1,5 @@
 -- gouki ---------------------------------------------------------------------------------
+
 sgs.ai_chaofeng["gouki"] = 1
 
 sgs.ai_card_intention["ShunyuCard"]=function(card,from,to,source)
@@ -37,6 +38,62 @@ sgs.ai_skill_use["@@shunyu"]=function(self,prompt)
             if self.player:distanceTo(enemy)<=1 then
                 return ("@ShunyuCard=%d+%d+%d+%d->%s"):format(spade:getEffectiveId(), heart:getEffectiveId(), club:getEffectiveId(), diamond:getEffectiveId(), enemy:objectName())
             end
+        end
+    end
+    
+    return "."    
+end
+
+-- ryu ---------------------------------------------------------------------------------
+
+sgs.ai_chaofeng["ryu"] = 2
+
+sgs.ai_card_intention["LongjuanCard"]=function(card,from,to,source)
+    return sgs.ai_card_intention.general(to,80)
+end
+sgs.ai_card_intention["BodongCard"]=function(card,from,to,source)
+    return sgs.ai_card_intention.general(to,80)
+end
+
+sgs.dynamic_value.damage_card["LongjuanCard"] = true
+sgs.dynamic_value.damage_card["BodongCard"] = true
+
+-- longjuan
+sgs.ai_skill_use["@@longjuan"]=function(self,prompt)
+    if self:getCardsNum("Slash")<=0 then return "." end
+    
+    local target = nil
+    local slash = self:getCardId("Slash")
+    
+	self:sort(self.enemies,"defense")    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:distanceTo(enemy) <= self.player:getAttackRange()+1 then
+            if target then
+                target = target.."+"..enemy:objectName()
+                break
+            else
+                target = enemy:objectName()
+            end
+        end
+    end
+    
+    if target then
+        return "@LongjuanCard="..slash.."->"..target
+    end
+    
+    return "."    
+end
+
+-- bodong
+sgs.ai_skill_use["@@bodong"]=function(self,prompt)
+    if self:getCardsNum("Slash")<=0 or self.player:getMp()<3 then return "." end
+    
+    local slash = self:getCardId("Slash")
+    
+	self:sort(self.enemies,"defense")    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:distanceTo(enemy) <= self.player:getAttackRange()+1 then
+            return "@BodongCard="..slash.."->"..enemy:objectName()
         end
     end
     
