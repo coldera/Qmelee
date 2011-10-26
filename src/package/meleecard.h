@@ -679,6 +679,7 @@ public:
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
     
+    virtual bool willThrow() const;
     virtual bool isAvailable(const Player *player) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };

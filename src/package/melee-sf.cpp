@@ -388,12 +388,264 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------ken
+
+//----------------------------------------------------------------------------- Jifeng
+
+class JifengEnable: public SlashBuffSkill{
+public:
+    JifengEnable():SlashBuffSkill("#jifeng-enable"){}
+
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        ServerPlayer *ken = effect.from;
+        Room *room = ken->getRoom();
+
+        if(ken->distanceTo(effect.to) <= 1) {
+            if(!effect.to->hasFlag("jifenged")) {
+                room->setPlayerFlag(effect.to, "jifenged");                
+            }
+            
+            if(ken->getMark("jifeng")) {
+                room->setPlayerFlag(ken, "-jifeng_on");
+            }else {
+                room->setPlayerFlag(ken, "jifeng_on");
+            }
+            
+        }
+
+        return false;
+    }
+};
+
+JifengCard::JifengCard(){
+    will_throw = true;
+}
+
+bool JifengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(to_select->hasFlag("jifenged") && Self->getMark("jifeng")==2)
+        return false;
+        
+    if(!to_select->hasFlag("jifenged") && Self->getMark("jifeng")==1)
+        return false;
+        
+    if(Self->distanceTo(to_select)>1) 
+        return false;
+
+    return true;
+}
+
+void JifengCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *ken = card_use.from;
+    
+    CardUseStruct use;
+    use.card = Sanguosha->getCard(getSubcards().first());
+    use.from = ken;
+    use.to << card_use.to;
+    
+    LogMessage log;
+    log.type = "#JifengBang";
+    log.from = ken;
+    room->sendLog(log);
+
+    room->useCard(use);
+}
+
+class JifengViewAsSkill: public OneCardViewAsSkill{
+public:
+    JifengViewAsSkill():OneCardViewAsSkill("jifeng"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jifeng";
+    }
+    
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("Slash") && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        JifengCard *card = new JifengCard;
+        card->addSubcard(card_item->getFilteredCard());
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Jifeng: public TriggerSkill{
+public:
+    Jifeng():TriggerSkill("jifeng"){
+        view_as_skill = new JifengViewAsSkill;    
+        events << CardFinished;
+    }
+
+    virtual int getPriority() const{
+        return 2;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Play && 
+            TriggerSkill::triggerable(target) && 
+            target->hasFlag("jifeng_on") &&
+            target->getHandcardNum();
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *ken, QVariant &data) const{
+        Room *room = ken->getRoom();
+        
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("Slash")) {
+        
+            QStringList choices;
+            choices << "JifengEffect1" << "JifengEffect2" << "NoChoice"; 
+            
+            QString choice = room->askForChoice(ken, objectName(), choices.join("+"));
+            
+            if(choice == "JifengEffect1") {
+                room->setPlayerMark(ken, "jifeng", 1);
+            }else if(choice == "JifengEffect2") {
+                room->setPlayerMark(ken, "jifeng", 2);
+            }
+            
+            if(choice!="NoChoice") {
+                while(room->askForUseCard(ken, "@@jifeng", "@jifeng") && choice!="JifengEffect1")
+                    ;//Empty loop
+                    
+                room->setPlayerMark(ken, "jifeng", 0);
+                
+                foreach(ServerPlayer *p, room->getOtherPlayers(ken)){
+                    if(p->hasFlag("jifenged")){
+                        room->setPlayerFlag(p, "-jifenged");
+                    }
+                } 
+            }
+        
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Shenglong
+
+ShenglongCard::ShenglongCard(){
+    will_throw = true;
+}
+
+bool ShenglongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(Self->distanceTo(to_select) > Self->getAttackRange()) 
+        return false;
+
+    return true;
+}
+
+void ShenglongCard::onEffect(const CardEffectStruct &effect) const {
+    
+    ServerPlayer *ken = effect.from;
+    Room *room = ken->getRoom();
+
+    ken->updateMp(-2);
+    
+    int times = 0;
+    
+    for(int i=0; i<3; i++) {
+        times++;
+        // room->getThread()->delay();
+        const Card *card = room->peek();
+        
+        LogMessage log;
+        log.type = "$Peek";
+        log.from = ken;
+        log.card_str = card->toString();
+        room->sendLog(log);
+        
+        room->throwCard(card);
+        
+        if(card->isBlack()){
+            break;
+        }   
+    }
+    
+    room->broadcastInvoke("animate", "shenglong");
+    
+    DamageStruct damageMaker;
+    damageMaker.card = this;
+    damageMaker.from = ken;
+    damageMaker.to = effect.to;
+    damageMaker.damage = times;
+    damageMaker.nature = DamageStruct::Fire;
+    room->damage(damageMaker);
+
+}
+
+class ShenglongViewAsSkill: public OneCardViewAsSkill{
+public:
+    ShenglongViewAsSkill():OneCardViewAsSkill("shenglong"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@shenglong";
+    }
+    
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("Slash") && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ShenglongCard *card = new ShenglongCard;
+        card->addSubcard(card_item->getFilteredCard());
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Shenglong: public PhaseChangeSkill{
+public:
+    Shenglong():PhaseChangeSkill("shenglong"){
+        view_as_skill = new ShenglongViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMp()>=2;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *ken) const{
+        Room *room = ken->getRoom();
+        
+        if(room->askForUseCard(ken, "@@shenglong", "@shenglong")){
+            ken->updateMp(-2);
+            ken->skip(Player::Play);
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu;
+    General *gouki, *ryu, *ken;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -408,6 +660,15 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<LongjuanCard>();
     addMetaObject<BodongCard>();
+    
+    ken = new General(this, "ken", "nu");
+    ken->addSkill(new Jifeng);
+    ken->addSkill(new JifengEnable);
+    related_skills.insertMulti("jifeng", "#jifeng-enable");
+    ken->addSkill(new Shenglong);
+    
+    addMetaObject<JifengCard>();
+    addMetaObject<ShenglongCard>();
 }
 
 ADD_PACKAGE(MeleeSF);

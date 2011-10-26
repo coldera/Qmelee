@@ -424,7 +424,7 @@ void LiulianCard::onEffect(const CardEffectStruct &effect) const {
         }   
     }
     
-    room->broadcastInvoke("animate", "liulian:");
+    room->broadcastInvoke("animate", "liulian");
     
     DamageStruct damageMaker;
     damageMaker.card = this;

@@ -45,7 +45,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             
             if(dead) {
                 QVariant tohelp = QVariant::fromValue((PlayerStar)dead);
-                const Card *card = room->askForCard(player, ".", "revive-rite-handcard", tohelp);
+                const Card *card = room->askForCard(player, ".touse", "revive-rite-handcard", tohelp);
                 if(card) {
                     room->moveCardTo(card, dead, Player::Hand, false);
                     
