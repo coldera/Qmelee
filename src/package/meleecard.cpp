@@ -2868,6 +2868,10 @@ Shtm::Shtm(Suit suit, int number)
     setObjectName("shtm");
 }
 
+bool Shtm::willThrow() const{
+    return false;
+}
+
 bool Shtm::isAvailable(const Player *player) const {
     QList<const Player *> players = player->parent()->findChildren<const Player *>();
     foreach(const Player *p, players){
@@ -2932,6 +2936,16 @@ public:
 };
 
 //----------------------------------------------------------CardPattern
+
+class ToUsePattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card);
+    }
+    virtual bool willThrow() const{
+        return false;
+    }
+};
 
 class HandcardPattern: public CardPattern{
 public:
@@ -3007,6 +3021,7 @@ MeleeCardPackage::MeleeCardPackage()
     :Package("meleecard")
 {
     patterns["."] = new HandcardPattern;
+    patterns[".touse"] = new ToUsePattern;
     patterns[".S"] = new SuitPattern(Card::Spade);
     patterns[".C"] = new SuitPattern(Card::Club);
     patterns[".H"] = new SuitPattern(Card::Heart);

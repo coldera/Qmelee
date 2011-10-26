@@ -719,7 +719,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if(card){
         //modify by ce
-        if(prompt != "revive-rite-handcard" && !prompt.contains("@quwu-card-show")) {
+        if(!prompt.contains("@quwu-card-show") && !(pattern==".touse")) {
             if(card->getTypeId() != Card::Skill){
                 const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
 
