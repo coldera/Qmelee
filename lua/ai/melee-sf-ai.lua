@@ -2,10 +2,6 @@
 
 sgs.ai_chaofeng["gouki"] = 1
 
-sgs.ai_card_intention["ShunyuCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-
 sgs.dynamic_value.damage_card["ShunyuCard"] = true
 
 -- shankong
@@ -47,13 +43,6 @@ end
 -- ryu ---------------------------------------------------------------------------------
 
 sgs.ai_chaofeng["ryu"] = 2
-
-sgs.ai_card_intention["LongjuanCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-sgs.ai_card_intention["BodongCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.damage_card["LongjuanCard"] = true
 sgs.dynamic_value.damage_card["BodongCard"] = true
@@ -103,13 +92,6 @@ end
 -- ken ---------------------------------------------------------------------------------
 
 sgs.ai_chaofeng["ryu"] = 4
-
-sgs.ai_card_intention["JifengCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-sgs.ai_card_intention["ShenlongCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.damage_card["JifengCard"] = true
 sgs.dynamic_value.damage_card["ShenlongCard"] = true

@@ -10,10 +10,6 @@ sgs.haohmaru_keep_value = {
 	IceBang = 3.8,
 }
 
-sgs.ai_card_intention["TianbaCard"]=function(card,from,to,source)
-        return sgs.ai_card_intention.general(to,80)
-end
-
 sgs.dynamic_value.damage_card["TianbaCard"] = true
 
 -- jiuqi
@@ -68,13 +64,6 @@ end
 
 -- nakoruru ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["nakoruru"] = 2
-
-sgs.ai_card_intention["GoutongCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-sgs.ai_card_intention["YingxuanCard"]=function(card,from,to,source)
-        return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.benefit["YingxuanCard"] = true
 
@@ -191,10 +180,6 @@ end
 
 -- kyoshiro ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["kyoshiro"] = 0
-
-sgs.ai_card_intention["QuwuCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 -- quwu
 local quwu_skill={}
@@ -343,10 +328,6 @@ end
 -- sogetsu ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["sogetsu"] = -2
 
-sgs.ai_card_intention["JiefangCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-
 -- yueyin
 sgs.ai_skill_invoke.yueyin = function(self, data)
     
@@ -386,10 +367,6 @@ end
 
 -- suija ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["sogetsu"] = 4
-
-sgs.ai_card_intention["SiyueCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.damage_card["SiyueCard"] = true
 
@@ -476,10 +453,6 @@ sgs.ai_chaofeng["enja"] = 8
 
 sgs.dynamic_value.damage_card["BaoshaCard"] = true
 
-sgs.ai_card_intention["BaoshaCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-
 -- baosha
 local baosha_skill={}
 baosha_skill.name="baosha"
@@ -535,14 +508,6 @@ end
 
 -- galford ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["galford"] = 6
-
-sgs.ai_card_intention["RenquanCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-
-sgs.ai_card_intention["DianguangCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.damage_card["RenquanCard"] = true
 sgs.dynamic_value.benefit["DianguangCard"] = true
@@ -611,14 +576,6 @@ end
 
 -- rimururu ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["rimururu"] = -4
-
-sgs.ai_card_intention["BingrenCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
-
-sgs.ai_card_intention["ChuixueCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.benefit["BingrenCard"] = true
 
@@ -775,9 +732,6 @@ sgs.ai_chaofeng["hanzo"] = -2
 sgs.hanzo_keep_value = {
     EquipCard = 6,
 }
-sgs.ai_card_intention["ChenyinCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.benefit["KongchanCard"] = true
 sgs.dynamic_value.control_card["ChenyinCard"] = true
@@ -830,10 +784,6 @@ end
 
 -- jubei ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["jubei"] = 0
-
-sgs.ai_card_intention["DaoquCard"]=function(card,from,to,source)
-    return sgs.ai_card_intention.general(to,80)
-end
 
 sgs.dynamic_value.control_card["DaoquCard"] = true
 sgs.dynamic_value.benefit["ErdaoCard"] = true
