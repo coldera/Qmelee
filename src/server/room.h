@@ -226,7 +226,9 @@ private:
     void makeReviving(const QStringList &texts);
     
     //modify by ce
+    void makeMp(const QStringList &texts);
     void detachSpecialSkill(ServerPlayer *player);
+    
 
 private slots:
     void reportDisconnection();

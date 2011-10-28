@@ -316,11 +316,11 @@ void BodongCard::onEffect(const CardEffectStruct &effect) const{
     
     int dp = 3;
 
-    if(room->askForCard(effect.to, "jink", "@bodong-jink:" + effect.from->objectName())
+    if(room->askForCard(effect.to, "jink", "@bodong-jink:" + effect.from->objectName()))
         dp--;
-    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName())
+    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName()))
         dp--;
-    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName())
+    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName()))
         dp--;
     
     if(dp) {       
@@ -663,6 +663,11 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<JifengCard>();
     addMetaObject<ShenglongCard>();
+    
+    // chunli = new General(this, "chunli", "qi", 3, false);
+    // chunli->addSkill(new Bailie);
+    // chunli->addSkill(new Jiqi);
+    // chunli->addSkill(new Qigong);
 }
 
 ADD_PACKAGE(MeleeSF);

@@ -1100,6 +1100,29 @@
     </message>
 </context>
 <context>
+    <name>MpMakerDialog</name>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2344"/>
+        <source>Mp maker</source>
+        <translation>MP制造器</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2363"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2372"/>
+        <source>Mp target</source>
+        <translation>目标</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2374"/>
+        <source>Mp point</source>
+        <translation>点数</translation>
+    </message>
+</context>
+<context>
     <name>Dashboard</name>
     <message>
         <location filename="src/ui/dashboard.cpp" line="64"/>
@@ -1696,6 +1719,11 @@
         <location filename="src/dialog/mainwindow.ui" line="291"/>
         <source>Damage maker</source>
         <translation>伤害制造器</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="291"/>
+        <source>Mp maker</source>
+        <translation>MP制造器</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="299"/>

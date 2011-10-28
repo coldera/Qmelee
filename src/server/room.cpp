@@ -2826,6 +2826,9 @@ void Room::makeCheat(const QString &cheat_str){
     QRegExp damage_rx(":(.+)->(\\w+):([NTFAPIRL])(\\d+)");
     QRegExp killing_rx(":KILL:(.+)->(\\w+)");
     QRegExp revive_rx(":REVIVE:(.+)");
+    
+    //modify by ce
+    QRegExp mp_rx(":MP:(\\w+):(.+)");
 
     if(damage_rx.exactMatch(cheat_str))
         makeDamage(damage_rx.capturedTexts());
@@ -2833,7 +2836,10 @@ void Room::makeCheat(const QString &cheat_str){
         makeKilling(killing_rx.capturedTexts());
     }else if(revive_rx.exactMatch(cheat_str)){
         makeReviving(revive_rx.capturedTexts());
+    }else if(mp_rx.exactMatch(cheat_str)){
+        makeMp(mp_rx.capturedTexts());
     }
+        
 }
 
 void Room::makeDamage(const QStringList &texts){
@@ -2874,6 +2880,16 @@ void Room::makeDamage(const QStringList &texts){
     damage.damage = point;
 
     this->damage(damage);
+}
+
+//modify by ce
+void Room::makeMp(const QStringList &texts){
+    int point = texts.at(2).toInt();
+
+    ServerPlayer *who = findChild<ServerPlayer *>(texts.at(1));
+
+    if(who)
+        who->updateMp(point);
 }
 
 void Room::makeKilling(const QStringList &texts){

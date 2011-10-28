@@ -42,6 +42,24 @@ private:
     QComboBox *killer, *victim;
 };
 
+//modify by ce
+
+class MpMakerDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    MpMakerDialog(QWidget *parent);
+
+protected:
+    virtual void accept();
+
+private:
+    QComboBox *mp_target;
+    QSpinBox *mp_point;
+
+    void fillCombobox(QComboBox *combobox);
+};
+
 class DamageMakerDialog: public QDialog{
     Q_OBJECT
 
@@ -148,6 +166,8 @@ public slots:
     void makeDamage();
     void makeKilling();
     void makeReviving();
+    //modify by ce
+    void makeMp();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

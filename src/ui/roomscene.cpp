@@ -2465,6 +2465,54 @@ void RoomScene::makeDamage(){
     damage_maker->exec();
 }
 
+
+MpMakerDialog::MpMakerDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Mp maker"));
+
+    mp_target = new QComboBox;
+    RoomScene::FillPlayerNames(mp_target, false);
+
+    mp_point = new QSpinBox;
+    mp_point->setRange(-100, 100);
+    mp_point->setValue(1);
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(ok_button);
+
+    QFormLayout *layout = new QFormLayout;
+
+    layout->addRow(tr("Mp target"), mp_target);
+    layout->addRow(tr("Mp point"), mp_point);
+    layout->addRow(hlayout);
+
+    setLayout(layout);
+
+}
+
+void MpMakerDialog::accept(){
+    QDialog::accept();
+
+    ClientInstance->request(QString("useCard :MP:%1:%2")
+        .arg(mp_target->itemData(mp_target->currentIndex()).toString())
+        .arg(mp_point->value()));
+}
+
+//modify by ce
+void RoomScene::makeMp(){
+    if(Self->getPhase() != Player::Play){
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
+        return;
+    }
+
+    MpMakerDialog *maker = new MpMakerDialog(main_window);
+    maker->exec();
+}
+
 void RoomScene::makeKilling(){
     if(Self->getPhase() != Player::Play){
         QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
