@@ -1782,10 +1782,13 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        QString asked = data.toString();
+        QStringList prompt = data.toString().split(":");
+        QString asked = prompt.at(0);
+        QString reason = prompt.at(1);
+        
         if(asked == "jink"){
             Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName())){
+            if(room->askForSkillInvoke(player, objectName(), reason)){
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
                 judge.good = true;
@@ -2310,7 +2313,6 @@ void Boar::onUninstall(ServerPlayer *player) const{
 
     if(skill)
         player->getRoom()->detachSkillFromPlayer(player, skill->objectName());
-        //room->getThread()->removeTriggerSkill(skill);
 }
 
 //----------------------------------------------------------Tiger
@@ -2468,12 +2470,14 @@ public:
 
         }else if(event == CardAsked && player->getMark("qinggang") == 0 && !player->getArmor()) {
         
-            QString pattern = data.toString();
+            QStringList prompt = data.toString().split(":");
+            QString pattern = prompt.at(0);
+            QString reason = prompt.at(1);
 
             if(pattern != "jink")
                 return false;
 
-            if(player->askForSkillInvoke("chaos_mirror")){
+            if(player->askForSkillInvoke("chaos_mirror", reason)){
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
                 judge.good = true;

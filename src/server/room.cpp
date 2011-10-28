@@ -675,8 +675,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
 
     const Card *card = NULL;
-
-    QVariant asked = pattern;
+    
+    //modify by ce
+    QVariant asked = QString("%1:%2").arg(pattern).arg(prompt);
     thread->trigger(CardAsked, player, asked);
     
     //modify by ce

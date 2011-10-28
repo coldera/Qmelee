@@ -315,19 +315,13 @@ void BodongCard::onEffect(const CardEffectStruct &effect) const{
     room->broadcastInvoke("animate", "bodong");
     
     int dp = 3;
-    const Card *first=NULL, *second=NULL, *third=NULL;
-    first = room->askForCard(effect.to, "jink", "@bodong-jink:" + effect.from->objectName());
-    if(first) {
-        second = room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName());
+
+    if(room->askForCard(effect.to, "jink", "@bodong-jink:" + effect.from->objectName())
         dp--;
-    }
-    if(second) {
-        third = room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName());
+    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName())
         dp--;
-    }
-    if(third) {
+    if(room->askForCard(effect.to, "jink", "@bodong-jink-more:" + effect.from->objectName())
         dp--;
-    }
     
     if(dp) {       
         DamageStruct damageMaker;

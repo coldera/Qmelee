@@ -2019,23 +2019,33 @@ JiushuCard::JiushuCard(){
     target_fixed = true;
 }
 
-void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *> &targets) const{
+void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *> &) const{
     jedah->updateMp(-20);
     
     ServerPlayer *dead = NULL;
-    QStringList deadPlayersName;
+    // QStringList deadPlayersName;
     
-    foreach(ServerPlayer *target, room->getServerPlayers()){
-        if(target->isDead()) {
-            dead = target;
-            deadPlayersName << target->getGeneralName();
+    // foreach(ServerPlayer *target, room->getServerPlayers()){
+        // if(target->isDead()) {
+            // dead = target;
+            // deadPlayersName << target->getGeneralName();
+        // }
+    // }
+       
+    // if(deadPlayersName.length() > 1) {
+        // QString choice = room->askForChoice(jedah, "jiushu-player", deadPlayersName.join("+"));
+        // dead = room->findPlayer(choice, true);
+    // }
+    
+    QList<ServerPlayer *> targets;
+    
+    foreach(ServerPlayer *p, room->getServerPlayers()){
+        if(p->isDead()) {
+            targets << p;
         }
     }
-       
-    if(deadPlayersName.length() > 1) {
-        QString choice = room->askForChoice(jedah, "jiushu-player", deadPlayersName.join("+"));
-        dead = room->findPlayer(choice, true);
-    }
+    
+    dead = room->askForPlayerChosen(jedah, targets, objectName());
     
     if(dead) {
         dead->gainMark("@jiushu");
@@ -2768,7 +2778,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *felicia, QVariant &data) const{
-        QString pattern = data.toString();
+        QStringList prompt = data.toString().split(":");
+        QString pattern = prompt.at(0);
         if(pattern != "jink" && pattern != "slash")
             return false;
 

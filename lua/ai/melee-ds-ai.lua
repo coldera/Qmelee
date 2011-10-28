@@ -87,7 +87,7 @@ local zuanji_skill={}
 zuanji_skill.name="zuanji"
 table.insert(sgs.ai_skills,zuanji_skill)
 zuanji_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("ZuanjiCard") or self.player:getMp()<2 then return end
+    if self.player:hasUsed("ZuanjiCard") or self.player:getMp()<2 or self.player:getMark("luochao")>0 then return end
     
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)

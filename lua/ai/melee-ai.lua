@@ -9,7 +9,6 @@ math.randomseed(os.time())
 
 -- this table stores all specialized AI classes
 sgs.ai_classes = {}
-sgs.hasDrank = false
 -- compare functions
 sgs.ai_compare_funcs = {
 	hp = function(a, b)
@@ -711,32 +710,10 @@ end
 -- used for SmartAI:askForSkillInvoke
 sgs.ai_skill_invoke = {
     liyao_sword = true;
-    deicide_bow = true;
-    red_dragon = true;
     chaos_mirror = true;
-    boar = true;
-    cattle = true;
     nvwa_stone = true;
-    soul_spirit = true;
     miracle = true;
 }
-
-sgs.ai_skill_invoke.ghost_fan=function(self, data)
-	if self.player:hasFlag("drank") then return false end
-	local effect = data:toSlashEffect() 
-	local target = effect.to
-	if self:isFriend(target) then return false end
-	local hasPeach
-	local cards = target:getHandcards()
-	for _, card in sgs.qlist(cards) do
-		if card:inherits("Peach") or card:inherits("Analeptic") then hasPeach = true break end
-	end
-	if hasPeach then return true end
-	if (target:getHandcardNum() > 1 or target:getArmor()) and target:getHp() > 1 then
-		return true
-	end
-	return false
-end
 
 function SmartAI:askForSkillInvoke(skill_name, data)
 	local invoke = sgs.ai_skill_invoke[skill_name]
@@ -1093,17 +1070,6 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			if not slash_prohibit then
 				self.predictedRange = self.player:getAttackRange()
                 
-                if sgs.hasDrank then
-                    self.room:writeToConsole("-----------drank and exit")
-                    self.room:writeToConsole(self.player:getGeneralName().." intend to attack "..enemy:getGeneralName())
-                    if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("canSlash") end
-                    if use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange) then self.room:writeToConsole("slash ok") end
-                    self.room:writeToConsole(self:objectiveLevel(enemy))
-                    if self:slashIsEffective(card, enemy) then self.room:writeToConsole("slashIsEffective") end
-                    self.room:writeToConsole("---------------------------")
-                    sgs.hasDrank = false
-                end
-                
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
 				self:objectiveLevel(enemy)>3 and
@@ -1111,8 +1077,13 @@ function SmartAI:useBasicCard(card, use,no_distance)
 					-- fill the card use struct
 					local anal=self:searchForAnaleptic(use,enemy,card)
 					if anal then 
-                        sgs.hasDrank = true
-                        self.room:writeToConsole("hasDrank")
+                        self.room:writeToConsole("-----------check drank and exit")
+                        self.room:writeToConsole(self.player:getGeneralName().." intend to attack "..enemy:getGeneralName())
+                        if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("canSlash") end
+                        if use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange) then self.room:writeToConsole("slash ok") end
+                        self.room:writeToConsole(self:objectiveLevel(enemy))
+                        if self:slashIsEffective(card, enemy) then self.room:writeToConsole("slashIsEffective") end
+                        self.room:writeToConsole("---------------------------")
 						use.card = anal
 						return 
 					end
@@ -2592,6 +2563,7 @@ function SmartAI:askForCard(pattern, prompt, data)
     --shtm
     if parsedPrompt[1] == "revive-rite-handcard" then 
         local dead = data:toPlayer()
+        if self:isFriend(dead) then self.room:writeToConsole(self.player:getGeneralName().."is friend with"..dead:getGeneralName()) end
         if dead and self:isFriend(dead) and self.player:getHandcardNum()>2 then
             local hcards = self.player:getHandcards()
             hcards=sgs.QList2Table(hcards)

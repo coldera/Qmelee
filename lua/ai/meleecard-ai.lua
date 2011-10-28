@@ -35,6 +35,60 @@ sgs.dynamic_value = {
 	},
 }
 
+-- card skill --------------------------------------------------------------------------------------
+
+sgs.ai_skill_invoke["ghost_fan"]=function(self, data)
+	if self.player:hasFlag("drank") then return false end
+	local effect = data:toSlashEffect() 
+	local target = effect.to
+	if self:isFriend(target) then return false end
+	local hasPeach
+	local cards = target:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("HolyWater") or card:inherits("Schnapps") then hasPeach = true break end
+	end
+	if hasPeach then return true end
+	if (target:getHandcardNum() > 1 or target:getArmor()) and target:getHp() > 1 then
+		return true
+	end
+	return false
+end
+
+sgs.ai_skill_invoke["deicide_bow"] = function(self, data)
+    local effect = data:toSlashEffect()
+    return effect and not self:isFriend(effect.to)
+end
+
+sgs.ai_skill_invoke["soul_spirit"] = function(self, data)
+    local effect = data:toSlashEffect()
+    return effect and not self:isFriend(effect.to)
+end
+
+sgs.ai_skill_invoke["red_dragon"] = function(self, data)
+    local damage = data:toDamage()
+    return damage and not self:isFriend(damage.to)
+end
+
+sgs.ai_skill_invoke["chaos_mirror"] = function(self, data)
+
+    if data and data=="@huhuan-card" then
+        for _, enemy in ipairs(self.enemies) do
+            if enemy:hasSkill("huhuan") then return false end
+        end
+    end
+    
+    return true
+end
+
+sgs.ai_skill_invoke["cattle"] = function(self, data)
+    return self.player:isWounded()
+end
+
+sgs.ai_skill_invoke["boar"] = function(self, data)
+    local damage = data:toDamage()
+    return damage and not self:isFriend(damage.from)
+end
+
 local snake_spear_skill={}
 snake_spear_skill.name="snake_spear"
 table.insert(sgs.ai_skills,snake_spear_skill)
