@@ -1551,6 +1551,10 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("Huoshen") && player->canSlashWithoutCrossbow() && player->getHp()<3 && player->getMp()<=3;
     }
+    
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "slash" && player->getHp()<3 && player->getMp()<=3;
+    }
 
     virtual bool viewFilter(const CardItem *to_select) const{
         return to_select->getFilteredCard()->isRed();
@@ -2023,29 +2027,19 @@ void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *
     jedah->updateMp(-20);
     
     ServerPlayer *dead = NULL;
-    // QStringList deadPlayersName;
+    QStringList deadPlayersName;
     
-    // foreach(ServerPlayer *target, room->getServerPlayers()){
-        // if(target->isDead()) {
-            // dead = target;
-            // deadPlayersName << target->getGeneralName();
-        // }
-    // }
-       
-    // if(deadPlayersName.length() > 1) {
-        // QString choice = room->askForChoice(jedah, "jiushu-player", deadPlayersName.join("+"));
-        // dead = room->findPlayer(choice, true);
-    // }
-    
-    QList<ServerPlayer *> targets;
-    
-    foreach(ServerPlayer *p, room->getServerPlayers()){
-        if(p->isDead()) {
-            targets << p;
+    foreach(ServerPlayer *target, room->getServerPlayers()){
+        if(target->isDead()) {
+            dead = target;
+            deadPlayersName << target->getGeneralName();
         }
     }
-    
-    dead = room->askForPlayerChosen(jedah, targets, objectName());
+       
+    if(deadPlayersName.length() > 1) {
+        QString choice = room->askForChoice(jedah, "jiushu-player", deadPlayersName.join("+"));
+        dead = room->findPlayer(choice, true);
+    }
     
     if(dead) {
         dead->gainMark("@jiushu");
@@ -2061,7 +2055,7 @@ void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *
         QString role;
         if(jedah->isLord()) {
             role = "loyalist";
-        }else if(jedah->getRole()=="renegade" && room->getMode() == "06_3v3") {
+        }else if(jedah->getRole() == "renegade" && room->getMode() == "06_3v3") {
             role = "rebel";
         }else {
             role = jedah->getRole();
