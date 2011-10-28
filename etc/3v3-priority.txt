@@ -1,3 +1,4 @@
+random 1
 zhangliao 7
 guojia 7
 liubei 7

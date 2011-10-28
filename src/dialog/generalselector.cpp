@@ -101,33 +101,41 @@ QString GeneralSelector::select1v1(const QStringList &candidates){
 }
 
 QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const QStringList &candidates, int default_value){
-    // int max = -1;
-    // QString max_general;
+    
+    //modify by ce
+    if(table.value("random") == 1) {
+    
+        int total = candidates.length();
+        QString to_select;
 
-    // foreach(QString candidate, candidates){
-        // int value = table.value(candidate, default_value);
+        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+        int random = qrand()%total;
 
-        // if(value > max){
-            // max = value;
-            // max_general = candidate;
-        // }
-    // }
+        to_select = candidates.at(random);
 
-    // Q_ASSERT(!max_general.isEmpty());
+        Q_ASSERT(!to_select.isEmpty());
 
-    // return max_general;
+        return to_select;
+        
+    }else {
+    
+        int max = -1;
+        QString max_general;
 
-    int total = candidates.length();
-    QString to_select;
+        foreach(QString candidate, candidates){
+            int value = table.value(candidate, default_value);
 
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    int random = qrand()%total;
+            if(value > max){
+                max = value;
+                max_general = candidate;
+            }
+        }
 
-    to_select = candidates.at(random);
+        Q_ASSERT(!max_general.isEmpty());
 
-    Q_ASSERT(!to_select.isEmpty());
+        return max_general;
 
-    return to_select;
+    }
 
 }
 
