@@ -103,6 +103,18 @@ struct PindianStruct{
     QString reason;
 };
 
+class JudgeStructPattern{
+private:
+    QString pattern;
+    bool isRegex;
+
+public:
+    JudgeStructPattern();
+    JudgeStructPattern &operator=(const QRegExp &rx);
+    JudgeStructPattern &operator=(const QString &str);
+    bool match(const Player *player, const Card *card) const;
+};
+
 struct JudgeStruct{
     JudgeStruct();
     bool isGood(const Card *card = NULL) const;
@@ -110,7 +122,7 @@ struct JudgeStruct{
 
     ServerPlayer *who;
     const Card *card;
-    QRegExp pattern;
+    JudgeStructPattern pattern;
     bool good;
     QString reason;
 };

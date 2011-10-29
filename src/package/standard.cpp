@@ -411,13 +411,7 @@ void Slash::setNature(DamageStruct::Nature nature){
 }
 
 bool Slash::IsAvailable(const Player *player){
-    if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
-        return false;
-
-    if(player->hasWeapon("crossbow"))
-        return true;
-    else
-        return player->canSlashWithoutCrossbow();
+    return player->canSlashWithoutCrossbow();
 }
 
 bool Slash::isAvailable(const Player *player) const{
@@ -461,27 +455,14 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int slash_targets = 1;
-    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this)){
+    if(Self->hasWeapon("wushuang_halberd") && Self->isLastHandCard(this)){
         slash_targets = 3;
     }
 
     bool distance_limit = true;
-    
-    //modify by ce
-    // if(Self->hasFlag("tianyi_success")){
-        // distance_limit = false;
-        // slash_targets ++;
-    // }
-
-    if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
-        slash_targets = 3;
 
     if(targets.length() >= slash_targets)
         return false;
-
-    if(inherits("WushenSlash")){
-        distance_limit = false;
-    }
 
     return Self->canSlash(to_select, distance_limit);
 }

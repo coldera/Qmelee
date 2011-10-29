@@ -12,68 +12,6 @@ Bang::Bang(Suit suit, int number): Slash(suit, number)
     nature = DamageStruct::Normal;
 }
 
-void Bang::setNature(DamageStruct::Nature nature){
-    this->nature = nature;
-}
-
-bool Bang::IsAvailable(const Player *player){
-    return player->canSlashWithoutCrossbow();
-}
-
-bool Bang::isAvailable(const Player *player) const{
-    return IsAvailable(player);
-}
-
-QString Bang::getSubtype() const{
-    return "attack_card";
-}
-
-void Bang::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-
-    BasicCard::use(room, source, targets);
-
-    if(source->hasFlag("drank")){
-        LogMessage log;
-        log.type = "#UnsetDrank";
-        log.from = source;
-        room->sendLog(log);
-
-        room->setPlayerFlag(source, "-drank");
-    }
-}
-
-void Bang::onEffect(const CardEffectStruct &card_effect) const{
-    Room *room = card_effect.from->getRoom();
-
-    SlashEffectStruct effect;
-    effect.from = card_effect.from;
-    effect.nature = nature;
-    effect.slash = this;
-
-    effect.to = card_effect.to;
-    effect.drank = effect.from->hasFlag("drank");
-
-    room->slashEffect(effect);
-}
-
-bool Bang::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return !targets.isEmpty();
-}
-
-bool Bang::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int slash_targets = 1;
-    if(Self->hasWeapon("wushuang_halberd") && Self->isLastHandCard(this)){
-        slash_targets = 3;
-    }
-
-    bool distance_limit = true;
-
-    if(targets.length() >= slash_targets)
-        return false;
-
-    return Self->canSlash(to_select, distance_limit);
-}
-
 //----------------------------------------------------------FireBang
 
 class FireBangSkill: public TriggerSkill{
