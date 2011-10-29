@@ -30,7 +30,7 @@ return {
     ["@longjuan"] = "是否发动【龙卷】",
     ["@bodong-jink"] = "你可以打出1张【闪】来防止1点伤害",
     ["@bodong-jink-more"] = "你还可以再打出1张【闪】来防止1点伤害",
-    ["#LongjuanBang"] = "%from 发动 <b style='color:yellow'>【龙卷】</b>技能",
+    ["#LongjuanBang"] = "%from 发动<b style='color:yellow'>【龙卷】</b>技能",
     ["@bodong"] = "是否发动必杀技【真空波动拳】",
     
     -- 2011-10-26 -AI 傲气凌人
@@ -45,6 +45,19 @@ return {
     ["JifengEffect1"] = "对该角色再使用1次【杀】",
     ["JifengEffect2"] = "对距离1以内的其他角色各使用1次【杀】",
     ["@jifeng"] = "请选择1张【杀】对距离1以内的角色使用",
-    ["#JifengBang"] = "%from 发动 <b style='color:yellow'>【疾风】</b>技能",
+    ["#JifengBang"] = "%from 发动<b style='color:yellow'>【疾风】</b>技能",
     ["@shenglong"] = "是否发动必杀技【升龙烈破】",
+    
+    -- 2011-10-26 -AI 世界最强女性
+    ["chunli"] = "春丽",
+    ["~chunli"] = "罪恶还没消亡...",
+    ["bailie"] = "百烈",
+    [":bailie"] = "你可以跳过出牌阶段，对攻击范围内任一角色至多使用3张【杀】",
+    ["$bailie"] = "呀 呀 呀！",
+    ["jiqi"] = "集气",
+    [":jiqi"] = "你可以跳过摸牌阶段，其他角色分别选择给你1张基本牌或不给",
+    ["$jiqi"] = "大家请相信我吧！",
+    ["qigong"] = "气功",
+    [":qigong"] = "出牌阶段，你可以消耗1点气，指定你以外任一角色发动，该角色防具效果无效，直到你的回合结束",
+    ["$qigong"] = "隔山打牛！",
 }

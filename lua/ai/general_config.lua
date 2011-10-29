@@ -89,14 +89,14 @@ sgs.ai_use_priority = {
 
         Schnapps = 2.7,
 
-		OffensiveHorse = 2.7,
-        FloodDragon=2.6999,
+		OffensiveHorse = 4.7,
+        FloodDragon=4.6,
+        SpiderQueen=4.5,
         DefensiveHorse = 2.6998,
         Rhinoceros=2.6997,
-        Boar=2.6996,
+        Boar=4.6996,
         Deer=2.6995,
         Cattle=2.6994,
-        SpiderQueen=2.6993,
         
         DeicideBow=2.699,
 		WushuangHalberd=2.695,
@@ -119,7 +119,6 @@ sgs.ai_use_priority = {
         ThunderBang = 2.45,
         IceBang = 2.4,
         Bang = 2.35,
-        
         
         Burn=2,
 		PoisonMarish = 1.5,

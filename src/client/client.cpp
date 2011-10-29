@@ -33,6 +33,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["roomEnd"] = &Client::roomEnd;
     callbacks["roomCreated"] = &Client::roomCreated;
     callbacks["roomError"] = &Client::roomError;
+    callbacks["hallEntered"] = &Client::hallEntered;
 
     callbacks["setup"] = &Client::setup;
     callbacks["addPlayer"] = &Client::addPlayer;
@@ -188,6 +189,7 @@ void Client::setup(const QString &setup_str){
 
     if(ServerInfo.parse(setup_str)){
         emit server_connected();
+        request("toggleReady .");
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }

@@ -7,7 +7,7 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), owner(false), general(NULL), general2(NULL),
+    :QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
     hp(-1), mp(0), max_hp(-1), state("online"), seat(0), alive(true), //modify by ce add
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), relic(NULL), //modify by ce add
@@ -31,6 +31,17 @@ void Player::setOwner(bool owner){
     if(this->owner != owner){
         this->owner = owner;
         emit owner_changed(owner);
+    }
+}
+
+bool Player::isReady() const{
+    return ready;
+}
+
+void Player::setReady(bool ready){
+    if(this->ready != ready){
+        this->ready = ready;
+        emit ready_changed(ready);
     }
 }
 

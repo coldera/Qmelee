@@ -412,17 +412,7 @@
         <translation>&lt;br/&gt;&lt;br/&gt; &lt;b&gt;温馨提示&lt;/b&gt;: %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/client/client.cpp" line="663"/>
-        <source>OK</source>
-        <translation>确定</translation>
-    </message>
-    <message>
-        <location filename="src/client/client.cpp" line="651"/>
-        <source>Cancel</source>
-        <translation>取消</translation>
-    </message>
-    <message>
-        <location filename="src/client/client.cpp" line="693"/>
+        <location filename="src/client/client.cpp" line="692"/>
         <source>Please choose:</source>
         <translation>请选择:</translation>
     </message>
@@ -1926,7 +1916,17 @@
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="371"/>
+        <location filename="src/dialog/mainwindow.cpp" line="819"/>
+        <source>Send low level command</source>
+        <translation>发送底层命令</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="819"/>
+        <source>Please input the raw low level command</source>
+        <translation>请输入要发送的底层命令</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="401"/>
         <source>irrKlang is a cross platform sound library for C++, C# and all .NET languages. &lt;br /&gt;</source>
         <translation>irrKlang 是一个跨平台的音频库，适用的语言有 C++, C# 和所有的 .Net 平台语言 &lt;br /&gt;</translation>
     </message>
