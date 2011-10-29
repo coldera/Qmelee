@@ -183,6 +183,9 @@ local t = {
     
     ["chaos_mirror"] = "混沌镜", 
     [":chaos_mirror"] = "每当你需要使用或打出一张【闪】时，你可以进行一次判定：若判定结果为红色，则视为你使用或打出了一张【闪】。", 
+    ["chaos_mirror:slash-jink"] = "是否发动【混沌镜】抵销【杀】", 
+    ["chaos_mirror:thousands-arrows-shot-jink"] = "是否发动【混沌镜】响应【万箭齐发】", 
+    ["chaos_mirror:@huhuan-card"] = "是否发动【混沌镜】响应【呼唤】", 
     ["king_shield"] = "仁王盾", 
     [":king_shield"] = "锁定技，黑色的【杀】对你无效。", 
     ["vine_armor"] = "藤甲", 
