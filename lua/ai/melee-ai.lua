@@ -2587,15 +2587,38 @@ function SmartAI:askForCard(pattern, prompt, data)
         else
             return "."
         end
+        
     --huhuan
     elseif parsedPrompt[1] == "@huhuan-card" then 
         local who = data:toPlayer()
 		if not self:isFriend(who) then return "." end
+        
         if pattern == "jink" then
             return self:getCardId("Dodge") or "."
         else
             return self:getCardId("Slash") or "."
         end
+    
+    --jiqi
+    elseif parsedPrompt[1] == "@jiqi-card" then
+        local who = data:toPlayer()
+        if not self:isFriend(who) then return "." end
+        
+		local holy_water, schnapps, slash, dodge
+		for _, card in sgs.qlist(self.player:getHandcards()) do
+			if card:inherits("HolyWater") then holy_water = card
+			elseif card:inherits("Schnapps") then schnapps = card
+			elseif card:inherits("Slash") then slash = card
+			elseif card:inherits("Dodge") then dodge = card
+			end
+		end
+        
+        if who:getHp()==1 and (holy_water or schnapps) then return "$"..(holy_water or schnapps):getEffectiveId() end
+        if who:getHandcardNum()==0 and dodge then return "$"..dodge:getEffectiveId() end
+        if slash then return "$"..slash:getEffectiveId() end
+        
+        return "."
+        
     end
 	
 	-- aoe
@@ -2625,6 +2648,18 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0 and not self.player:hasSkill("buqu"))) then 
 				return self:getCardId("Slash")
 			else return "." end
+        --bailie
+        elseif (parsedPrompt[1] == "@bailie-slash") then 
+            local to = data:toPlayer()
+            local cards = self.player:getHandcards()
+            cards = sgs.QList2Table(cards)
+            
+            for _,card in ipairs(cards) do
+                if card:inherits("Slash") and self:slashIsEffective(card, to) then
+                    return "$"..card:getEffectiveId()
+                end
+            end
+            
 		end
         return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
@@ -2642,27 +2677,27 @@ function SmartAI:askForCard(pattern, prompt, data)
 		end
 		return self:getCardId("Dodge") or "."
 	elseif pattern == ".basic" then
-		local effect = data:toCardEffect()
-		if self:isFriend(effect.to) then return "." end
-		local has_peach, has_anal, has_slash, slash_jink
-		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("HolyWater") then has_peach = card
-			elseif card:inherits("Schnapps") then has_anal = card
-			elseif card:inherits("Slash") then has_slash = card
-			elseif card:inherits("Dodge") then has_jink = card
-			end
-		end
+		-- local effect = data:toCardEffect()
+		-- if self:isFriend(effect.to) then return "." end
+		-- local has_peach, has_anal, has_slash, slash_jink
+		-- for _, card in sgs.qlist(self.player:getHandcards()) do
+			-- if card:inherits("HolyWater") then has_peach = card
+			-- elseif card:inherits("Schnapps") then has_anal = card
+			-- elseif card:inherits("Slash") then has_slash = card
+			-- elseif card:inherits("Dodge") then has_jink = card
+			-- end
+		-- end
 		
-		if has_slash then return "$" .. has_slash:getEffectiveId()
-		elseif has_jink then return "$" .. has_jink:getEffectiveId()
-		elseif has_anal or has_peach then 
-			if self:getCardsNum("Dodge", effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
-				if has_anal then return "$" .. has_anal:getEffectiveId()
-				else return "$" .. has_peach:getEffectiveId()
-				end
-			end
-		else return "." 
-		end
+		-- if has_slash then return "$" .. has_slash:getEffectiveId()
+		-- elseif has_jink then return "$" .. has_jink:getEffectiveId()
+		-- elseif has_anal or has_peach then 
+			-- if self:getCardsNum("Dodge", effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
+				-- if has_anal then return "$" .. has_anal:getEffectiveId()
+				-- else return "$" .. has_peach:getEffectiveId()
+				-- end
+			-- end
+		-- else return "." 
+		-- end
 	end
 
 	if parsedPrompt[1] == "liyao-sword-card" then 
@@ -2949,14 +2984,15 @@ function SmartAI:cardNeed(card)
     if card:inherits("Schnapps") then
         if self.player:getHp()<2 then return 10 end
     end
-   if card:inherits("Slash") and (self:getCardsNum("Slash") > 0) then return 4 end
+    if card:inherits("Slash") and (self:getCardsNum("Slash") > 0) then return 4 end
     if card:inherits("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash") > 1) then return 6 end
 	if card:inherits("Unassailable") and self:getCardsNum("Unassailable") == 0 then
-		if self.player:containsTrick("soul_awe") or self.player:containsTrick("enegy_drain") then return 10 end
+		if self.player:containsTrick("soul_awe") or self.player:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 10 end
 		for _,friend in ipairs(self.friends) do
-			if friend:containsTrick("soul_awe") or friend:containsTrick("enegy_drain") then return 7 end
+			if friend:containsTrick("soul_awe") or friend:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 7 end
 		end
 	end
+    return self:getUseValue(card)
 end
 
 sgs.ai_cardshow = {}
@@ -3052,7 +3088,8 @@ function SmartAI:getCardId(class_name, player)
 	local cards = player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	self:sortByUsePriority(cards)
-	local card_str = self:getGuhuoCard(class_name, player) or zeroCardView(class_name, player)
+	-- local card_str = self:getGuhuoCard(class_name, player) or zeroCardView(class_name, player)
+	local card_str = zeroCardView(class_name, player)
 	if card_str then return card_str end
 	
 	for _, card in ipairs(cards) do

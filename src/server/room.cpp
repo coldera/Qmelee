@@ -721,7 +721,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if(card){
         //modify by ce
-        if(!prompt.contains("@quwu-card-show") && !(pattern==".touse")) {
+        if(!prompt.contains("@quwu-card-show") && !prompt.contains("@jiqi-card") && !(pattern==".touse")) {
             if(card->getTypeId() != Card::Skill){
                 const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
 

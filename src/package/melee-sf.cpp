@@ -634,12 +634,219 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------chunli
+
+//----------------------------------------------------------------------------- Bailie
+
+BailieCard::BailieCard(){}
+
+bool BailieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(!Self->inMyAttackRange(to_select)) 
+        return false;
+
+    return true;
+}
+
+void BailieCard::onEffect(const CardEffectStruct &effect) const {
+    ServerPlayer *chunli = effect.from;
+    Room *room = chunli->getRoom();
+    
+    QVariant tohelp = QVariant::fromValue((PlayerStar)effect.to);
+    
+    for(int i=0; i<3; i++) {
+        
+        const Card *bang = room->askForCard(chunli, "slash", "@bailie-slash:" + effect.to->objectName(), tohelp);
+        
+        if(bang) {
+            
+            CardUseStruct use;
+            use.card = bang;
+            use.from = chunli;
+            use.to << effect.to;
+
+            room->useCard(use);
+        }else {
+            break;
+        }
+    }
+}
+
+class BailieViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    BailieViewAsSkill():ZeroCardViewAsSkill("bailie"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@bailie";
+    }
+    
+    virtual const Card *viewAs() const{
+        BailieCard *card = new BailieCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Bailie: public PhaseChangeSkill{
+public:
+    Bailie():PhaseChangeSkill("bailie"){
+        view_as_skill = new BailieViewAsSkill;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Play && target->getHandcardNum();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *chunli) const{
+        Room *room = chunli->getRoom();
+
+        if(room->askForUseCard(chunli, "@@bailie", "@bailie")){
+            return true;
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Jiqi
+
+JiqiCard::JiqiCard(){
+    target_fixed = true;
+}
+
+void JiqiCard::use(Room *room, ServerPlayer *chunli, const QList<ServerPlayer *> &) const{
+    
+    QVariant tohelp = QVariant::fromValue((PlayerStar)chunli);
+
+    foreach(ServerPlayer *p, room->getOtherPlayers(chunli)){
+        
+        const Card *card = room->askForCard(p, ".basic", "@jiqi-card:" + chunli->objectName(), tohelp);
+        
+        if(card) {
+            room->moveCardTo(card, chunli, Player::Hand, true);
+        }else {
+            LogMessage log;
+            log.type = "#JiqiNoCard";
+            log.from = p;
+            room->sendLog(log);            
+        }
+        
+    }
+    
+}
+
+class JiqiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    JiqiViewAsSkill():ZeroCardViewAsSkill("jiqi"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jiqi";
+    }
+    
+    virtual const Card *viewAs() const{
+        JiqiCard *card = new JiqiCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Jiqi: public PhaseChangeSkill{
+public:
+    Jiqi():PhaseChangeSkill("jiqi"){
+        view_as_skill = new JiqiViewAsSkill;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Draw;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *chunli) const{
+        Room *room = chunli->getRoom();
+
+        if(room->askForUseCard(chunli, "@@jiqi", "@jiqi")){
+            return true;
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Qigong
+
+QigongCard::QigongCard(){}
+
+bool QigongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return true;
+}
+
+void QigongCard::onEffect(const CardEffectStruct &effect) const {
+    effect.from->updateMp(-1);
+    effect.to->addMark("qinggang");
+}
+
+class QigongViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    QigongViewAsSkill():ZeroCardViewAsSkill("qigong"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@qigong";
+    }
+    
+    virtual const Card *viewAs() const{
+        QigongCard *card = new QigongCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Qigong: public PhaseChangeSkill{
+public:
+    Qigong():PhaseChangeSkill("qigong"){
+        view_as_skill = new QigongViewAsSkill;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Start && target->getMp()>0;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *chunli) const{
+        Room *room = chunli->getRoom();
+
+        room->askForUseCard(chunli, "@@qigong", "@qigong");
+
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken;
+    General *gouki, *ryu, *ken, *chunli;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -664,10 +871,15 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<JifengCard>();
     addMetaObject<ShenglongCard>();
     
-    // chunli = new General(this, "chunli", "qi", 3, false);
-    // chunli->addSkill(new Bailie);
-    // chunli->addSkill(new Jiqi);
-    // chunli->addSkill(new Qigong);
+    chunli = new General(this, "chunli", "qi", 3, false);
+    chunli->addSkill(new Bailie);
+    chunli->addSkill(new Jiqi);
+    chunli->addSkill(new Qigong);
+    
+    addMetaObject<BailieCard>();
+    addMetaObject<JiqiCard>();
+    addMetaObject<QigongCard>();
+    
 }
 
 ADD_PACKAGE(MeleeSF);

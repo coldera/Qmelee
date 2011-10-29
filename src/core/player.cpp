@@ -841,8 +841,8 @@ bool Player::canSlashWithoutCrossbow() const{
     
     if(hasFlag("one_more_bang"))
         return slash_count < 2;
-    else
-        return slash_count < 1;
+
+    return slash_count < 1;
 }
 
 void Player::jilei(const QString &type){

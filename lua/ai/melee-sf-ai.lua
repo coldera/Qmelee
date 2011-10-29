@@ -155,3 +155,54 @@ sgs.ai_skill_use["@@shenglong"]=function(self,prompt)
     
     return "."    
 end
+
+-- chunli ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["gouki"] = 4
+
+sgs.dynamic_value.damage_card["BailieCard"] = true
+sgs.dynamic_value.control_card["QigongCard"] = true
+
+-- qigong
+sgs.ai_skill_use["@@qigong"]=function(self,prompt)
+    if self:getCardsNum("Slash")<=0 or self.player:getMp()<1 then return "." end
+
+	self:sort(self.enemies,"defense")    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:inMyAttackRange(enemy) then
+            return "@QigongCard=.->"..enemy:objectName()
+        end
+    end
+    
+    return "."    
+end
+
+-- jiqi
+sgs.ai_skill_use["@@jiqi"]=function(self,prompt)
+    
+    local num = self:getCardsNum("Slash");
+    
+    for _,friend in ipairs(self.friends_noself) do
+        if self:getCardsNum("BasicCard", friend)>1 then
+            num = num+1
+        end
+    end
+    
+    if num>3 then return "@JiqiCard=.->." end
+    
+    return "."    
+end
+
+-- bailie
+sgs.ai_skill_use["@@bailie"]=function(self,prompt)
+    if self:getCardsNum("Slash")<2 then return "." end
+
+	self:sort(self.enemies,"defense")    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:inMyAttackRange(enemy) then
+            return "@BailieCard=.->"..enemy:objectName()
+        end
+    end
+    
+    return "."    
+end
+

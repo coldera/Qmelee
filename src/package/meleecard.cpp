@@ -2945,6 +2945,13 @@ public:
     }
 };
 
+class BasicPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) && card->getTypeId() == Card::Basic;
+    }
+};
+
 //----------------------------------------------------------cheat
 
 CheatCard::CheatCard(){
@@ -2978,6 +2985,7 @@ MeleeCardPackage::MeleeCardPackage()
     // patterns["nullification"] = new NamePattern("nullification");
     patterns["nullification"] = new NamePattern("unassailable");
     patterns["peach+analeptic"] = new PAPattern;
+    patterns[".basic"] = new BasicPattern;
 
     QList<Card *> cards;
     

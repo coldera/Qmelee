@@ -379,9 +379,7 @@ public:
 
 //----------------------------------------------------------------------------- Liulian
 
-LiulianCard::LiulianCard(){
-    // mute = true;
-}
+LiulianCard::LiulianCard(){}
 
 bool LiulianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())

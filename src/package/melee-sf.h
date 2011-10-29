@@ -63,4 +63,30 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class BailieCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE BailieCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class JiqiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JiqiCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class QigongCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QigongCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // MELEESF_H
