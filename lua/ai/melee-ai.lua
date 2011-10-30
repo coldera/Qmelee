@@ -145,15 +145,21 @@ function SmartAI:initialize(player)
 			if not success then 
 				self.room:writeToConsole(result1) 
 				
-                self.room:writeToConsole("========handcard=======") 
+                self.room:writeToConsole("========debug=======") 
                     local p = self.room:getCurrent()
                     self.room:writeToConsole(p:getGeneralName()) 
+                self.room:writeToConsole("------------handcard-----------") 
                     local cards = p:getHandcards()
                     cards = sgs.QList2Table(cards)                    
                     for _,c in ipairs(cards) do
                         self.room:writeToConsole(c:objectName()) 
                     end
-                self.room:writeToConsole("=====================") 
+                self.room:writeToConsole("------------stack-----------") 
+                    local stacks = debug.getinfo
+                    for _,s in ipairs(stacks) do
+                        self.room:writeToConsole(s.currentline.."::"..s:name) 
+                    end
+                self.room:writeToConsole("===================") 
 				-- self.room:writeToConsole(debug.traceback()) 
 			else 
 				return result1, result2 
@@ -1074,6 +1080,16 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			if not slash_prohibit then
 				self.predictedRange = self.player:getAttackRange()
                 
+                if self.player:hasFlag("drank") then
+                    self.room:writeToConsole("----------- drank and slash")
+                    self.room:writeToConsole(self.player:getGeneralName().." intend to attack "..enemy:getGeneralName())
+                    if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("canSlash") end
+                    if use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange) then self.room:writeToConsole("slash ok") end
+                    self.room:writeToConsole(self:objectiveLevel(enemy))
+                    if self:slashIsEffective(card, enemy) then self.room:writeToConsole("slashIsEffective") end
+                    self.room:writeToConsole("---------------------------")
+                end
+                
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
 				self:objectiveLevel(enemy)>3 and
@@ -1083,10 +1099,6 @@ function SmartAI:useBasicCard(card, use,no_distance)
 					if anal and not self:isEquip("BloodGuard", enemy)  then 
                         self.room:writeToConsole("-----------check drank and exit")
                         self.room:writeToConsole(self.player:getGeneralName().." intend to attack "..enemy:getGeneralName())
-                        if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("canSlash") end
-                        if use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange) then self.room:writeToConsole("slash ok") end
-                        self.room:writeToConsole(self:objectiveLevel(enemy))
-                        if self:slashIsEffective(card, enemy) then self.room:writeToConsole("slashIsEffective") end
                         self.room:writeToConsole("---------------------------")
 						use.card = anal
 						return 
@@ -1284,7 +1296,7 @@ function SmartAI:useCardBurn(fire_attack, use)
 
 	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng() and self:hasTrickEffective(fire_attack, enemy) then	
+		if enemy:getMark("@invincible")<=0 and (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng() and self:hasTrickEffective(fire_attack, enemy) then	
 			
 			local cards = enemy:getHandcards()
 			local success = true

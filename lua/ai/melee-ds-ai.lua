@@ -61,7 +61,7 @@ bingzhu_skill.getTurnUseCard=function(self)
     self:sortByUseValue(cards, true)
     
    for _,enemy in ipairs(self.enemies) do
-        if enemy:getHp()==1 and not enemy:isEquip("HolyWing") then
+        if enemy:getHp()==1 and not self:isEquip("HolyWing", enemy) then
             card_str = ("@BingzhuCard=%d+%d"):format(cards[1]:getId(),cards[2]:getId())
             return sgs.Card_Parse(card_str)   
         end
@@ -71,7 +71,7 @@ end
 
 sgs.ai_skill_use_func["BingzhuCard"]=function(card,use,self)
    for _,enemy in ipairs(self.enemies) do
-        if enemy:getHp()==1 and not enemy:isEquip("HolyWing") then
+        if enemy:getHp()==1 and not self:isEquip("HolyWing", enemy) then
             use.card = card
             if use.to then 
                 use.to:append(self.enemies[1])
