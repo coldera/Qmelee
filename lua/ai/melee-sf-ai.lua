@@ -206,3 +206,49 @@ sgs.ai_skill_use["@@bailie"]=function(self,prompt)
     return "."    
 end
 
+-- blank ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["blank"] = -4
+
+sgs.blank_keep_value = {
+	ThunderBang = 4,
+}
+
+sgs.dynamic_value.damage_card["DianjiCard"] = true
+
+-- dianji
+local dianji_skill={}
+dianji_skill.name="dianji"
+table.insert(sgs.ai_skills,dianji_skill)
+dianji_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("DianjiCard") or self:getCardsNum("ThunderBang")<=0 or self.player:getMp()<2 then return end
+    
+    local good, bad = 0, 0
+    local who = self.player   
+    
+    for _, friend in ipairs(self.friends_noself) do
+        if friend:getHandcardNum()<2 and self:damageIsEffective("thunder", friend) then 
+            if friend:getHp() == 1 then 
+                bad = bad + 5
+            end
+            bad = bad + 3
+        end
+    end
+
+    for _, enemy in ipairs(self.enemies) do
+        if enemy:getHandcardNum()<2 and self:damageIsEffective("thunder", enemy) then 
+            if enemy:getHp() == 1 then 
+                good = good + 5
+            end
+            good = good + 3
+        end
+    end
+    
+    if good < bad then return nil end
+    
+    return sgs.Card_Parse("@DianjiCard=%d."):format(self:getCardId("ThunderBang"))
+
+end
+
+sgs.ai_skill_use_func["DianjiCard"]=function(card,use,self)
+    use.card = card
+end

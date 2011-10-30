@@ -89,4 +89,20 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+// class DianjiChoice: public SkillCard{
+    // Q_OBJECT
+
+// public:
+    // Q_INVOKABLE DianjiChoice();
+    // virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+// };
+
+class DianjiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DianjiCard();
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
 #endif // MELEESF_H

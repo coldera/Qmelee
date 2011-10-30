@@ -1,5 +1,5 @@
 #include "melee-sf.h"
-
+#include "meleecard.h"
 #include "general.h"
 #include "skill.h"
 #include "room.h"
@@ -510,6 +510,8 @@ public:
             }
             
             if(choice!="NoChoice") {
+                room->playSkillEffect(objectName());
+            
                 while(room->askForUseCard(ken, "@@jifeng", "@jifeng") && choice!="JifengEffect1")
                     ;//Empty loop
                     
@@ -841,12 +843,99 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------blank
+
+//----------------------------------------------------------------------------- Shidian
+
+class Shidian: public TriggerSkill{
+public:
+    Shidian():TriggerSkill("shidian"){
+        events << Predamaged;
+        frequency = Compulsory;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *blank, QVariant &data) const{
+        Room *room = blank->getRoom();
+        
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature == DamageStruct::Thunder) {
+            
+            LogMessage log;
+            log.type = "#DamageNullify";
+            log.to << blank;
+            log.arg = objectName();
+            room->sendLog(log);
+            
+            blank->drawCards(1);
+        
+            return true;
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Dianji
+
+DianjiCard::DianjiCard(){
+    once = true;
+    target_fixed = true;
+}
+
+void DianjiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *blank = card_use.from;
+    
+    room->playSkillEffect("dianji");
+    
+    LogMessage log;
+    log.type = "#Dianji";
+    log.from = blank;
+    room->sendLog(log);    
+    
+    blank->updateMp(-2);
+    
+    QList<ServerPlayer *> targets = room->getOtherPlayers(blank);
+    
+    CardUseStruct use;
+    use.card = Sanguosha->getCard(getSubcards().first());
+    use.from = blank;
+    use.to << targets;
+
+    room->useCard(use);
+    
+}
+
+class Dianji: public OneCardViewAsSkill{
+public:
+    Dianji():OneCardViewAsSkill("dianji"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("DianjiCard") && player->getMp()>1 && player->getHandcardNum();
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("ThunderBang") && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        DianjiCard *card = new DianjiCard;
+        card->addSubcard(card_item->getFilteredCard());
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli;
+    General *gouki, *ryu, *ken, *chunli, *blank;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -879,6 +968,15 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<BailieCard>();
     addMetaObject<JiqiCard>();
     addMetaObject<QigongCard>();
+    
+    
+    blank = new General(this, "blank", "nu");
+    blank->addSkill(new Shidian);
+    blank->addSkill(new Dianji);
+
+    addMetaObject<DianjiCard>();
+    
+    
     
 }
 

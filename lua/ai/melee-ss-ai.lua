@@ -478,7 +478,7 @@ baosha_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if who:distanceTo(friend)<=who:getAttackRange() and friend:getHandcardNum()<2 then 
+        if self:inMyAttackRange(friend) and friend:getHandcardNum()<2 and self:damageIsEffective("fire", friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -487,7 +487,7 @@ baosha_skill.getTurnUseCard=function(self)
     end
 
     for _, enemy in ipairs(self.enemies) do
-        if who:distanceTo(enemy)<=who:getAttackRange() and enemy:getHandcardNum()<2 then 
+        if who:distanceTo(enemy)<=who:getAttackRange() and enemy:getHandcardNum()<2 and  self:damageIsEffective("fire", enemy) then 
             if enemy:getHp() == 1 then 
                 good = good + 5
             end
@@ -655,7 +655,7 @@ chuixue_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if friend:getHandcardNum()<2 then 
+        if friend:getHandcardNum()<2 and self:damageIsEffective("ice", friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -664,7 +664,7 @@ chuixue_skill.getTurnUseCard=function(self)
     end
 
     for _, enemy in ipairs(self.enemies) do
-        if enemy:getHandcardNum()<2 then 
+        if enemy:getHandcardNum()<2 and self:damageIsEffective("ice", enemy) then 
             if enemy:getHp() == 1 then 
                 good = good + 5
             end
