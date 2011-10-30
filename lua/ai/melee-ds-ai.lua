@@ -74,7 +74,7 @@ sgs.ai_skill_use_func["BingzhuCard"]=function(card,use,self)
         if enemy:getHp()==1 and not self:isEquip("HolyWing", enemy) then
             use.card = card
             if use.to then 
-                use.to:append(self.enemies[1])
+                use.to:append(enemy)
             end
             break
         end

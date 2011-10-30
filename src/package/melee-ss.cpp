@@ -2376,14 +2376,12 @@ void ShuangyueCard::use(Room *room, ServerPlayer *jubei, const QList<ServerPlaye
     const Weapon *weapon = jubei->getWeapon();
     
     room->setPlayerFlag(jubei, "changing_weapon");
-    
+
+    jubei->addToPile("erdao_weapon", weapon->getEffectiveId(), false);
+
     int card_id =  jubei->getPile("erdao_weapon").first();
     const Card *new_weapon = Sanguosha->getCard(card_id);
-    
-    // jubei->obtainCard(new_weapon);    
-    jubei->addToPile("erdao_weapon", weapon->getEffectiveId(), false);
-    
-    room->moveCardTo(new_weapon, jubei, Player::Equip);
+    room->moveCardTo(new_weapon, jubei, Player::Equip, false);
     
     room->setPlayerFlag(jubei, "one_more_bang");
     room->setPlayerFlag(jubei, "-changing_weapon");

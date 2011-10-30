@@ -245,7 +245,14 @@ dianji_skill.getTurnUseCard=function(self)
     
     if good < bad then return nil end
     
-    return sgs.Card_Parse("@DianjiCard=%d."):format(self:getCardId("ThunderBang"))
+    local cards = player:getCards("he")
+	cards = sgs.QList2Table(cards)
+    
+    for _, card in ipairs(cards) do
+        if card:inherits("ThunderBang") then
+            return sgs.Card_Parse(("@DianjiCard=%d."):format(card:getEffectiveId()))
+        end
+    end
 
 end
 

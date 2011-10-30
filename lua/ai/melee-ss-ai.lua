@@ -478,7 +478,7 @@ baosha_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if self:inMyAttackRange(friend) and friend:getHandcardNum()<2 and self:damageIsEffective("fire", friend) then 
+        if self.player:inMyAttackRange(friend) and friend:getHandcardNum()<2 and self:damageIsEffective("fire", friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -566,7 +566,7 @@ local dianguang_skill={}
 dianguang_skill.name="dianguang"
 table.insert(sgs.ai_skills,dianguang_skill)
 dianguang_skill.getTurnUseCard=function(self)
-    if self.player:getMark("@dianguang") or self.player:getMp()<3 then return end    
+    if self.player:getMark("@dianguang")>0 or self.player:getMp()<3 then return end    
     return sgs.Card_Parse("@DianguangCard=.")
 end
 
@@ -820,7 +820,9 @@ shuangyue_skill.name="shuangyue"
 table.insert(sgs.ai_skills,shuangyue_skill)
 shuangyue_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("ShuangyueCard") or self:getCardsNum("Slash")==0 then return end
-    return sgs.Card_Parse("@ShuangyueCard=.")
+    if self:getCardsNum("Slash")>0 and not self.player:canSlashWithoutCrossbow() then
+        return sgs.Card_Parse("@ShuangyueCard=.")
+    end
 end
 
 sgs.ai_skill_use_func["ShuangyueCard"]=function(card,use,self)

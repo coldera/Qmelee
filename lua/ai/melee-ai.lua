@@ -157,7 +157,8 @@ function SmartAI:initialize(player)
                 self.room:writeToConsole("------------stack-----------") 
                     -- local stacks = debug.getinfo()
                     -- for _,s in ipairs(stacks) do
-                    local s = debug.getinfo(2).short_src
+                    -- local s = debug.traceback()
+                    local s = debug.getinfo(2, "Sln")
                     self.room:writeToConsole(s) 
                     -- end
                 self.room:writeToConsole("===================") 
