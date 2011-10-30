@@ -456,7 +456,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 }
             }else if(kingdom == "ling" && damage.nature == DamageStruct::Thunder) {
                 foreach(ServerPlayer *ling, room->getOtherPlayers(player)){
-                    if(ling->getKingdom() == "ling"){
+                    if(ling->getKingdom() == "ling" && (ling->getArmor() || ling->getHorse())){
                         
                         JudgeStruct judge;
                         judge.pattern = QRegExp("(.*):(diamond):(.*)");

@@ -75,7 +75,14 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     ServerPlayer *target = targets.value(0, source);
     
     switch(location()){
-        case WeaponLocation: equipped = target->getWeapon(); break;
+        //modify by ce for weapon_forbid
+        case WeaponLocation: {
+            if(target->getMark("@weapon_forbid")) {
+                return;
+            }
+            equipped = target->getWeapon(); 
+            break;
+        }
         //modify by ce for armor_forbid
         case ArmorLocation: {
             if(target->getMark("@armor_forbid")) {

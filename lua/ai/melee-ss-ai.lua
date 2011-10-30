@@ -577,6 +577,10 @@ end
 -- rimururu ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["rimururu"] = -4
 
+sgs.rimururu_keep_value = {
+    Armor = 0,
+}
+
 sgs.dynamic_value.benefit["BingrenCard"] = true
 
 -- bingren

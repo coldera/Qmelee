@@ -791,7 +791,7 @@ public:
     Yanbao():OneCardViewAsSkill("yanbao"){}
     
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("Yanbao") && player->canSlashWithoutCrossbow();
+        return !player->hasUsed("Yanbao") && Slash::IsAvailable(player);
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1265,7 +1265,7 @@ public:
     Anqi():OneCardViewAsSkill("anqi"){}
     
     virtual bool isEnabledAtPlay(const Player *leilei) const{
-        return leilei->canSlashWithoutCrossbow();
+        return Slash::IsAvailable(leilei);
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1549,7 +1549,7 @@ public:
     Huoshen():OneCardViewAsSkill("huoshen"){}
     
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("Huoshen") && player->canSlashWithoutCrossbow() && player->getHp()<3 && player->getMp()<=3;
+        return !player->hasUsed("Huoshen") && Slash::IsAvailable(player) && player->getHp()<3 && player->getMp()<=3;
     }
     
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -1695,7 +1695,7 @@ public:
     Xueshen():OneCardViewAsSkill("xueshen"){}
     
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("XueshenCard") && player->getMp()>4 && player->canSlashWithoutCrossbow() && player->getHandcardNum()>0;
+        return !player->hasUsed("XueshenCard") && player->getMp()>4 && Slash::IsAvailable(player) && player->getHandcardNum()>0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

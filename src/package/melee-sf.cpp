@@ -930,12 +930,135 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------dhaisim
+
+//----------------------------------------------------------------------------- Yujia
+
+class Yujia: public GameStartSkill{
+public:
+    Yujia():GameStartSkill("yujia"){
+        frequency = Compulsory;
+    }
+
+    virtual void onGameStart(ServerPlayer *dhaisim) const{
+        dhaisim->getRoom()->setPlayerMark(dhaisim, "no_range_limit", 1);
+    }
+};
+
+//----------------------------------------------------------------------------- Huoyan
+
+HuoyanCard::HuoyanCard(){}
+
+void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
+
+    ServerPlayer *dhaisim = card_use.from;
+
+    const Card *card = Sanguosha->getCard(getSubcards().first());    
+    FireBang *fire_bang = new FireBang(card->getSuit(), card->getNumber());
+
+    LogMessage log;
+    log.type = "$Huoyan";
+    log.from = dhaisim;
+    log.to << card_use.to;
+    log.card_str = fire_bang->toString();
+    room->sendLog(log); 
+    
+    room->playSkillEffect("huoyan");
+    
+    dhaisim->updateMp(-2);
+    
+    fire_bang->use(room, dhaisim, card_use.to);
+    
+    room->throwCard(this);
+    
+}
+
+class Huoyan: public OneCardViewAsSkill{
+public:
+    Huoyan():OneCardViewAsSkill("huoyan"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp()>=2 && Slash::IsAvailable(player);
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("Slash") && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        HuoyanCard *card = new HuoyanCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Chuansong
+
+ChuansongCard::ChuansongCard(){}
+
+void ChuansongCard::onEffect(const CardEffectStruct &effect) const {
+    ServerPlayer *dhaisim = effect.from;
+    Room *room = dhaisim->getRoom();
+    
+    ServerPlayer *next;
+    
+    do{
+        next = dhaisim->getNext();
+        room->swapSeat(dhaisim, next);
+    }while(next != effect.to);
+    
+}
+
+class ChuansongViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    ChuansongViewAsSkill():ZeroCardViewAsSkill("chuansong"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@chuansong";
+    }
+    
+    virtual const Card *viewAs() const{
+        ChuansongCard *card = new ChuansongCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Chuansong: public TriggerSkill{
+public:
+    Chuansong():TriggerSkill("chuansong"){
+        view_as_skill = new ChuansongViewAsSkill;
+        events << CardResponsed;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+    
+    virtual bool trigger(TriggerEvent event, ServerPlayer *dhaisim, QVariant &data) const{
+        Room *room = dhaisim->getRoom();
+    
+        CardStar card_star = data.value<CardStar>();
+        if(!card_star->inherits("Dodge"))
+            return false;
+        
+        room->askForUseCard(dhaisim, "@@chuansong", "@chuansong");
+
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blank;
+    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -969,13 +1092,21 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<JiqiCard>();
     addMetaObject<QigongCard>();
     
-    
     blank = new General(this, "blank", "nu");
     blank->addSkill(new Shidian);
     blank->addSkill(new Dianji);
 
     addMetaObject<DianjiCard>();
     
+    dhaisim = new General(this, "dhaisim", "ling", 3);
+    dhaisim->addSkill(new Yujia);
+    dhaisim->addSkill(new MarkAssignSkill("@weapon_forbid", 1));
+    related_skills.insertMulti("yujia", "#@weapon_forbid");
+    dhaisim->addSkill(new Huoyan);
+    dhaisim->addSkill(new Chuansong);
+    
+    addMetaObject<HuoyanCard>();
+    addMetaObject<ChuansongCard>();
     
     
 }

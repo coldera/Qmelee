@@ -35,6 +35,7 @@ local t = {
     ["@invincible"] = "无损",
     ["invincible"] = "【无损】",
     ["@armor_forbid"] = "封甲",
+    ["@weapon_forbid"] = "封械",
     ["@skill_forbid"] = "封技",
     ["skill_forbid"] = "【封技】",
     ["@card_forbid"] = "封牌",

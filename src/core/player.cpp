@@ -147,17 +147,9 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    // if(hasFlag("tianyi_success"))
-        // return 1000;
 
-    // if(weapon)
-        // return weapon->getRange();
-    // else if(hasSkill("zhengfeng"))
-        // return hp;
-    // else
-        // return 1;
     //modify by ce    
-    if(hasFlag("no_range_limit"))
+    if(hasFlag("no_range_limit") || getMark("no_range_limit"))
         return 99;
     
     int range = 1;

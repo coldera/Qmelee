@@ -186,6 +186,8 @@ void Room::detachSpecialSkill(ServerPlayer *player) {
         player->loseMark("@armor_forbid");
     }else if(player->hasSkill("banruo")) {
         player->loseMark("@banruo");
+    }else if(player->hasSkill("yujia")) {
+        player->loseMark("@weapon_forbid");
     }
 }
 

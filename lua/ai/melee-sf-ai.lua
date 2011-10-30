@@ -259,3 +259,60 @@ end
 sgs.ai_skill_use_func["DianjiCard"]=function(card,use,self)
     use.card = card
 end
+
+
+-- dhaisim ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["dhaisim"] = 6
+
+sgs.dhaisim_keep_value = {
+	Weapon = 0,
+    FireBang = 2,
+}
+
+sgs.dynamic_value.damage_card["HuoyanCard"] = true
+
+-- huoyan
+local huoyan_skill={}
+huoyan_skill.name="huoyan"
+table.insert(sgs.ai_skills,huoyan_skill)
+huoyan_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("HuoyanCard") or not self.player:canSlashWithoutCrossbow() or self.player:getMp()<2 then return end
+    
+    local cards = player:getCards("h")
+	cards = sgs.QList2Table(cards)
+    
+    for _, card in ipairs(cards) do
+        if card:inherits("Slash") and not card:inherits("FireBang") then
+            return sgs.Card_Parse(("@HuoyanCard=%d."):format(card:getEffectiveId()))
+        end
+    end
+    
+end
+
+sgs.ai_skill_use_func["HuoyanCard"]=function(card,use,self)
+        
+        self:sort(self.enemies,"defense")
+        for _,enemy in ipairs(self.enemies) do
+            if self:damageIsEffective("fire", enemy) then
+                use.card = card
+                if use.to then 
+                    use.to:append(enemy) 
+                end
+                break
+            end
+        end
+    
+end
+
+-- chuansong
+sgs.ai_skill_use["@@chuansong"]=function(self,prompt)
+
+    local target = self.room:getCurrent();
+    
+    if target:getNext() ~= self.player then
+        return "@ChuansongCard=.->"..target:objectName()
+    end
+    
+    return "."
+    
+end

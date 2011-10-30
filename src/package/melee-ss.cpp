@@ -1188,7 +1188,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->objectName() == "bang";
+        return to_select->getFilteredCard()->inherits("Bang") && !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -1426,7 +1426,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{    
-        return !player->hasUsed("BaoshaCard") && player->getMp()>=2 && player->canSlashWithoutCrossbow();
+        return !player->hasUsed("BaoshaCard") && player->getMp()>=2 && Slash::IsAvailable(player);
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
