@@ -1979,7 +1979,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *jedah) const{
-        return TriggerSkill::triggerable(jedah);
+        return jedah->hasSkill("jiushu");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *jedah, QVariant &data) const{
@@ -2007,7 +2007,7 @@ public:
                 }
             }        
         }else if(event == Death) {
-            foreach(ServerPlayer *p, jedah->getRoom()->getOtherPlayers(jedah)){
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
                 if(p->getMark("jiushu_on")) {
                     room->setPlayerMark(p, "jiushu_on", 0);
                     room->killPlayer(p);
