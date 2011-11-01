@@ -29,16 +29,8 @@ return {
 	["cheat"] = "作弊", 
 	["yes"] = "是", 
 	["no"] = "否", 
-	
-	["wei"] = "魏", 
-	["shu"] = "蜀", 
-	["wu"] = "吴", 
-	["qun"] = "群", 
-	
-	["test"] = "测试",
-	["sujiang"] = "素将",
-	["sujiangf"] = "素将(女)",
-	
+    
+
 	["#Murder"] = "%to [%arg] 挂了，凶手是 %from", 
 	["#Suicide"] = "%to [%arg] 自杀身亡", 
 	["#InvokeSkill"] = "%from 使用了技能<b style='color:yellow'>【%arg】</b>", 

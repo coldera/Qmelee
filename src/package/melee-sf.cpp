@@ -1053,12 +1053,86 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------honda
+
+//----------------------------------------------------------------------------- Xushi
+
+class XushiOff: public TriggerSkill{
+public:
+    XushiOff():TriggerSkill("#xushi-off"){
+        events << CardResponsed;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMark("@xuli")>0;
+    }
+    
+    virtual bool trigger(TriggerEvent event, ServerPlayer *honda, QVariant &data) const{
+    
+        CardStar card_star = data.value<CardStar>();
+        if(card_star->inherits("BasicCard")) {
+            honda->loseMark("@xuli");
+        }
+        
+        return false;
+    }
+};
+
+class Xushi: public PhaseChangeSkill{
+public:
+    Xushi():PhaseChangeSkill("xushi"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Play && !target->getMark("@xuli");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *honda) const{
+        Room *room = honda->getRoom();
+        
+        if(honda->askForSkillInvoke(objectName())) {
+        
+            room->playSkillEffect(objectName());
+        
+            honda->gainMark("@xuli");
+            return true;
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Wushuang
+
+class Wushuang: public PhaseChangeSkill{
+public:
+    Wushuang():PhaseChangeSkill("wushuang"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Start && target->getMark("@xuli");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *honda) const{
+        Room *room = honda->getRoom();
+        
+        if(honda->askForSkillInvoke(objectName())) {
+        
+            room->playSkillEffect(objectName());
+        
+            honda->loseMark("@xuli");
+            room->setPlayerFlag(honda, "no_range_limit");
+            room->setPlayerFlag(honda, "no_bang_limit");
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim;
+    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1108,6 +1182,11 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<HuoyanCard>();
     addMetaObject<ChuansongCard>();
     
+    honda = new General(this, "honda", "nu");
+    honda->addSkill(new Xushi);
+    honda->addSkill(new XushiOff);
+    related_skills.insertMulti("xushi", "#xushi-off");
+    honda->addSkill(new Wushuang);
     
 }
 

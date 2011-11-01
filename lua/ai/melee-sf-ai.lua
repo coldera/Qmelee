@@ -278,7 +278,7 @@ table.insert(sgs.ai_skills,huoyan_skill)
 huoyan_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("HuoyanCard") or not self.player:canSlashWithoutCrossbow() or self.player:getMp()<2 then return end
     
-    local cards = player:getCards("h")
+    local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
     
     for _, card in ipairs(cards) do
@@ -315,4 +315,41 @@ sgs.ai_skill_use["@@chuansong"]=function(self,prompt)
     
     return "."
     
+end
+
+
+-- honda ---------------------------------------------------------------------------------
+
+sgs.ai_chaofeng["honda"] = 1
+
+-- xushi
+sgs.ai_skill_invoke.xushi = function(self, data)
+    
+    local has_armor, has_dhorse
+    local slash, dodge, water = 0, 0, 0
+    
+    local cards = player:getCards("h")
+	cards = sgs.QList2Table(cards)
+    
+    for _, card in ipairs(cards) do
+        if not self.player:getArmor() and card:inherits("Armor") then return false end
+        if not self.player:getDefensiveHorse() and card:inherits("DefensiveHorse") then return false end
+        
+        if card:inherits("Slash") then 
+            slash = slash+1 
+        elseif card:inherits("Dodge") then
+            dodge = dodge+1
+        elseif card:inherits("HolyWater") then
+            water = water+1
+        end
+    end
+    
+    if self.player:getHp()+self.player:getMp() > #cards and slash>1 then return true end
+    if self.player:getHp()==1 and self.player:getMp()>1 and dodge+water > 2 then return true end
+    
+end
+
+-- wushuang
+sgs.ai_skill_invoke.wushuang = function(self, data)
+    return self:getCardsNum("Slash") > 1
 end

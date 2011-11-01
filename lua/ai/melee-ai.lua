@@ -9,6 +9,7 @@ math.randomseed(os.time())
 
 -- this table stores all specialized AI classes
 sgs.ai_classes = {}
+sgs.showFriendDebug = false
 -- compare functions
 sgs.ai_compare_funcs = {
 	hp = function(a, b)
@@ -144,7 +145,7 @@ function SmartAI:initialize(player)
 			success, result1, result2 = pcall(method, self, ...) 
 			if not success then 
 				self.room:writeToConsole(result1) 
-				
+				sgs.showFriendDebug = true
                 self.room:writeToConsole("========debug=======") 
                     local p = self.room:getCurrent()
                     self.room:writeToConsole(p:getGeneralName()) 
@@ -155,12 +156,7 @@ function SmartAI:initialize(player)
                         self.room:writeToConsole(c:objectName()) 
                     end
                 self.room:writeToConsole("------------stack-----------") 
-                    -- local stacks = debug.getinfo()
-                    -- for _,s in ipairs(stacks) do
-                    -- local s = debug.traceback()
-                    local s = debug.getinfo(2, "Sln")
-                    self.room:writeToConsole(s) 
-                    -- end
+                    self.room:writeToConsole(method_name) 
                 self.room:writeToConsole("===================") 
 				-- self.room:writeToConsole(debug.traceback()) 
 			else 
@@ -676,6 +672,16 @@ function SmartAI:isFriend(other, another)
 	if another then 
 		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
 	end
+    
+    if sgs.showFriendDebug then
+        self.room:writeToConsole("========is friend ?=======")
+        if useDefaultStrategy() then self.room:writeToConsole("useDefaultStrategy") end
+        if (self.player:objectName())==(other:objectName()) then self.room:writeToConsole("same objectName") end 
+        if self:objectiveLevel(other)<0 then self.room:writeToConsole("objectiveLevel") end
+        self.room:writeToConsole("=====================")
+        sgs.showFriendDebug = false
+    end
+    
     if useDefaultStrategy() then return self.lua_ai:isFriend(other) end
     if (self.player:objectName())==(other:objectName()) then return true end 
 	if self:objectiveLevel(other)<0 then return true end
@@ -724,9 +730,13 @@ sgs.ai_skill_invoke = {
     chaos_mirror = true;
     nvwa_stone = true;
     miracle = true;
+    soul_spirit = true;
 }
 
 function SmartAI:askForSkillInvoke(skill_name, data)
+
+    self.room:writeToConsole("askForSkillInvoke::"..skill_name)
+
 	local invoke = sgs.ai_skill_invoke[skill_name]
 	if type(invoke) == "boolean" then
 		return invoke

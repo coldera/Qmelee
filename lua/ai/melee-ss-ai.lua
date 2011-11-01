@@ -123,7 +123,7 @@ local yingxuan_skill={}
 yingxuan_skill.name="yingxuan"
 table.insert(sgs.ai_skills,yingxuan_skill)
 yingxuan_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("YingxuanCard") then return end    
+    if self.player:hasUsed("YingxuanCard") or self.player:getMark("@yingxuan")>0 then return end    
     
     local card_str
     local cards = self.player:getHandcards()
@@ -342,7 +342,7 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     cards=sgs.QList2Table(cards)    
     self:sortByUseValue(cards, true)    
     
-    if self:getKeepValue(cards[1]) >= 3.5 and self.player:getHp()>=2 then return false end
+    if cards[1] and self:getKeepValue(cards[1]) >= 3.5 and self.player:getHp()>=2 then return false end
     
     local allcards = self.player:getCards("he")
     allcards = sgs.QList2Table(allcards)

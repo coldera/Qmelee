@@ -59,7 +59,7 @@ sgs.ai_skill_invoke["deicide_bow"] = function(self, data)
     return effect and not self:isFriend(effect.to)
 end
 
-sgs.ai_skill_invoke["soul_spirit"] = function(self, data)
+sgs.ai_skill_invoke["soul_cane"] = function(self, data)
     local effect = data:toSlashEffect()
     return effect and not self:isFriend(effect.to)
 end

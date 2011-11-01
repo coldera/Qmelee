@@ -1777,7 +1777,12 @@
         <translation>重放文件格式转换 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="234"/>
+        <location filename="src/dialog/mainwindow.ui" line="357"/>
+        <source>Send lowlevel command ...</source>
+        <translation>发送底层命令 ...</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="235"/>
         <source>Alt+M</source>
         <translation></translation>
     </message>

@@ -573,7 +573,12 @@ int Player::getMaxCards() const{
     
     int deer = hasSkill("deer")?1:0;
     
-    return qMax(hp,0) + bee - deer;
+    int xushi = 0;
+    if(getMark("@xuli")) {
+        xushi = getMp();
+    }
+    
+    return qMax(hp,0) + bee - deer + xushi;
 }
 
 QString Player::getKingdom() const{

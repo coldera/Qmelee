@@ -92,14 +92,9 @@ zuanji_skill.name="zuanji"
 table.insert(sgs.ai_skills,zuanji_skill)
 zuanji_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("ZuanjiCard") or self.player:getMp()<2 or self.player:getMark("luochao")>0 then return end
-    
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-    
-    for _,card in ipairs(cards) do
-        if card:inherits("Slash") then
-            return sgs.Card_Parse("@ZuanjiCard=.")
-        end
+
+    if self:getCardsNum("Slash")>1 then
+        return sgs.Card_Parse("@ZuanjiCard=.")
     end
     
 end
@@ -418,10 +413,13 @@ end
 
 -- fanxiang
 sgs.ai_skill_use["@@fanxiang"]=function(self,prompt)
-    local parsedPrompt = prompt:split(":")
-    self.room:writeToConsole("fanxiang skill invoke?----"..prompt)
+    local parsedPrompt = prompt:split(":")    
     local card = sgs.Sanguosha:getCard(parsedPrompt[2])
-
+    
+    if card then
+    self.room:writeToConsole("fanxiang skill invoke?----"..card:objectName())
+    end 
+    
     if self.player:getMp()<1 or not card then return "." end
     
     local canInvoke = false
