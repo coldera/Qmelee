@@ -804,7 +804,7 @@ local erdao_skill={}
 erdao_skill.name="erdao"
 table.insert(sgs.ai_skills,erdao_skill)
 erdao_skill.getTurnUseCard=function(self)
-    if not self.player:getWeapon() or self.player:hasUsed("ErdaoCard") or self.player:getMp()<2 or self.player:hasSkill("shuangyue") then return end
+    if not self.player:getWeapon() or self.player:hasUsed("ErdaoCard") or self.player:getMp()<2 or self.player:getMark("erdao") then return end
     
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
