@@ -70,13 +70,7 @@ sgs.ai_skill_invoke["red_dragon"] = function(self, data)
 end
 
 sgs.ai_skill_invoke["chaos_mirror"] = function(self, data)
-    if data and data:toString()=="@huhuan-card" then
-        for _, enemy in ipairs(self.enemies) do
-            if enemy:hasSkill("huhuan") then return false end
-        end
-    end
-    
-    return true
+    return self:needHelp(data)
 end
 
 sgs.ai_skill_invoke["cattle"] = function(self, data)

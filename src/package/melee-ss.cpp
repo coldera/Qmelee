@@ -1065,9 +1065,9 @@ void SiyueCard::use(Room *room, ServerPlayer *suija, const QList<ServerPlayer *>
     log.to << targets;
     room->sendLog(log);    
     
-    iceBang->use(room, suija, targets);
-    
     suija->getRoom()->throwCard(this);
+    
+    iceBang->use(room, suija, targets);
 
 }
 

@@ -331,12 +331,15 @@ sgs.ai_chaofeng["sogetsu"] = -2
 -- yueyin
 sgs.ai_skill_invoke.yueyin = function(self, data)
     
-    local card_use = data:toCardUse()
-    if not card_use.card then
-        card_use = data:toCardEffect()
-    end
+    card_use = data:toCardEffect()
+    local card = card_use.card
     
-    if card_use.card and card_use.card:inherits("TrickCard") then return false end
+    if not card 
+    or card:inherits("Cure") 
+    or card:inherits("GlobalEffect") 
+    or card:inherits("DestroyAll")
+    or card:inherits("Burn")
+    or card:inherits("SoulChain") then return false end
     
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards)    

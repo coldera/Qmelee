@@ -154,6 +154,7 @@ local t = {
     [":snake_spear"] = "当你需要使用或打出一张【杀】时，你可以将两张手牌当一张【杀】来使用或打出。", 
     ["pangu_axe"] = "盘古斧", 
     [":pangu_axe"] = "当你使用的【杀】被抵挡时，你可以弃两张牌，则【杀】依然造成伤害。", 
+    ["@axe"] = "你可再弃两张牌（包括装备）使此杀强制命中", 
     ["wushuang_halberd"] = "无双戟", 
     [":wushuang_halberd"] = "当你使用的【杀】是你的最后一张手牌时，你可以为这张【杀】指定至多三名目标，然后依次结算之。", 
     ["deicide_bow"] = "弑神弓", 
@@ -186,9 +187,6 @@ local t = {
     
     ["chaos_mirror"] = "混沌镜", 
     [":chaos_mirror"] = "每当你需要使用或打出一张【闪】时，你可以进行一次判定：若判定结果为红色，则视为你使用或打出了一张【闪】。", 
-    ["chaos_mirror:slash-jink"] = "是否发动【混沌镜】抵销【杀】", 
-    ["chaos_mirror:thousands-arrows-shot-jink"] = "是否发动【混沌镜】响应【万箭齐发】", 
-    ["chaos_mirror:@huhuan-card"] = "是否发动【混沌镜】响应【呼唤】", 
     ["king_shield"] = "仁王盾", 
     [":king_shield"] = "锁定技，黑色的【杀】对你无效。", 
     ["vine_armor"] = "藤甲", 

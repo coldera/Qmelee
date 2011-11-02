@@ -556,6 +556,9 @@ void ShenglongCard::onEffect(const CardEffectStruct &effect) const {
 
     ken->updateMp(-2);
     
+    if(room->askForCard(effect.to, "jink", "shenglong-jink:" + ken->objectName()))
+        return;
+    
     int times = 0;
     
     for(int i=0; i<3; i++) {
@@ -1216,17 +1219,18 @@ public:
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
-        Room *room = target->getRoom();
+        return !target->hasSkill("xuanfeng");
+        // Room *room = target->getRoom();
 
-        ServerPlayer *zangief = NULL;
-        foreach(ServerPlayer *p, room->getAllPlayers()){
-            if(p->hasSkill("xuanfeng")) {
-                zangief = p;
-                break;
-            }
-        }
+        // ServerPlayer *zangief = NULL;
+        // foreach(ServerPlayer *p, room->getAllPlayers()){
+            // if(p->hasSkill("xuanfeng")) {
+                // zangief = p;
+                // break;
+            // }
+        // }
         
-        return zangief && target!=zangief && zangief->getCards("he").length()>=2;
+        // return zangief && target!=zangief && zangief->getCards("he").length()>=2;
     }
     
     virtual bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data) const{
@@ -1240,6 +1244,9 @@ public:
                 break;
             }
         }
+        
+        if(zangief->getCards("he").length()<2)
+            return false;
         
         CardUseStruct use = data.value<CardUseStruct>();   
         QString prompt = QString("@xuanfeng:%1:%2").arg(use.card->getEffectiveId()).arg(use.from->objectName());
@@ -1386,12 +1393,167 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------guile
+
+//----------------------------------------------------------------------------- Shoudao
+
+class Shoudao: public FilterSkill{
+public:
+    Shoudao():FilterSkill("shoudao"){}
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->inherits("Dodge") && to_select->getCard()->isRed();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Bang *bang = new Bang(card->getSuit(), card->getNumber());
+        bang->addSubcard(card->getId());
+        bang->setSkillName(objectName());
+
+        return bang;
+    }
+};
+
+//----------------------------------------------------------------------------- Jiaodao
+
+JiaodaoCard::JiaodaoCard(){
+    will_throw = true;
+    target_fixed = true;
+}
+
+void JiaodaoCard::use(Room *room, ServerPlayer *guile, const QList<ServerPlayer *> &) const {
+    
+    room->throwCard(this);
+    
+    ServerPlayer *target;
+    
+    foreach(ServerPlayer *p, room->getOtherPlayers(guile)) {
+        if(p->hasFlag("jiaodao_on")) {
+            target = p;
+            break;
+        }
+    }
+    
+    DamageStruct damageMaker;
+    damageMaker.card = this;
+    damageMaker.from = guile;
+    damageMaker.to = target;
+    damageMaker.damage = 1;
+    damageMaker.nature = DamageStruct::Normal;
+    room->damage(damageMaker);
+    
+    guile->updateMp(1);
+}
+
+class JiaodaoViewAsSkill: public ViewAsSkill{
+public:
+    JiaodaoViewAsSkill():ViewAsSkill("jiaodao"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jiaodao";
+    }
+    
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.length() >= 2)
+            return false;
+        
+        const Card *card = to_select->getFilteredCard();
+        
+        if(!(card->isRed() && (card->inherits("Slash") || card->inherits("Dodge"))))
+            return false;
+            
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 2)
+            return NULL;
+
+        JiaodaoCard *card = new JiaodaoCard;
+        card->addSubcards(cards);
+        card->setSkillName(objectName());
+        
+        return card;
+    }
+};
+
+class Jiaodao: public TriggerSkill{
+public:
+    Jiaodao():TriggerSkill("jiaodao"){
+        events << Damage;
+        view_as_skill = new JiaodaoViewAsSkill;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *guile, QVariant &data) const{
+    
+        Room *room = guile->getRoom();
+        DamageStruct damage = data.value<DamageStruct>();
+        
+        if(!damage.card)
+            return false;
+        
+        if(damage.to->isAlive() && (damage.card->inherits("Dodge") || damage.card->inherits("Slash")) && damage.card->isRed()) {
+            
+            room->setPlayerFlag(damage.to, "jiaodao_on");
+            
+            room->askForUseCard(guile, "@@jiaodao", "@jiaodao");
+            
+            room->setPlayerFlag(damage.to, "-jiaodao_on");
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Yinsu
+
+class Yinsu:public TriggerSkill{
+public:
+    Yinsu():TriggerSkill("yinsu"){
+        events << CardAsked;
+    }
+
+    virtual bool triggerable(const ServerPlayer *guile) const{
+        return TriggerSkill::triggerable(guile) && guile->getMp()>=2;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *guile, QVariant &data) const{
+        QStringList prompt = data.toString().split(":");
+        QString pattern = prompt.at(0);
+        QString reason = prompt.at(1);
+        
+        if(pattern != "jink")
+            return false;
+
+        if(guile->askForSkillInvoke(objectName(), reason)) {
+            
+            guile->updateMp(-2);
+            
+            Dodge *dodge = new Dodge(Card::NoSuit, 0);
+            dodge->setSkillName(objectName());
+            guile->getRoom()->provide(dodge);
+            return true;
+        }
+
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda, *zangief;
+    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda, *zangief, *guile;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1455,6 +1617,14 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<XuanfengCard>();
     addMetaObject<DazhuangCard>();
+    
+    guile = new General(this, "guile", "kuang");
+    guile->addSkill(new Shoudao);
+    guile->addSkill(new Jiaodao);
+    guile->addSkill(new Yinsu);
+    
+    addMetaObject<JiaodaoCard>();
+    
 }
 
 ADD_PACKAGE(MeleeSF);

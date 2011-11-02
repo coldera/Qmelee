@@ -130,4 +130,12 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class JiaodaoCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JiaodaoCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // MELEESF_H

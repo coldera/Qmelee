@@ -909,7 +909,16 @@ end
 
 -- shoulie
 sgs.ai_skill_invoke.shoulie = function(self, data) 
-    return self.player:getMp()>0 and self:GetDefense(self.player)<=8
+    local move = data:toCardMove()
+    local card = sgs.Sanguosha:getCard(move.card_id)
+    
+    if (card:inherits("Armor") and not self.player:getArmor())
+    or (card:inherits("DefensiveHorse") and not self.player:getDefensiveHorse())
+    or self.player:getMp()>2 and not self.player:getHorse() then
+        return true
+    end
+
+    return false
 end
 
 -- youbu

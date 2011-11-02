@@ -3110,6 +3110,22 @@ function SmartAI:damageIsEffective(dtype, player)
     end
 end
 
+function SmartAI:needHelp(data)
+
+    if data then
+        local parse = data:toString()
+
+        for _,p in ipairs(self.enemies) do
+            if parse=="@huhuan-card" and p:hasSkill("huhuan") then
+                return false
+            end
+        end
+        
+    end
+    
+    return true
+end
+
 function SmartAI:hasSkills(skill_names, player)
 	player = player or self.player
 	for _, skill_name in ipairs(skill_names:split("|")) do

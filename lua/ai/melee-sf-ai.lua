@@ -148,7 +148,7 @@ sgs.ai_skill_use["@@shenglong"]=function(self,prompt)
     
 	self:sort(self.enemies,"defense")    
     for _,enemy in ipairs(self.enemies) do
-        if self.player:inMyAttackRange(enemy) and not self:isEquip("HolyWing", enemy) then
+        if self.player:inMyAttackRange(enemy) and not self:isEquip("HolyWing", enemy) and enemy:getHandcardNum()<3 then
             return "@ShenglongCard="..slash.."->"..enemy:objectName()
         end
     end
@@ -187,7 +187,7 @@ sgs.ai_skill_use["@@jiqi"]=function(self,prompt)
         end
     end
     
-    if num>3 then return "@JiqiCard=.->." end
+    if num>3 or (self.player:getHandcardNum()-self.player:getHp()>2) then return "@JiqiCard=.->." end
     
     return "."    
 end
@@ -344,8 +344,18 @@ sgs.ai_skill_invoke.xushi = function(self, data)
         end
     end
     
+    self.room:writeToConsole("xushi----------")
+    self.room:writeToConsole("hp mp num slash dodge water")
+    self.room:writeToConsole(self.player:getHp())
+    self.room:writeToConsole(self.player:getMp())
+    self.room:writeToConsole(#cards)
+    self.room:writeToConsole(slash)
+    self.room:writeToConsole(dodge)
+    self.room:writeToConsole(water)
+    self.room:writeToConsole("----------------")
+    
     if self.player:getHp()+self.player:getMp() > #cards and slash>1 then return true end
-    if self.player:getHp()==1 and self.player:getMp()>1 and dodge+water > 2 then return true end
+    if self.player:getHp()==1 and self.player:getMp()>1 and water == 0 then return true end
     
 end
 
@@ -387,7 +397,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     if self:isFriend(target) then return "." end
     
     if self.player:inMyAttackRange(target) or card:inherits("Cure") or card:inherits("Grab") then
-        return ("@XuanfengCard=%d+%d"):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
+        return ("@XuanfengCard=%d+%d->"):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
     end
     
     return "."
@@ -415,8 +425,43 @@ sgs.ai_skill_use["@@dazhuang"]=function(self, prompt)
     return "."
 end
 
+-- guile ---------------------------------------------------------------------------------
+
+sgs.ai_chaofeng["guile"] = 8
+
+sgs.zangief_keep_value = {
+	Dodge = 3,
+}
+
+sgs.dynamic_value.damage_card["JiaodaoCard"] = true
 
 
+-- jiaodao
+sgs.ai_skill_use["@@jiaodao"]=function(self, prompt)
 
+	local cards = sgs.QList2Table(cards)
+    self:sortByUseValue(cards, true)
+    
+    local first, second
+    
+    for _, card in ipairs(cards) do
+        if (card:inherits("Slash") or card:inherits("Dodge")) and card:isRed() then
+            if first then
+                second = card
+            else
+                first = card
+            end
+        end
+    end
+    
+    if second then
+        return ("@JiaodaoCard=%d+%d->"):format(first:getEffectiveId(), second:getEffectiveId())
+    end
+    
+    return "."
+end
 
-
+-- yinsu
+sgs.ai_skill_invoke.yinsu = function(self, data)
+    return self:needHelp(data)
+end
