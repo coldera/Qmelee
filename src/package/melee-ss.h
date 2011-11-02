@@ -107,14 +107,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
-class FengyinCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE FengyinCard();
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-};
-
 class YanmieBang: public FireBang{
     Q_OBJECT
 

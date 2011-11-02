@@ -914,7 +914,7 @@ public:
 class Yueyin: public TriggerSkill{
 public:
     Yueyin():TriggerSkill("yueyin"){
-        events << CardUsed << CardEffected;
+        events << CardEffected;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -925,13 +925,8 @@ public:
         
         ServerPlayer *card_user = NULL;
 
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card_user = use.from;
-        }else if(event == CardEffected){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            card_user = effect.from;
-        }
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        card_user = effect.from;
         
         if(sogetsu->getCards("he").length()<2 || card_user == sogetsu)
             return false;
@@ -1082,7 +1077,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("SiyueCard") && player->getMp()>=2;
+        return  player->getMp()>=2;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1100,51 +1095,22 @@ public:
 
 //----------------------------------------------------------------------------- Fengyin
 
-FengyinCard::FengyinCard(){
-    target_fixed = true;
-}
-
-void FengyinCard::use(Room *room, ServerPlayer *suija, const QList<ServerPlayer *> &targets) const{
-    
-    suija->updateMp(-3);
-    
-    room->transfigure(suija, "sogetsu", false, false);
-}
-
-class FengyinViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    FengyinViewAsSkill():ZeroCardViewAsSkill("fengyin"){}
-    
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-    
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@fengyin";
-    }
-    
-    virtual const Card *viewAs() const{
-        FengyinCard *card = new FengyinCard;
-        card->setSkillName(objectName());
-        return card;
-    }
-};
-
 class Fengyin: public PhaseChangeSkill{
 public:
-    Fengyin():PhaseChangeSkill("fengyin"){
-        view_as_skill = new FengyinViewAsSkill;
-    }
+    Fengyin():PhaseChangeSkill("fengyin"){}
 
     virtual bool triggerable(const ServerPlayer *player) const{
-        return PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish;
+        return PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish && player->getMp()>0;
     }
 
     virtual bool onPhaseChange(ServerPlayer *suija) const{
+        Room *room = suija->getRoom();
         
-        if(suija->getMp()>=3) {
-            suija->getRoom()->askForUseCard(suija, "@@fengyin", "@fengyin");
+        if(room->askForSkillInvoke(suija, objectName())) {
+            suija->updateMp(-1);
+            room->transfigure(suija, "sogetsu", false, false);
         }
+
         return false;
     }
 };
@@ -2082,7 +2048,7 @@ public:
 class YingwuOn: public TriggerSkill{
 public:
     YingwuOn():TriggerSkill("yingwu_on"){
-        events << CardUsed << CardEffected;
+        events << CardEffected;
         frequency = Compulsory;
     }
     
@@ -2095,15 +2061,9 @@ public:
         ServerPlayer *card_user = NULL;
         const Card *card = NULL;
 
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card_user = use.from;
-            card = use.card;
-        }else if(event == CardEffected){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            card_user = effect.from;
-            card = effect.card;
-        }
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        card_user = effect.from;
+        card = effect.card;
         
         if(card_user == hanzo)
             return false;
@@ -2566,7 +2526,6 @@ MeleeSSPackage::MeleeSSPackage()
     suija->addSkill(new Fengyin);
     
     addMetaObject<SiyueCard>();
-    addMetaObject<FengyinCard>();
     
     kazuki = new General(this, "kazuki", "nu");
     kazuki->addSkill(new Rexue);

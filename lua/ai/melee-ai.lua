@@ -1849,7 +1849,7 @@ end
 
 function SmartAI:useEquipCard(card, use)
    if card:inherits("Weapon") then
-        
+        if self.player:getMark("@weapon_forbid")>0 then return end
         if self.player:getWeapon() and self.player:hasSkill("bingren_on") then return end
         
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then

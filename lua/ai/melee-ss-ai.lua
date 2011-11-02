@@ -375,7 +375,7 @@ local siyue_skill={}
 siyue_skill.name="siyue"
 table.insert(sgs.ai_skills,siyue_skill)
 siyue_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("SiyueCard") or self.player:getMp()<2 or self.player:getHandcardNum()<1 then return end    
+    if self.player:getMp()<2 or self.player:getHandcardNum()<1 then return end    
     
     local card_str
     local cards = self.player:getHandcards()
@@ -388,20 +388,23 @@ siyue_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func["SiyueCard"]=function(card,use,self)
-    
-    self:updatePlayers(true)
+
 	self:sort(self.enemies,"defense")
     
-    use.card = card
-    if use.to then 
-        use.to:append(self.enemies[1])
-    end        
+    for _, enemy in ipairs(self.enemies) do
+        if  self:damageIsEffective("ice", enemy) then 
+            use.card = card
+            if use.to then 
+                use.to:append(self.enemies[1])
+            end    
+        end
+    end 
     
 end
 
 -- fengyin
 sgs.ai_skill_use["@@fengyin"]=function(self,prompt)
-    if self.player:getMp()<3 then return "." end
+    if self.player:getMp()<1 then return "." end
      
     self:updatePlayers(true)
 	self:sort(self.enemies,"defense")
