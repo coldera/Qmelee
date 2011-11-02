@@ -529,11 +529,14 @@ huoshen_skill.getTurnUseCard=function(self)
 	cards = sgs.QList2Table(cards)
     self:sortByUseValue(cards, true)
     
-    if cards[1] and self:getUseValue(cards[1])<3.5 then
-        local suit = cards[1]:getSuitString()
-        local number = cards[1]:getNumberString()
-        local card_id = cards[1]:getEffectiveId()
-        card_str = ("fire_bang:huoshen[%s:%s]=%d"):format(suit, number, card_id)
+    for _,hcard in ipairs(cards) do
+        if  self:getUseValue(hcard)<3.5 and hcard:isRed() then
+            local suit = hcard:getSuitString()
+            local number = hcard:getNumberString()
+            local card_id = hcard:getEffectiveId()
+            card_str = ("fire_bang:huoshen[%s:%s]=%d"):format(suit, number, card_id)
+            break
+        end
     end
     
     if card_str then
@@ -698,11 +701,11 @@ sgs.ai_skill_use["@@card_to_anita"]=function(self,prompt)
         end
     end
     
-    if not first_card and self.player:getHandcardNum()>self.player:getMaxHP() then
+    if not first_card and self.player:getHandcardNum()>self.player:getHp() then
         first_card = cards[1]
     end
     
-    if first_card and self.player:getHandcardNum()-self.player:getMaxHP()>=2 then
+    if first_card and self.player:getHandcardNum()>self.player:getHp() then
         if cards[1] == first_card then
             second_card = cards[2]
         else 
@@ -726,7 +729,7 @@ sgs.ai_skill_use["@@card_to_anita"]=function(self,prompt)
 end
 
 sgs.ai_skill_invoke.anita_anwei = function(self, data) 
-    if self.player:getMark("@anita")>0 and self.player:getMp()>0 and (self.player:getHandcardNum() == 0 or self.player:hasFlag("leishen_on")) then
+    if self.player:getMark("@anita")>0 and self.player:getMp()>0 and (self.player:getHp()==1 or self.player:getHandcardNum()<2 or self.player:hasFlag("leishen_on")) then
         return true
     end
     
