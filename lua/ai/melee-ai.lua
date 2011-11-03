@@ -1076,6 +1076,10 @@ end
 
 
 function SmartAI:useBasicCard(card, use,no_distance)
+    if self.player:hasFlag("drank") then
+        self.room:writeToConsole("----------- drank and slash ?")
+    end
+
 	if (self.player:getHandcardNum() == 1 
 	and self.player:getHandcards():first():inherits("Slash") 
 	and self.player:getWeapon() 
@@ -1096,16 +1100,6 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			slash_prohibit=self:slashProhibit(card,enemy)
 			if not slash_prohibit then
 				self.predictedRange = self.player:getAttackRange()
-                
-                if self.player:hasFlag("drank") then
-                    self.room:writeToConsole("----------- drank and slash")
-                    self.room:writeToConsole(self.player:getGeneralName().." intend to attack "..enemy:getGeneralName())
-                    if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("canSlash") end
-                    if use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange) then self.room:writeToConsole("slash ok") end
-                    self.room:writeToConsole(self:objectiveLevel(enemy))
-                    if self:slashIsEffective(card, enemy) then self.room:writeToConsole("slashIsEffective") end
-                    self.room:writeToConsole("---------------------------")
-                end
                 
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 

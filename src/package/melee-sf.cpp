@@ -1251,7 +1251,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();   
         QString prompt = QString("@xuanfeng:%1:%2").arg(use.card->getEffectiveId()).arg(use.from->objectName());
         
-        if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick") && room->askForUseCard(zangief, "@@xuanfeng", prompt)) {
+        if(use.card->isNDTrick() && room->askForUseCard(zangief, "@@xuanfeng", prompt)) {
             
             if(use.card->willThrow())
                 room->throwCard(use.card);
@@ -1426,7 +1426,7 @@ void JiaodaoCard::use(Room *room, ServerPlayer *guile, const QList<ServerPlayer 
     
     room->throwCard(this);
     
-    ServerPlayer *target;
+    ServerPlayer *target = NULL;
     
     foreach(ServerPlayer *p, room->getOtherPlayers(guile)) {
         if(p->hasFlag("jiaodao_on")) {
@@ -1548,12 +1548,255 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------sakura
+
+//----------------------------------------------------------------------------- Chongbai
+
+ChongbaiCard::ChongbaiCard(){
+    will_throw = false;
+    once = true;
+}
+
+void ChongbaiCard::onEffect(const CardEffectStruct &effect) const {
+    
+    ServerPlayer *sakura = effect.from;
+    Room *room = sakura->getRoom();
+    
+    const Card *card = Sanguosha->getCard(getSubcards().first());
+
+    room->moveCardTo(card, effect.to, Player::Hand, false);
+    
+    sakura->updateMp(1);
+}
+
+class Chongbai: public OneCardViewAsSkill{
+public:
+    Chongbai():OneCardViewAsSkill("chongbai"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getHandcardNum() && !player->hasUsed("ChongbaiCard");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ChongbaiCard *card = new ChongbaiCard;
+        card->addSubcard(card_item->getFilteredCard());
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Mofang
+
+class MofangCollect: public TriggerSkill{
+public:
+    MofangCollect():TriggerSkill("#mofang-collect"){
+        events << CardFinished;
+        frequency = Compulsory;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("mofang");
+    }
+    
+    virtual bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data) const{
+    
+        Room *room = target->getRoom();
+    
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->isVirtualCard() 
+        || use.card->inherits("EquipCard") || use.card->inherits("DelayedTrick") 
+        || room->getCardPlace(use.card->getEffectiveId()) != Player::DiscardedPile)
+            return false;
+        
+        QVariantList mofang_list = room->getTag("MofangCardList").toList();
+        
+        mofang_list << use.card->getId();
+        while(mofang_list.length()>5)
+            mofang_list.pop_front();
+            
+        room->setTag("MofangCardList", mofang_list);
+        
+        return false;
+    }
+};
+
+class MofangViewAsSkill: public OneCardViewAsSkill{
+public:
+    MofangViewAsSkill():OneCardViewAsSkill("mofangvas"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@mofangvas";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        int card_id = Self->getMark("mofang");
+        const Card *card = Sanguosha->getCard(card_id);
+        return to_select->getFilteredCard()->getSuit() == card->getSuit();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+
+        int card_id = Self->getMark("mofang");
+        const Card *card = Sanguosha->getCard(card_id);
+        const Card *to_select = card_item->getFilteredCard();
+
+        Card *new_card = Sanguosha->cloneCard(card->objectName(), to_select->getSuit(), to_select->getNumber());
+        new_card->addSubcard(to_select);
+        new_card->setSkillName(objectName());
+        return new_card;
+    }
+};
+
+MofangCard::MofangCard(){
+    once = true;
+    target_fixed = true;
+}
+
+void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer *> &) const {
+    
+    QVariantList mofang_list = room->getTag("MofangCardList").toList();
+    
+    if(!mofang_list.length())
+        return;
+    
+    QList<int> card_ids;
+    foreach(QVariant card_id, mofang_list)
+        card_ids << card_id.toInt();
+        
+    room->fillAG(card_ids);
+    int card_id = room->askForAG(sakura, card_ids, true, "mofang_choice");
+    room->broadcastInvoke("clearAG");
+    
+    if(card_id != -1){
+        const Card *card = Sanguosha->getCard(card_id);
+        
+        if(!card->isAvailable(sakura)) {
+            LogMessage log;
+            log.type = "$MofangUnused";
+            log.from = sakura;
+            log.card_str = card->toString();
+            room->sendLog(log);
+            
+            return;
+        }else {
+            
+            LogMessage log;
+            log.type = "$MofangUsed";
+            log.from = sakura;
+            log.card_str = card->toString();
+            room->sendLog(log);
+        
+            room->setPlayerMark(sakura, "mofang", card_id);                            
+            room->askForUseCard(sakura, "@mofangvas", "@mofang");                
+            room->setPlayerMark(sakura, "mofang", -1);
+        }
+
+    }
+}
+
+class Mofang: public ZeroCardViewAsSkill{
+public:
+    Mofang():ZeroCardViewAsSkill("mofang"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("MofangCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        return new MofangCard;
+    }
+};
+
+//----------------------------------------------------------------------------- Yingluo
+
+YingluoCard::YingluoCard(){
+    target_fixed = true;
+}
+
+void YingluoCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer *> &) const{
+    sakura->updateMp(-1);
+}
+
+class YingluoViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    YingluoViewAsSkill():ZeroCardViewAsSkill("yingluo"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@yingluo";
+    }
+    
+    virtual const Card *viewAs() const{
+        YingluoCard *card = new YingluoCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Yingluo: public PhaseChangeSkill{
+public:
+    Yingluo():PhaseChangeSkill("yingluo"){
+        view_as_skill = new YingluoViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Draw;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *sakura) const{
+        Room *room = sakura->getRoom();
+        
+        QList<const Card*> cards;
+        
+        if(sakura->askForSkillInvoke(objectName())) {
+            
+            do{
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(club):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = sakura;
+
+                room->judge(judge);
+                
+                cards << judge.card;
+                
+                if(judge.isBad()) {
+                    if(!sakura->getMp() || !room->askForUseCard(sakura, "@@yingluo", "@yingluo"))
+                        room->setPlayerFlag(sakura, "yingluo_off");
+                }
+                
+            }while(!sakura->hasFlag("yingluo_off"));
+            
+            foreach(const Card *card, cards)
+                sakura->obtainCard(card);
+            
+            return true;
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda, *zangief, *guile;
+    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda, *zangief, *guile, *sakura;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1625,6 +1868,18 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<JiaodaoCard>();
     
+    sakura = new General(this, "sakura", "qi", 3, false);
+    sakura->addSkill(new Chongbai);
+    sakura->addSkill(new Mofang);
+    sakura->addSkill(new MofangCollect);
+    related_skills.insertMulti("mofang", "#mofang-collect");
+    sakura->addSkill(new Yingluo);
+    
+    skills << new MofangViewAsSkill;
+    
+    addMetaObject<ChongbaiCard>();
+    addMetaObject<MofangCard>();
+    addMetaObject<YingluoCard>();
 }
 
 ADD_PACKAGE(MeleeSF);

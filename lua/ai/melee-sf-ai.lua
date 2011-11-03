@@ -381,7 +381,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
-    self:sortByUseValue(cards, true)
+    self:sortByUseValue(cards)
     
     if self:getUseValue(cards[2])>5 then return "." end
     
@@ -396,7 +396,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     end
     if self:isFriend(target) then return "." end
     
-    if self.player:inMyAttackRange(target) or card:inherits("Cure") or card:inherits("Grab") then
+    if self.player:inMyAttackRange(target) or card:inherits("Cure") or card:inherits("Grab") or card:inherits("WoodElf") then
         return ("@XuanfengCard=%d+%d->"):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
     end
     
@@ -408,11 +408,14 @@ sgs.ai_skill_use["@@dazhuang"]=function(self, prompt)
     if self.player:getMp()<3 then return "." end
     
     local card_str = "@DazhuangCard="
+    local pk = self:getCardId("PK")
     
     if self.player:getMp()>=6 then
         card_str = card_str..".->"
+    elseif pk then
+        card_str = card_str..pk.."->"
     else
-        card_str = card_str..self:getCardId("PK").."->"
+        return "."
     end
     
 	self:sort(self.enemies,"defense")    
@@ -465,3 +468,5 @@ end
 sgs.ai_skill_invoke.yinsu = function(self, data)
     return self:needHelp(data)
 end
+
+

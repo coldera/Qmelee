@@ -138,4 +138,28 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class ChongbaiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChongbaiCard();
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class MofangCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MofangCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class YingluoCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YingluoCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // MELEESF_H
