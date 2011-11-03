@@ -570,11 +570,11 @@ sgs.ai_skill_use["@@leishen"]=function(self,prompt)
     return "."
 end
 
- -- leishen_bang
-local leishen_bang_skill={}
-leishen_bang_skill.name="leishen_bang"
-table.insert(sgs.ai_skills,leishen_bang_skill)
-leishen_bang_skill.getTurnUseCard=function(self)
+ -- leishen
+local leishen_skill={}
+leishen_skill.name="leishen"
+table.insert(sgs.ai_skills,leishen_skill)
+leishen_skill.getTurnUseCard=function(self)
     local card_str = nil
     
     if not self.player:hasFlag("leishen_on") then return end
@@ -590,7 +590,7 @@ leishen_bang_skill.getTurnUseCard=function(self)
             if hcard:inherits("ThunderBang") then
                 card_str = card_id
             else 
-                card_str = ("thunder_bang:leishen_bang[%s:%s]=%d"):format(suit, number, card_id)
+                card_str = ("thunder_bang:leishen[%s:%s]=%d"):format(suit, number, card_id)
             end
         end
     end

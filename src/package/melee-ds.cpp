@@ -253,7 +253,7 @@ public:
         CardUseStruct card_use = data.value<CardUseStruct>();
         CardStar card = card_use.card;
         
-        if(card->inherits("BasicCard") || (card->inherits("TrickCard") && !card->inherits("DelayedTrick"))) {
+        if(card->inherits("BasicCard") || card->isNDTrick()) {
         
             if(card_use.to.length() && card_use.to.first()->getCards("hej").length()<=1 && (card->inherits("Grab") || card->inherits("DestroyAll"))) {
                 return false;
@@ -1334,7 +1334,7 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         ServerPlayer *card_user = effect.from;
         
-        if(card_user == leilei || !(effect.card->inherits("BasicCard") || (effect.card->inherits("TrickCard") && !effect.card->inherits("DelayedTrick"))))
+        if(card_user == leilei || !(effect.card->inherits("BasicCard") || effect.card->isNDTrick()))
             return false;
         
         Room *room = leilei->getRoom();
@@ -1571,33 +1571,6 @@ public:
 
 //----------------------------------------------------------------------------- Leishen
 
-class LeishenBang: public OneCardViewAsSkill{
-public:
-    LeishenBang():OneCardViewAsSkill("leishen_bang"){}
-    
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasFlag("leishen_on");
-    }
-
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("ThunderBang") 
-            or (to_select->getCard()->getSuit() == Card::Diamond && to_select->getCard()->inherits("Bang"));
-    }
-
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        
-        if(card->inherits("ThunderBang")) {
-            return card;
-        }else {
-            ThunderBang *thunderbang = new ThunderBang(card->getSuit(), card->getNumber());
-            thunderbang->addSubcard(card->getId());
-            thunderbang->setSkillName(objectName());
-            return thunderbang;
-        }
-    }
-};
-
 LeishenCard::LeishenCard(){
     target_fixed = true;
 }
@@ -1613,11 +1586,16 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
+        return player->hasFlag("leishen_on");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped();
+        if(Self->hasFlag("leishen_on")) {
+            return to_select->getCard()->inherits("ThunderBang") 
+                or (to_select->getCard()->getSuit() == Card::Diamond && to_select->getCard()->inherits("Bang"));
+        }else {
+            return !to_select->isEquipped();
+        }
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
@@ -1625,11 +1603,23 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        LeishenCard *card = new LeishenCard;
-        card->addSubcard(card_item->getCard());
-        // card->setSkillName(objectName());
-        
-        return card;
+        if(Self->hasFlag("leishen_on")) {
+            const Card *card = card_item->getCard();
+            
+            if(card->inherits("ThunderBang")) {
+                return card;
+            }else {
+                ThunderBang *thunderbang = new ThunderBang(card->getSuit(), card->getNumber());
+                thunderbang->addSubcard(card->getId());
+                thunderbang->setSkillName(objectName());
+                return thunderbang;
+            }
+        }else {
+            LeishenCard *leishen = new LeishenCard;
+            leishen->addSubcard(card_item->getCard());
+            
+            return leishen;
+        }
     }
 };
 
@@ -3026,7 +3016,6 @@ MeleeDSPackage::MeleeDSPackage()
     donovan = new General(this, "donovan", "ling");
     donovan->addSkill(new Huoshen);
     donovan->addSkill(new Leishen);
-    donovan->addSkill(new LeishenBang);
     donovan->addSkill(new Xueshen);
     
     addMetaObject<LeishenCard>();
