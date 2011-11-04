@@ -1804,12 +1804,80 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------cammy
+
+//----------------------------------------------------------------------------- Jingzhun
+
+class Jingzhun: public SlashBuffSkill{
+public:
+    Jingzhun():SlashBuffSkill("jingzhun"){}
+
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        ServerPlayer *cammy = effect.from;
+        Room *room = cammy->getRoom();
+        
+        bool canInvoke = cammy->distanceTo(effect.to) == cammy->getAttackRange();
+        QVariant tohelp = QVariant::fromValue((PlayerStar)effect.to);
+        
+        if(canInvoke && cammy->getMp()>=2 && room->askForSkillInvoke(cammy, objectName(), tohelp)) {
+            room->playSkillEffect(objectName());
+        
+            cammy->updateMp(-2);
+            room->slashResult(effect, NULL);
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Luoxuan
+
+class Luoxuan: public TriggerSkill{
+public:
+    Luoxuan():TriggerSkill("luoxuan"){
+        events << Damage;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMp()>=2;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *cammy, QVariant &data) const{
+    
+        Room *room = cammy->getRoom();
+        
+        DamageStruct damage = data.value<DamageStruct>();
+        
+        if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(cammy, objectName(), data)) {
+            room->playSkillEffect(objectName());
+        
+            cammy->updateMp(-2);
+            
+            int card_id = room->askForCardChosen(cammy, damage.to, "e", "luoxuan");
+            
+            if(card_id != -1) {
+                LogMessage log;
+                log.type = "$LuoxuanDiscard";
+                log.to << damage.to;
+                log.card_str = Sanguosha->getCard(card_id)->toString();
+                room->sendLog(log);
+                
+                room->throwCard(card_id);
+            }
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1893,6 +1961,10 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<ChongbaiCard>();
     addMetaObject<MofangCard>();
     addMetaObject<YingluoCard>();
+    
+    cammy = new General(this, "cammy", "kuang", 4, false);
+    cammy->addSkill(new Jingzhun);
+    cammy->addSkill(new Luoxuan);
 }
 
 ADD_PACKAGE(MeleeSF);

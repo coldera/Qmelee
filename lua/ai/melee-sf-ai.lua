@@ -628,5 +628,29 @@ sgs.ai_skill_use["@@yingluo"]=function(self, prompt)
 end
 
 
+-- cammy ---------------------------------------------------------------------------------
 
+sgs.ai_chaofeng["cammy"] = 2
 
+-- jingzhun
+sgs.ai_skill_invoke.jingzhun = function(self, data)
+    local target = data:toPlayer()
+    
+    if self:isFriend(target) or target:getHandcardNum()==0 or not self:slashIsEffective(target) then return false end
+    
+    return true
+    
+end
+
+-- luoxuan
+sgs.ai_skill_invoke.luoxuan = function(self, data)
+    local damage = data:toDamage()
+    
+    if self:isFriend(damage.to) then return false end
+    
+    if damage.to:getArmor() or damage.to:getDefensiveHorse() or damage.to:getRelic() then
+        return true
+    end
+    
+    return false
+end
