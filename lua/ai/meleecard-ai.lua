@@ -39,6 +39,8 @@ sgs.dynamic_value = {
 
 sgs.ai_skill_invoke["ghost_fan"]=function(self, data)
 	if self.player:hasFlag("drank") then return false end
+	if self.player:isWounded() and self.player:hasFlag("wuye_on")  then return false end
+    
 	local effect = data:toSlashEffect() 
 	local target = effect.to
 	if self:isFriend(target) then return false end

@@ -330,10 +330,12 @@ sgs.ai_chaofeng["sogetsu"] = -2
 
 -- yueyin
 sgs.ai_skill_invoke.yueyin = function(self, data)
+    local allcards = self.player:getCards("he")
+    if allcards:length()<2 then return false end
     
     card_use = data:toCardEffect()
-    local card = card_use.card
     
+    local card = card_use.card
     if card then self.room:writeToConsole("yueyin::"..card:objectName()) end 
     
     if not card 
@@ -344,15 +346,13 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     or card:inherits("SoulChain") then return false end
     
     local cards = self.player:getHandcards()
-    cards=sgs.QList2Table(cards)    
+    
+    cards=sgs.QList2Table(cards)
     self:sortByUseValue(cards, true)    
     
     if cards[1] and self:getKeepValue(cards[1]) >= 3.5 and self.player:getHp()>=2 then return false end
     
-    local allcards = self.player:getCards("he")
-    allcards = sgs.QList2Table(allcards)
-    
-    if self.player:getHp()<2 or #allcards>3 then return true end
+    if self.player:getHp()<2 or allcards:length()>3 then return true end
     
     return false
 end

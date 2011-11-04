@@ -245,7 +245,7 @@ dianji_skill.getTurnUseCard=function(self)
     
     if good < bad then return nil end
     
-    local cards = player:getCards("he")
+    local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
     
     for _, card in ipairs(cards) do
@@ -324,6 +324,8 @@ sgs.ai_chaofeng["honda"] = 1
 
 -- xushi
 sgs.ai_skill_invoke.xushi = function(self, data)
+    
+    if self.player:hasFlag("no_bang_limit") then return false end
     
     local has_armor, has_dhorse
     local slash, dodge, water = 0, 0, 0

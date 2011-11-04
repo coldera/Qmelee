@@ -1992,8 +1992,9 @@ public:
         if(room->askForUseCard(hanzo, "@@kongchan", "@kongchan")) {
 
             if(damage.from && damage.from != hanzo) {
-            
-                const Card *bang = room->askForCard(hanzo, "slash", "kongchan-bang");
+                QVariant tohelp = QVariant::fromValue((PlayerStar)damage.from);
+                
+                const Card *bang = room->askForCard(hanzo, "slash", "@kongchan-bang:"+damage.from->objectName(), tohelp);
                 
                 if(bang) {
                     CardUseStruct use;

@@ -1034,6 +1034,7 @@ end
 sgs.ai_chaofeng["felicia"] = 6
 
 sgs.dynamic_value.benefit["LeyuanCard"] = true
+sgs.ai_use_priority["LeyuanCard"] = 10
 
 -- leyuan
 local leyuan_skill={}

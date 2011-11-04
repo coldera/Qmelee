@@ -1077,7 +1077,7 @@ end
 
 function SmartAI:useBasicCard(card, use,no_distance)
     if self.player:hasFlag("drank") then
-        self.room:writeToConsole("----------- drank and slash ?")
+        self.room:writeToConsole("----------- drank and slash ? is "..card:objectName())
     end
 
 	if (self.player:getHandcardNum() == 1 
@@ -2578,6 +2578,20 @@ function SmartAI:askForCardChosen(who, flags, reason)
     return self:getCardRandomly(who, new_flag) or who:getCards(flags):first():getEffectiveId()							
 end
 
+function SmartAI:findEffectiveSlash(to)
+    
+    local cards = self.player:getHandcards()
+    cards = sgs.QList2Table(cards)
+    
+    for _,card in ipairs(cards) do
+        if card:inherits("Slash") and self:slashIsEffective(card, to) then
+            return card:getEffectiveId()
+        end
+    end
+    
+    return -1
+end
+
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	
@@ -2674,15 +2688,15 @@ function SmartAI:askForCard(pattern, prompt, data)
         --bailie
         elseif (parsedPrompt[1] == "@bailie-slash") then 
             local to = data:toPlayer()
-            local cards = self.player:getHandcards()
-            cards = sgs.QList2Table(cards)
+            local card_id = self:findEffectiveSlash(to)
+            if card_id >= 0 then return "$"..card_id end
+        --kongchan
+        elseif (parsedPrompt[1] == "@kongchan-bang") then 
+            local to = data:toPlayer()
+            if self:isFriend(to) then return "." end
             
-            for _,card in ipairs(cards) do
-                if card:inherits("Slash") and self:slashIsEffective(card, to) then
-                    return "$"..card:getEffectiveId()
-                end
-            end
-            
+            local card_id = self:findEffectiveSlash(to)
+            if card_id >= 0 then return "$"..card_id end
 		end
         return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then

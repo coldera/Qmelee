@@ -1705,7 +1705,7 @@ void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer 
             room->sendLog(log);
         
             room->setPlayerMark(sakura, "mofang", card_id);                            
-            if(room->askForUseCard(sakura, "@mofangvas", "@mofang") {
+            if(room->askForUseCard(sakura, "@mofangvas", "@mofang")){
                 LogMessage log;
                 log.type = "#MofangUnused";
                 log.from = sakura;
