@@ -144,11 +144,13 @@ return {
     [":yingluo"] = "摸牌阶段，你可以放弃摸牌进行判定，若不为梅花，则可以选择消耗1点气继续判定，判定结束后你得到所有判定牌",
     ["$yingluo"] = "别小看我哦，我的潜力很大的",
     ["mofang_choice"] = "请选择1张牌来发动【模仿】",
-    ["$MofangUnused"] = "%from 选择了 %card，<b style='color:gray'>因为使用不了【模仿】失败</b>",
+    ["$MofangUnused"] = "%from 选择了 %card，<b style='color:gray'>因为使用不了模仿失败</b>",
+    ["#MofangUnused"] = "%from 放弃了模仿",
     ["$MofangUsed"] = "%from 从记忆中选择了 %card",
     ["@mofang"] = "请选择1张与【模仿】牌相同花牌的手牌",
     ["@yingluo"] = "是否消耗1点气继续发动【樱落】",
     ["mofangvas"] = "模仿",
     [":mofangvas"] = "立即从手牌中打出相同花色的牌当做选中的牌来使用",
+    ["#MofangNothing"] = "%from 想不起任何牌， <b style='color:gray'>模仿失败</b>",
     
 }

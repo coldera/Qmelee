@@ -1666,8 +1666,16 @@ void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer 
     
     QVariantList mofang_list = room->getTag("MofangCardList").toList();
     
-    if(!mofang_list.length())
+    if(!mofang_list.length()) {
+    
+        LogMessage log;
+        log.type = "#MofangNothing";
+        log.from = sakura;
+        room->sendLog(log);
+        
         return;
+    }
+        
     
     QList<int> card_ids;
     foreach(QVariant card_id, mofang_list)
@@ -1697,7 +1705,12 @@ void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer 
             room->sendLog(log);
         
             room->setPlayerMark(sakura, "mofang", card_id);                            
-            room->askForUseCard(sakura, "@mofangvas", "@mofang");                
+            if(room->askForUseCard(sakura, "@mofangvas", "@mofang") {
+                LogMessage log;
+                log.type = "#MofangUnused";
+                log.from = sakura;
+                room->sendLog(log);
+            }
             room->setPlayerMark(sakura, "mofang", -1);
         }
 

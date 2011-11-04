@@ -546,6 +546,9 @@ sgs.ai_skill_askforag.mofang = function(self, card_ids)
 	
     for _, card in ipairs(cards) do
         if self:hasSuit(card:getSuitString()) then
+            
+            self.room:writeToConsole("mofang choice:"..card:objectName())
+            
             return card:getEffectiveId()
         end
     end
@@ -561,6 +564,7 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
 	local number = ag_card:getNumberString()
     
 	local cards = self.player:getCards("h")
+    cards = sgs.QList2Table(cards)
     self:sortByKeepValue(cards, true)
     
     local use_card
@@ -572,8 +576,11 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
     end
     
     if ag_card and use_card and ag_card:isAvailable(self.player) then
+    
+self.room:writeToConsole("mofang start")
+        
         if ag_card:targetFixed() then
-            return (ag_card:objectName()..":mofangvas[%s:%s]=%d"):format(suit, number, use_card:getEffectiveId())
+            return (ag_card:objectName()..":mofangvas[%s:%s]=%d->."):format(suit, number, use_card:getEffectiveId())
         else
             local use={}
             local card_str = (ag_card:objectName()..":mofangvas[%s:%s]=%d->"):format(suit, number, use_card:getEffectiveId())
@@ -582,17 +589,19 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
             use.to = self.room:getAllPlayers()
             local index = use.to:length()
             
+self.room:writeToConsole(index)       
+    
             local type = ag_card:getTypeId()
-
+            
             if type == sgs.Card_Basic then
                 self:useBasicCard(ag_card, use, self.slash_distance_limit)
             elseif type == sgs.Card_Trick then
                 self:useTrickCard(ag_card, use)
-            elseif type == sgs.Card_Skill then
-                self:useSkillCard(ag_card, use)
             else
-                self:useEquipCard(ag_card, use)
+                return "."
             end
+            
+self.room:writeToConsole(use.to:length())
             
             local target = use.to
             if target:at(index) then
@@ -600,7 +609,11 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
                 if target:at(index+1) then
                     card_str = card_str.."+"..target:at(index+1):objectName()
                 end
+            else
+                return "."
             end
+            
+self.room:writeToConsole(card_str)
             
             return card_str
             
