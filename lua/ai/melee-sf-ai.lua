@@ -389,6 +389,9 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     
     local data = prompt:split(":")
     local card = sgs.Sanguosha:getCard(data[2])
+    
+    if not card then return "." end
+    
     local target = nil
     
     for _, p in sgs.qlist(self.room:getAllPlayers()) do

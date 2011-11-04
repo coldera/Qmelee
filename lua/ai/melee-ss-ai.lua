@@ -343,6 +343,7 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     or card:inherits("GlobalEffect") 
     or card:inherits("DestroyAll")
     or card:inherits("Burn")
+    or card:inherits("HolyWater")
     or card:inherits("SoulChain") then return false end
     
     local cards = self.player:getHandcards()
