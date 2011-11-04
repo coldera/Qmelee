@@ -199,7 +199,7 @@ sgs.ai_skill_use["@@bailie"]=function(self,prompt)
 	self:sort(self.enemies,"defense")    
     for _,enemy in ipairs(self.enemies) do
         if self.player:inMyAttackRange(enemy) then
-            return "@BailieCard=.->"..enemy:objectName()
+            return "@BailieCard="..self:getCardId("Slash").."->"..enemy:objectName()
         end
     end
     
@@ -250,7 +250,7 @@ dianji_skill.getTurnUseCard=function(self)
     
     for _, card in ipairs(cards) do
         if card:inherits("ThunderBang") then
-            return sgs.Card_Parse(("@DianjiCard=%d."):format(card:getEffectiveId()))
+            return sgs.Card_Parse(("@DianjiCard=%d"):format(card:getEffectiveId()))
         end
     end
 
@@ -488,28 +488,36 @@ chongbai_skill.getTurnUseCard=function(self)
     cards=sgs.QList2Table(cards)    
     self:sortByKeepValue(cards)
     
-    local card = nil
+    local card_id = nil
     local water = self:getCardId("HolyWater")
     local slash = self:getCardId("Slash")
+    local dodge = self:getCardId("Dodge")
     
-    if water and not self.player:isWounded() then card = water end
-    if dodge and self:getCardsNum("dodge")>1 and not self.player:isWounded() then card = dodge end
-    if slash and not self.player:canSlashWithoutCrossbow() and self:getCardsNum("Slash")>1 then card = slash end
-    if #cards > self.player:getMaxHP() then card = cards[1] end
+    if water and not self.player:isWounded() then card_id = water end
+    if dodge and self:getCardsNum("dodge")>1 and not self.player:isWounded() then card_id = dodge end
+    if slash and not self.player:canSlashWithoutCrossbow() and self:getCardsNum("Slash")>1 then card_id = slash end
+    if #cards > self.player:getMaxHP() then card_id = cards[1]:getEffectiveId() end
     
-    if card then
-        return sgs.Card_Parse(("@ChongbaiCard=%d."):format(card))
+    if card_id then
+        return sgs.Card_Parse("@ChongbaiCard="..card_id)
     end
     
 end
 
 sgs.ai_skill_use_func["ChongbaiCard"]=function(card,use,self)
-    self:sort(self.friends_noself,"defense")
 
-    use.card = card
-    if use.to then
-        use.to:append(self.friends_noself[1])
+    local target = nil
+
+	self:sort(self.friends_noself,"defense")    
+    target = self.friends_noself[1]
+        
+    if target then
+        use.card = card
+        if use.to then
+            use.to:append(target)
+        end
     end
+    
 end
 
 -- mofang
@@ -546,7 +554,7 @@ end
 
 -- mofang viewasskill
 sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
-    if self.player:getMark("mofang") == -1 then return "." end
+    if self.player:getMark("mofang") == -1 or self.player:getHandcardNum() < 1 then return "." end
     
     local ag_card = sgs.Sanguosha:getCard(self.player:getMark("mofang"))
     local suit = ag_card:getSuitString()

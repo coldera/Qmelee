@@ -334,6 +334,8 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     card_use = data:toCardEffect()
     local card = card_use.card
     
+    if card then self.room:writeToConsole("yueyin::"..card:objectName()) end 
+    
     if not card 
     or card:inherits("Cure") 
     or card:inherits("GlobalEffect") 
