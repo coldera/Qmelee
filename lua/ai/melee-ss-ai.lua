@@ -85,7 +85,7 @@ sgs.ai_skill_use_func["GoutongCard"]=function(card,use,self)
     local cards = self.player:getHandcards()    
     
     cards=sgs.QList2Table(cards)    
-    self:sortByUseValue(cards, true)
+    self:sortByUseValue(cards)
     
     for _, friend in ipairs(self.friends_noself) do
         if friend:getHp() == 1  and self.player:getMp()>=1 and friend:getHandcardNum()>0 then
@@ -731,7 +731,6 @@ sgs.ai_skill_use["@@xunguang"]=function(self,prompt)
             card_str = card_str.."+"..target:at(index+1):objectName()
         end
     end
-    -- self.room:writeToConsole("log----------------------------------------- "..card_str)
     
     return card_str
 end

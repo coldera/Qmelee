@@ -206,8 +206,8 @@ sgs.ai_skill_use["@@bailie"]=function(self,prompt)
     return "."    
 end
 
--- blank ---------------------------------------------------------------------------------
-sgs.ai_chaofeng["blank"] = -4
+-- blanka ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["blanka"] = -4
 
 sgs.blank_keep_value = {
 	ThunderBang = 4,
@@ -381,7 +381,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
-    self:sortByUseValue(cards)
+    self:sortByKeepValue(cards, true)
     
     if self:getUseValue(cards[2])>5 then return "." end
     
@@ -468,5 +468,150 @@ end
 sgs.ai_skill_invoke.yinsu = function(self, data)
     return self:needHelp(data)
 end
+
+
+-- sakura ---------------------------------------------------------------------------------
+
+sgs.ai_chaofeng["sakura"] = 4
+
+sgs.dynamic_value.benefit["ChongbaiCard"] = true
+
+-- chongbai
+local chongbai_skill={}
+chongbai_skill.name="chongbai"
+table.insert(sgs.ai_skills,chongbai_skill)
+chongbai_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("ChongbaiCard") or self.player:getHandcardNum()<2 or #self.friends_noself==0 then return end
+    
+    local cards = self.player:getCards("h")    
+    
+    cards=sgs.QList2Table(cards)    
+    self:sortByKeepValue(cards)
+    
+    local card = nil
+    local water = self:getCardId("HolyWater")
+    local slash = self:getCardId("Slash")
+    
+    if water and not self.player:isWounded() then card = water end
+    if dodge and self:getCardsNum("dodge")>1 and not self.player:isWounded() then card = dodge end
+    if slash and not self.player:canSlashWithoutCrossbow() and self:getCardsNum("Slash")>1 then card = slash end
+    if #cards > self.player:getMaxHP() then card = cards[1] end
+    
+    if card then
+        return sgs.Card_Parse(("@ChongbaiCard=%d."):format(card))
+    end
+    
+end
+
+sgs.ai_skill_use_func["ChongbaiCard"]=function(card,use,self)
+    self:sort(self.friends_noself,"defense")
+
+    use.card = card
+    if use.to then
+        use.to:append(self.friends_noself[1])
+    end
+end
+
+-- mofang
+local mofang_skill={}
+mofang_skill.name="mofang"
+table.insert(sgs.ai_skills,mofang_skill)
+
+mofang_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("MofangCard") then return end
+    return sgs.Card_Parse("@MofangCard=.")
+end
+
+sgs.ai_skill_use_func["MofangCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- mofang ag
+sgs.ai_skill_askforag.mofang = function(self, card_ids)
+	local cards = {}
+    
+	for _, id in ipairs(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	
+    self:sortByUseValue(cards)
+	
+    for _, card in ipairs(cards) do
+        if self:hasSuit(card:getSuitString()) then
+            return card:getEffectiveId()
+        end
+    end
+    
+end
+
+-- mofang viewasskill
+sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
+    if self.player:getMark("mofang") == -1 then return "." end
+    
+    local ag_card = sgs.Sanguosha:getCard(self.player:getMark("mofang"))
+    local suit = ag_card:getSuitString()
+	local number = ag_card:getNumberString()
+    
+	local cards = self.player:getCards("h")
+    self:sortByKeepValue(cards, true)
+    
+    local use_card
+    for _, card in ipairs(cards) do
+        if card:getSuitString() == suit then
+            use_card = card
+            break
+        end
+    end
+    
+    if ag_card and use_card and ag_card:isAvailable(self.player) then
+        if ag_card:targetFixed() then
+            return (ag_card:objectName()..":mofangvas[%s:%s]=%d"):format(suit, number, use_card:getEffectiveId())
+        else
+            local use={}
+            local card_str = (ag_card:objectName()..":mofangvas[%s:%s]=%d->"):format(suit, number, use_card:getEffectiveId())
+            
+            use.from = self.player
+            use.to = self.room:getAllPlayers()
+            local index = use.to:length()
+            
+            local type = ag_card:getTypeId()
+
+            if type == sgs.Card_Basic then
+                self:useBasicCard(ag_card, use, self.slash_distance_limit)
+            elseif type == sgs.Card_Trick then
+                self:useTrickCard(ag_card, use)
+            elseif type == sgs.Card_Skill then
+                self:useSkillCard(ag_card, use)
+            else
+                self:useEquipCard(ag_card, use)
+            end
+            
+            local target = use.to
+            if target:at(index) then
+                card_str = card_str..target:at(index):objectName()
+                if target:at(index+1) then
+                    card_str = card_str.."+"..target:at(index+1):objectName()
+                end
+            end
+            
+            return card_str
+            
+        end
+    end
+    
+    return "."
+end
+
+-- yingluo
+sgs.ai_skill_invoke.yingluo = function(self, data)
+    return self.player:getMp()>1
+end
+
+sgs.ai_skill_use["@@yingluo"]=function(self, prompt)
+    if self.player:getMp()<1 then return "." end
+    return "@YingluoCard=.->."
+end
+
+
 
 

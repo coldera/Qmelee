@@ -846,7 +846,7 @@ public:
     }
 };
 
-//--------------------------------------------------------------------------------------------------------------blank
+//--------------------------------------------------------------------------------------------------------------blanka
 
 //----------------------------------------------------------------------------- Shidian
 
@@ -899,19 +899,19 @@ public:
         return TriggerSkill::triggerable(target);
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *blank, QVariant &data) const{
-        Room *room = blank->getRoom();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *blanka, QVariant &data) const{
+        Room *room = blanka->getRoom();
         
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature == DamageStruct::Thunder) {
             
             LogMessage log;
             log.type = "#DamageNullify";
-            log.to << blank;
+            log.to << blanka;
             log.arg = objectName();
             room->sendLog(log);
             
-            blank->drawCards(1);
+            blanka->drawCards(1);
         
             return true;
         }
@@ -928,22 +928,22 @@ DianjiCard::DianjiCard(){
 }
 
 void DianjiCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *blank = card_use.from;
+    ServerPlayer *blanka = card_use.from;
     
     room->playSkillEffect("dianji");
     
     LogMessage log;
     log.type = "#Dianji";
-    log.from = blank;
+    log.from = blanka;
     room->sendLog(log);    
     
-    blank->updateMp(-2);
+    blanka->updateMp(-2);
     
-    QList<ServerPlayer *> targets = room->getOtherPlayers(blank);
+    QList<ServerPlayer *> targets = room->getOtherPlayers(blanka);
     
     CardUseStruct use;
     use.card = Sanguosha->getCard(getSubcards().first());
-    use.from = blank;
+    use.from = blanka;
     use.to << targets;
 
     room->useCard(use);
@@ -1796,7 +1796,7 @@ public:
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blank, *dhaisim, *honda, *zangief, *guile, *sakura;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhaisim, *honda, *zangief, *guile, *sakura;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1830,11 +1830,11 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<JiqiCard>();
     addMetaObject<QigongCard>();
     
-    blank = new General(this, "blank", "nu");
-    blank->addSkill(new Shidian);
-    blank->addSkill(new ShidianGet);
+    blanka = new General(this, "blanka", "nu");
+    blanka->addSkill(new Shidian);
+    blanka->addSkill(new ShidianGet);
     related_skills.insertMulti("shidian", "#shidian-get");
-    blank->addSkill(new Dianji);
+    blanka->addSkill(new Dianji);
 
     addMetaObject<DianjiCard>();
     
