@@ -261,8 +261,8 @@ sgs.ai_skill_use_func["DianjiCard"]=function(card,use,self)
 end
 
 
--- dhaisim ---------------------------------------------------------------------------------
-sgs.ai_chaofeng["dhaisim"] = 6
+-- dhalsim ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["dhalsim"] = 6
 
 sgs.dhaisim_keep_value = {
 	Weapon = 0,

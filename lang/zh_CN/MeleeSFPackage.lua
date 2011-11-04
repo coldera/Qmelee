@@ -80,8 +80,8 @@ return {
     ["#ShidianGet"] = "%from <b style='color:yellow'>【嗜电】</b>技能发动",
     
     -- 2011-10-30 +AI 修行憎
-    ["dhaisim"] = "达尔锡",
-    ["~dhaisim"] = "死亡，只是一种解脱",
+    ["dhalsim"] = "达尔锡",
+    ["~dhalsim"] = "死亡，只是一种解脱",
     ["yujia"] = "瑜珈",
     [":yujia"] = "锁定技，你不能装备武器，你使用的【杀】无距离限制",
     ["huoyan"] = "火焰",

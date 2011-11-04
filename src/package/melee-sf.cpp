@@ -971,7 +971,7 @@ public:
     }
 };
 
-//--------------------------------------------------------------------------------------------------------------dhaisim
+//--------------------------------------------------------------------------------------------------------------dhalsim
 
 //----------------------------------------------------------------------------- Yujia
 
@@ -981,8 +981,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual void onGameStart(ServerPlayer *dhaisim) const{
-        dhaisim->getRoom()->setPlayerMark(dhaisim, "no_range_limit", 1);
+    virtual void onGameStart(ServerPlayer *dhalsim) const{
+        dhalsim->getRoom()->setPlayerMark(dhalsim, "no_range_limit", 1);
     }
 };
 
@@ -992,23 +992,23 @@ HuoyanCard::HuoyanCard(){}
 
 void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
-    ServerPlayer *dhaisim = card_use.from;
+    ServerPlayer *dhalsim = card_use.from;
 
     const Card *card = Sanguosha->getCard(getSubcards().first());    
     FireBang *fire_bang = new FireBang(card->getSuit(), card->getNumber());
 
     LogMessage log;
     log.type = "$Huoyan";
-    log.from = dhaisim;
+    log.from = dhalsim;
     log.to << card_use.to;
     log.card_str = fire_bang->toString();
     room->sendLog(log); 
     
     room->playSkillEffect("huoyan");
     
-    dhaisim->updateMp(-2);
+    dhalsim->updateMp(-2);
     
-    fire_bang->use(room, dhaisim, card_use.to);
+    fire_bang->use(room, dhalsim, card_use.to);
     
     room->throwCard(this);
     
@@ -1039,14 +1039,14 @@ public:
 ChuansongCard::ChuansongCard(){}
 
 void ChuansongCard::onEffect(const CardEffectStruct &effect) const {
-    ServerPlayer *dhaisim = effect.from;
-    Room *room = dhaisim->getRoom();
+    ServerPlayer *dhalsim = effect.from;
+    Room *room = dhalsim->getRoom();
     
     ServerPlayer *next;
     
     do{
-        next = dhaisim->getNext();
-        room->swapSeat(dhaisim, next);
+        next = dhalsim->getNext();
+        room->swapSeat(dhalsim, next);
     }while(next != effect.to);
     
 }
@@ -1081,14 +1081,14 @@ public:
         return TriggerSkill::triggerable(target);
     }
     
-    virtual bool trigger(TriggerEvent event, ServerPlayer *dhaisim, QVariant &data) const{
-        Room *room = dhaisim->getRoom();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *dhalsim, QVariant &data) const{
+        Room *room = dhalsim->getRoom();
     
         CardStar card_star = data.value<CardStar>();
         if(!card_star->inherits("Dodge"))
             return false;
         
-        room->askForUseCard(dhaisim, "@@chuansong", "@chuansong");
+        room->askForUseCard(dhalsim, "@@chuansong", "@chuansong");
 
         return false;
     }
@@ -1796,7 +1796,7 @@ public:
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhaisim, *honda, *zangief, *guile, *sakura;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1838,12 +1838,12 @@ MeleeSFPackage::MeleeSFPackage()
 
     addMetaObject<DianjiCard>();
     
-    dhaisim = new General(this, "dhaisim", "ling", 3);
-    dhaisim->addSkill(new Yujia);
-    dhaisim->addSkill(new MarkAssignSkill("@weapon_forbid", 1));
+    dhalsim = new General(this, "dhalsim", "ling", 3);
+    dhalsim->addSkill(new Yujia);
+    dhalsim->addSkill(new MarkAssignSkill("@weapon_forbid", 1));
     related_skills.insertMulti("yujia", "#@weapon_forbid");
-    dhaisim->addSkill(new Huoyan);
-    dhaisim->addSkill(new Chuansong);
+    dhalsim->addSkill(new Huoyan);
+    dhalsim->addSkill(new Chuansong);
     
     addMetaObject<HuoyanCard>();
     addMetaObject<ChuansongCard>();
