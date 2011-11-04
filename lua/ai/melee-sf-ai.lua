@@ -576,8 +576,6 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
     end
     
     if ag_card and use_card and ag_card:isAvailable(self.player) then
-    
-self.room:writeToConsole("mofang start")
         
         if ag_card:targetFixed() then
             return (ag_card:objectName()..":mofangvas[%s:%s]=%d->."):format(suit, number, use_card:getEffectiveId())
@@ -587,9 +585,7 @@ self.room:writeToConsole("mofang start")
             
             use.from = self.player
             use.to = self.room:getAllPlayers()
-            local index = use.to:length()
-            
-self.room:writeToConsole(index)       
+            local index = use.to:length()    
     
             local type = ag_card:getTypeId()
             
@@ -601,8 +597,6 @@ self.room:writeToConsole(index)
                 return "."
             end
             
-self.room:writeToConsole(use.to:length())
-            
             local target = use.to
             if target:at(index) then
                 card_str = card_str..target:at(index):objectName()
@@ -612,8 +606,6 @@ self.room:writeToConsole(use.to:length())
             else
                 return "."
             end
-            
-self.room:writeToConsole(card_str)
             
             return card_str
             
