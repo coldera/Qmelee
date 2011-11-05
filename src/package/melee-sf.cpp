@@ -1861,7 +1861,7 @@ public:
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMp()>=2;
+        return TriggerSkill::triggerable(target) && target->getMp()>=1;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *cammy, QVariant &data) const{
@@ -1873,7 +1873,7 @@ public:
         if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(cammy, objectName(), data)) {
             room->playSkillEffect(objectName());
         
-            cammy->updateMp(-2);
+            cammy->updateMp(-1);
             
             int card_id = room->askForCardChosen(cammy, damage.to, "e", "luoxuan");
             
@@ -2056,7 +2056,12 @@ public:
         }
         
         CardUseStruct use = data.value<CardUseStruct>();   
-        if(rose && rose->getMp()>=2 && rose->getMark("caozonging")<=0 && !use.card->isVirtualCard() && !use.card->targetFixed()) {
+        if(rose 
+        && rose->getMp()>=2 
+        && rose->getMark("caozonging")<=0 
+        && !use.card->isVirtualCard() 
+        && !use.card->targetFixed() 
+        && !use.card->inherits("Unassailable")) {
             
             QVariant tohelp = QVariant::fromValue(use);
             if(room->askForSkillInvoke(rose, objectName(), tohelp)) {
