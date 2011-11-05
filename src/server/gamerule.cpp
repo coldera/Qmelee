@@ -403,6 +403,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     case DamageDone:{
             
+			//modify by ce
             if(player->getMark("@invincible")) {
                 LogMessage log;
                 log.type = "#Invincible";

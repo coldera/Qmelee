@@ -705,7 +705,10 @@ bool Player::canSlash(const Player *other, bool distance_limit) const{
 
     if(other == this)
         return false;
-
+    
+    if(hasSkill("yujia"))
+        return true;
+    
     if(distance_limit)
         return distanceTo(other) <= getAttackRange();
     else

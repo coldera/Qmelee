@@ -160,7 +160,8 @@ enum TriggerEvent{
     SlashProceed,
     SlashHit,
     SlashMissed,
-
+    
+    CardChosen, //modify by ce
     CardAsked,
     CardUsed,
     CardResponsed,
@@ -171,10 +172,11 @@ enum TriggerEvent{
     CardEffect,
     CardEffected,
     CardFinished,
-
+    
     ChoiceMade,
 
     NumOfEvents,
+    
 };
 
 typedef const Card *CardStar;

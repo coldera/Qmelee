@@ -1061,7 +1061,8 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
     if card_str then return sgs.Card_Parse(card_str) end
 	
     for _, anal in ipairs(cards) do
-        if (anal:className()=="Schnapps") and not (anal:getEffectiveId()==slash:getEffectiveId()) then
+        if (anal:className() == "Schnapps") and not (anal:getEffectiveId() == slash:getEffectiveId()) and 
+			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_Hand) then
             return anal
         end
     end
@@ -2464,7 +2465,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		return card:getId()
 	end
 	
-    if self:isFriend(who) then
+    if self:isFriend(who) or who:hasSkill("anshi") then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
 			local lightning, indulgence, supply_shortage
@@ -3423,7 +3424,7 @@ function getCards(class_name, player, room, flag)
 			cards_str = isCompulsoryView(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
 			table.insert(cards, card_str)
-		elseif card:inherits(class_name) then table.insert(cards, card) 
+        elseif card:inherits(class_name) and not prohibitUseDirectly(card, player) then table.insert(cards, card) 
 		elseif getSkillViewCard(card, class_name, player, card_place) then
 			cards_str = getSkillViewCard(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
@@ -3476,6 +3477,16 @@ function SmartAI:getCardsNum(class_name, player, flag)
 		-- end
 	-- end
 	return n
+end
+
+function SmartAI:cardProhibit(card, to)
+	if card:inherits("Slash") then return self:slashProhibit(card, to) end
+	if card:getTypeId() == sgs.Card_Trick then 
+		if card:isBlack() and to:hasSkill("weimu") then return true end
+		if card:inherits("Indulgence") or card:inherits("Snatch") and to:hasSkill("qianxun") then return true end
+		if card:inherits("Duel") and to:hasSkill("kongcheng") and to:isKongcheng() then return true end
+	end
+	return false
 end
 
 -- load other ai scripts

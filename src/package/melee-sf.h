@@ -162,4 +162,11 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class XinlingCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XinlingCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
 #endif // MELEESF_H

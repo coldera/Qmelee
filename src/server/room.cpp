@@ -639,21 +639,27 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
-    if(flags == "h" && !who->hasFlag("dongchaee"))
+    //modify by ce
+    QVariant data = QString("%1:%2").arg(reason).arg(player->getGeneralName());
+    bool change = thread->trigger(CardChosen, who, data);
+    
+    if(flags == "h" && !change)
         return who->getRandomHandCardId();
-
+        
+    ServerPlayer *chooser = change ? who : player;
+    
     int card_id;
 
-    AI *ai = player->getAI();
+    AI *ai = chooser->getAI();
     if(ai){
         thread->delay(Config.AIDelay);
         card_id = ai->askForCardChosen(who, flags, reason);
     }else{
-        player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
-        getResult("chooseCardCommand", player);
+        chooser->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
+        getResult("chooseCardCommand", chooser);
 
         if(result.isEmpty())
-            return askForCardChosen(player, who, flags, reason);
+            return askForCardChosen(chooser, who, flags, reason);
 
         if(result == "."){
             // randomly choose a card
@@ -669,7 +675,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         card_id = who->getRandomHandCardId();
 
     QVariant decisionData = QVariant::fromValue("cardChosen:"+reason+":"+QString::number(card_id));
-    thread->trigger(ChoiceMade, player, decisionData);
+    thread->trigger(ChoiceMade, chooser, decisionData);
 
 
     return card_id;

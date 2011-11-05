@@ -668,7 +668,7 @@ void BailieCard::onEffect(const CardEffectStruct &effect) const {
         const Card *bang = room->askForCard(chunli, "slash", "@bailie-slash:" + effect.to->objectName(), tohelp);
         
         if(bang) {
-            
+        
             CardUseStruct use;
             use.card = bang;
             use.from = chunli;
@@ -791,6 +791,39 @@ public:
 
 //----------------------------------------------------------------------------- Qigong
 
+class QigongBuff: public SlashBuffSkill{
+public:
+    QigongBuff():SlashBuffSkill("#qigong-buff"){}
+
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        
+        if(effect.to->hasFlag("qigong"))
+            effect.to->addMark("qinggang");
+
+        return false;
+    }
+};
+
+class QigongOff: public PhaseChangeSkill{
+public:
+    QigongOff():PhaseChangeSkill("#qigong-off"){}
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Finish;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *chunli) const{
+        Room *room = chunli->getRoom();
+        
+        foreach(ServerPlayer *p, room->getOtherPlayers(chunli)) {
+            if(p->hasFlag("qigong"))
+                room->setPlayerFlag(p, "-qigong");
+        }
+
+        return false;
+    }
+};
+
 QigongCard::QigongCard(){}
 
 bool QigongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -805,7 +838,7 @@ bool QigongCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void QigongCard::onEffect(const CardEffectStruct &effect) const {
     effect.from->updateMp(-1);
-    effect.to->addMark("qinggang");
+    effect.from->getRoom()->setPlayerFlag(effect.to, "qigong");
 }
 
 class QigongViewAsSkill: public ZeroCardViewAsSkill{
@@ -981,9 +1014,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual void onGameStart(ServerPlayer *dhalsim) const{
-        dhalsim->getRoom()->setPlayerMark(dhalsim, "no_range_limit", 1);
-    }
+    virtual void onGameStart(ServerPlayer *dhalsim) const{}
 };
 
 //----------------------------------------------------------------------------- Huoyan
@@ -1220,17 +1251,6 @@ public:
     
     virtual bool triggerable(const ServerPlayer *target) const{
         return !target->hasSkill("xuanfeng");
-        // Room *room = target->getRoom();
-
-        // ServerPlayer *zangief = NULL;
-        // foreach(ServerPlayer *p, room->getAllPlayers()){
-            // if(p->hasSkill("xuanfeng")) {
-                // zangief = p;
-                // break;
-            // }
-        // }
-        
-        // return zangief && target!=zangief && zangief->getCards("he").length()>=2;
     }
     
     virtual bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data) const{
@@ -1941,7 +1961,8 @@ public:
             if(dan->faceUp())
                 dan->turnOver();
             dan->gainMark("@card_forbid");
-            room->setPlayerMark(dan, "tiaoxin_on", x-1);
+            //because this skill invokes in finish phase so +1
+            room->setPlayerMark(dan, "tiaoxin_on", x-1+1);
         }
         
         return false;
@@ -1975,12 +1996,161 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------rose
+
+//----------------------------------------------------------------------------- Anshi
+
+class Anshi: public TriggerSkill{
+public:
+    Anshi():TriggerSkill("anshi"){
+        frequency = Compulsory;
+        events << CardChosen;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *rose, QVariant &data) const{
+        if(rose->hasSkill(objectName())) {
+            rose->getRoom()->playSkillEffect(objectName());
+            
+            QStringList prompt = data.toString().split(":");
+            
+            LogMessage log;
+            log.type = "#AnshiEffect";
+            log.from = rose;
+            log.arg = prompt.at(0);
+            log.arg2 = prompt.at(1);
+            rose->getRoom()->sendLog(log);
+            
+            return true;
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Caozong
+
+class Caozong: public TriggerSkill{
+public:
+    Caozong():TriggerSkill("caozong"){
+        events << CardUsed;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("caozong");
+    }
+    
+    virtual bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data) const{
+        
+        Room *room = target->getRoom();
+
+        ServerPlayer *rose = NULL;
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            if(p->hasSkill("caozong")) {
+                rose = p;
+                break;
+            }
+        }
+        
+        CardUseStruct use = data.value<CardUseStruct>();   
+        if(rose->getMp()>=2 && rose->getMark("caozonging")<=0 && !use.card->isVirtualCard() && !use.card->targetFixed()) {
+            
+            QVariant tohelp = QVariant::fromValue(use);
+            if(room->askForSkillInvoke(rose, objectName(), tohelp)) {
+
+                QList<ServerPlayer *> players;
+                
+                if(use.card->inherits("Slash")) {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if(use.from->canSlash(p, true))
+                            players << p;
+                    }
+                }else if(use.card->inherits("BorrowWeapon")) {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if(p->getWeapon())
+                            players << p;
+                    }
+                }else if(use.card->inherits("Grab") || use.card->inherits("Icebound")) {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if(use.from->distanceTo(p)<=1)
+                            players << p;
+                    }
+                }else if(use.card->inherits("Cure")) {
+                    foreach(ServerPlayer *p, room->getAllPlayers()) {
+                        if(use.from->distanceTo(p)<=1 || use.from == p)
+                            players << p;
+                    }
+                }else if(use.card->inherits("Burn")) {
+                    foreach(ServerPlayer *p, room->getAllPlayers()) {
+                        if(p->getHandcardNum())
+                            players << p;
+                    }
+                }else {
+                    players = room->getOtherPlayers(use.from);
+                }
+                
+                ServerPlayer *new_target = room->askForPlayerChosen(rose, players, objectName());
+                
+                use.to.removeFirst();
+                use.to.insert(0,new_target);
+                
+                rose->updateMp(-2);
+
+                LogMessage log;
+                log.type = "$CaozongEffect";
+                log.from = rose;
+                log.to << use.to;
+                log.card_str = use.card->toString();
+                room->sendLog(log);
+                
+                room->setPlayerMark(rose, "caozonging", 1);
+                room->useCard(use, true);
+                room->setPlayerMark(rose, "caozonging", 0);
+                
+                return true;
+                
+            }
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Xinling
+
+XinlingCard::XinlingCard(){
+    target_fixed = true;
+}
+
+void XinlingCard::use(Room *room, ServerPlayer *rose, const QList<ServerPlayer *> &) const{
+    room->loseHp(rose,1);
+    rose->updateMp(3);
+}
+
+class Xinling: public ZeroCardViewAsSkill{
+public:
+    Xinling():ZeroCardViewAsSkill("xinling"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("XinlingCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        XinlingCard *card = new XinlingCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -2009,7 +2179,11 @@ MeleeSFPackage::MeleeSFPackage()
     chunli->addSkill(new Bailie);
     chunli->addSkill(new Jiqi);
     chunli->addSkill(new Qigong);
-    
+    chunli->addSkill(new QigongOff);
+    chunli->addSkill(new QigongBuff);
+    related_skills.insertMulti("qigong", "#qigong-off");
+    related_skills.insertMulti("qigong", "#qigong-buff");
+       
     addMetaObject<BailieCard>();
     addMetaObject<JiqiCard>();
     addMetaObject<QigongCard>();
@@ -2074,6 +2248,13 @@ MeleeSFPackage::MeleeSFPackage()
     dan->addSkill(new TiaoxinOff);
     related_skills.insertMulti("tiaoxin", "#tiaoxin-off");
     dan->addSkill(new Wodao);
+
+    rose = new General(this, "rose", "ling", 3, false);
+    rose->addSkill(new Anshi);
+    rose->addSkill(new Caozong);
+    rose->addSkill(new Xinling);
+    
+    addMetaObject<XinlingCard>();
 }
 
 ADD_PACKAGE(MeleeSF);

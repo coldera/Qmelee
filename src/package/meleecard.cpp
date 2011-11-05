@@ -2927,7 +2927,7 @@ void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 MeleeCardPackage::MeleeCardPackage()
     :Package("meleecard")
-{
+{   
     patterns["."] = new HandcardPattern;
     patterns[".touse"] = new ToUsePattern;
     patterns[".S"] = new SuitPattern(Card::Spade);

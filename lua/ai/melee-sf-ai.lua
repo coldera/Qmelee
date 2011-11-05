@@ -199,7 +199,7 @@ sgs.ai_skill_use["@@bailie"]=function(self,prompt)
 	self:sort(self.enemies,"defense")    
     for _,enemy in ipairs(self.enemies) do
         if self.player:inMyAttackRange(enemy) then
-            return "@BailieCard="..self:getCardId("Slash").."->"..enemy:objectName()
+            return "@BailieCard=.->"..enemy:objectName()
         end
     end
     
@@ -664,7 +664,7 @@ sgs.ai_chaofeng["dan"] = 5
 
 -- tiaoxin
 sgs.ai_skill_invoke.tiaoxin = function(self, data)
-    if self.getHp()>3 or self.getHp() - #self.enemies>1 then return true end
+    if self.player:getHp()>3 or self.player:getHp() - #self.enemies>1 then return true end
     return false
 end
 

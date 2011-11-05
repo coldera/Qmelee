@@ -251,25 +251,25 @@ function SmartAI:updateLoyalTarget(player)
     if (self:objectiveLevel(player) >= 4) then
         if not sgs.loyal_target then sgs.loyal_target = player 
 		elseif player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.loyal_target = player
-        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target=player 
-        elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target=player 
-        elseif (sgs.loyal_target:getHp()>1) and (getDefense(player)<=3) then sgs.loyal_target=player 
-		elseif sgs.rebel_target:getHp()-player:getHp()>=2 then sgs.loyal_target = player
-        elseif (sgs.loyal_target:getHandcardNum()>0) and (player:getHandcardNum()==0) then sgs.loyal_target=player 
-		elseif self:getCardsNum(".", sgs.loyal_target, "e")>self:getCardsNum(".", player, "e") then sgs.loyal_target=player 
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target = player 
+        elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target = player 
+        elseif (sgs.loyal_target:getHp() > 1) and (getDefense(player) <= 3) then sgs.loyal_target = player 
+		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.loyal_target = player
+        elseif (sgs.loyal_target:getHandcardNum() > 0) and (player:getHandcardNum() == 0) then sgs.loyal_target = player 
+		elseif self:getCardsNum(".", sgs.loyal_target, "e") > self:getCardsNum(".", player, "e") then sgs.loyal_target = player 
         end
     end
 end
 
 function SmartAI:updateRebelTarget(player)
 	if self.role == "lord" or self.role == "loyalist" then return end
-	if not sgs.rebel_target then sgs.rebel_target=player end
-	if self.room:getLord():objectName() == player:objectName() then sgs.rebel_target=player
-	elseif self:objectiveLevel(player)>=4 and self:objectiveLevel(player)<5 then
-		if player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.rebel_target=player
-        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.rebel_target:getGeneralName()] or 0) then sgs.rebel_target=player 
-		elseif (sgs.rebel_target:getArmor()) and (not player:getArmor() and sgs.rebel_target:getHp()>player:getHp()) then sgs.rebel_target=player 
-		elseif sgs.rebel_target:getHp()-player:getHp()>=2 then sgs.rebel_target=player
+	if not sgs.rebel_target then sgs.rebel_target = player end
+	if self.room:getLord():objectName() == player:objectName() then sgs.rebel_target = player
+	elseif self:objectiveLevel(player) >= 4 and self:objectiveLevel(player) < 5 then
+		if player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.rebel_target = player
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.rebel_target:getGeneralName()] or 0) then sgs.rebel_target = player 
+		elseif (sgs.rebel_target:getArmor()) and (not player:getArmor() and sgs.rebel_target:getHp() > player:getHp()) then sgs.rebel_target = player 
+		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.rebel_target = player
 		end
 	end
 end
@@ -288,29 +288,29 @@ end
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
-        if self.player:getRole()=="renegade" then
-		elseif player:getRole()=="renegade" then
+        if self.player:getRole() == "renegade" then
+		elseif player:getRole() == "renegade" then
         elseif self:isFriend(player) then return -2
         elseif player:isLord() then return 5
-        elseif player:getRole()=="renegade" then return 4.1
+        elseif player:getRole() == "renegade" then return 4.1
         else return 4.5 end
     end
     
-    if player:objectName()==self.player:objectName() then return -2 end
+    if player:objectName() == self.player:objectName() then return -2 end
 
-    local modifier=0
-    local rene=sgs.ai_renegade_suspect[player:objectName()] or 0
-    if rene>1 then modifier=0.5 end
+    local modifier = 0
+    local rene = sgs.ai_renegade_suspect[player:objectName()] or 0
+    if rene > 1 then modifier = 0.5 end
     
-    local players=self.room:getOtherPlayers(self.player)
-    players=sgs.QList2Table(players)
+    local players = self.room:getOtherPlayers(self.player)
+    players = sgs.QList2Table(players)
 	
 	
-    local hasRebel, hasLoyal, hasRenegade=false, false, false
+    local hasRebel, hasLoyal, hasRenegade = false, false, false
     for _,oplayer in ipairs(players) do
-        if oplayer:getRole()=="rebel" then hasRebel=true end
-		if oplayer:getRole()=="loyalist" then hasLoyal=true end
-        if oplayer:getRole()=="renegade" then hasRenegade=true end
+        if oplayer:getRole() == "rebel" then hasRebel = true end
+		if oplayer:getRole() == "loyalist" then hasLoyal = true end
+        if oplayer:getRole() == "renegade" then hasRenegade = true end
 		if hasRebel and hasLoyal and hasRenegade then break end
 	end
 	
@@ -804,9 +804,8 @@ end
 
 -- yicai,badao,yitian-slash,moon-spear-slash
 sgs.ai_skill_use["slash"] = function(self, prompt)
-	if prompt ~= "@yicai" and prompt ~= "@badao" and
-		prompt ~= "yitian-slash" and prompt ~= "@moon-spear-slash" then return "." end
-    local slash=self:getCard("Slash")
+	if prompt ~= "@askforslash" and prompt ~= "@moon-spear-slash" then return "." end
+	local slash = self:getCard("Slash")
 	if not slash then return "." end
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
@@ -827,7 +826,7 @@ function SmartAI:slashIsEffective(slash, to)
 		return false
 	end
 
-	if self.player:hasWeapon("qinggang_sword") then
+	if self.player:hasWeapon("qinggang_sword") or (self.player:hasFlag("xianzhen_success") and self.room:getTag("XianzhenTarget"):toPlayer() == to) then
 		return true
 	end
 
@@ -876,7 +875,7 @@ end
 
 local function zeroCardView(class_name, player)
 	if class_name == "Analeptic" then
-		if player:hasSkill("jiushi") and self.player:faceUp() then
+		if player:hasSkill("jiushi") and player:faceUp() then
 			return ("analeptic:jiushi[no_suit:0]=.")
 		end
 	end
@@ -986,7 +985,8 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	if card_str then return sgs.Card_Parse(card_str) end
 	
     for _, anal in ipairs(cards) do
-        if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
+        if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) and 
+			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_Hand) then
             return anal
         end
     end
@@ -2701,6 +2701,13 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
+		elseif parsedPrompt[1] == "@xianzhen-slash" then
+			local target = self.player:getTag("XianzhenTarget"):toPlayer()
+			local slashes = self:getCards("Slash")
+			for _, slash in ipairs(slashes) do
+				if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
+			end
+			return "."
 		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
@@ -3272,7 +3279,7 @@ function getCards(class_name, player, room, flag)
 			cards_str = isCompulsoryView(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
 			table.insert(cards, card_str)
-		elseif card:inherits(class_name) then table.insert(cards, card) 
+		elseif card:inherits(class_name) and not prohibitUseDirectly(card, player) then table.insert(cards, card) 
 		elseif getSkillViewCard(card, class_name, player, card_place) then
 			cards_str = getSkillViewCard(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
@@ -3325,6 +3332,16 @@ function SmartAI:getCardsNum(class_name, player, flag)
 		end
 	end
 	return n
+end
+
+function SmartAI:cardProhibit(card, to)
+	if card:inherits("Slash") then return self:slashProhibit(card, to) end
+	if card:getTypeId() == sgs.Card_Trick then 
+		if card:isBlack() and to:hasSkill("weimu") then return true end
+		if card:inherits("Indulgence") or card:inherits("Snatch") and to:hasSkill("qianxun") then return true end
+		if card:inherits("Duel") and to:hasSkill("kongcheng") and to:isKongcheng() then return true end
+	end
+	return false
 end
 
 -- load other ai scripts
