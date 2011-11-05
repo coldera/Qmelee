@@ -17,12 +17,18 @@ local t = {
 	["@ling"] = "灵力", 
 	["@kuang"] = "狂暴", 
 	["@yuan"] = "怨念", 
-    
-    ["#PunishNu"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--气脉逆行</b>",
-    ["#PunishQi"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--毒气攻心</b>",
-    ["#PunishLing"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--感同身受</b>",
-    ["#PunishKuang"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--走火入魔</b>",
-    ["#PunishYuan"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--天火焚身</b>",
+
+    ["#DamagePunish"] = "===== <b style='color:#FF0066'>属性惩罚判定：</b>结果 %arg 将受到惩罚 =====",    
+    ["#PunishNu"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--气脉逆行</b>\
+    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>怒型</b> 角色受到 <b style='color:#FF0066'>气属性</b> 惩罚：减少1点怒 ）</span>",
+    ["#PunishQi"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--毒气攻心</b>\
+    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>气型</b> 角色受到 <b style='color:#FF0066'>毒属性</b> 惩罚：失去1点体力 ）</span>",
+    ["#PunishLing"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--感同身受</b>\
+    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>灵型</b> 角色受到 <b style='color:#FF0066'>雷属性</b> 惩罚：失去防具和坐骑 ）</span>",
+    ["#PunishKuang"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--走火入魔</b>\
+    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>狂型</b> 角色受到 <b style='color:#FF0066'>冰属性</b> 惩罚：失去1张手牌 ）</span>",
+    ["#PunishYuan"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--天火焚身</b>\
+    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>怨型</b> 角色受到 <b style='color:#FF0066'>火属性</b> 惩罚：失去1点体力 ）</span>",
     
     ["normal_nature"] = "[无属性]",
     ["fire_nature"] = "[火属性]",
@@ -41,7 +47,6 @@ local t = {
     ["@card_forbid"] = "封牌",
     ["card_forbid"] = "【封牌】",
     
-    ["$DamagePunish"] = "--评估伤害惩罚--",
     ["#Invincible"] = "%from 处于 <b style='color:yellow'>无损状态</b> 任何伤害和战术牌对其无效",
     ["#CountDown"] = "%from 还有 %arg 回合才能解除 %arg2 状态",
     

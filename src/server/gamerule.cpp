@@ -426,10 +426,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 }
             }
             
-            LogMessage log;
-            log.type = "$DamagePunish";
-            room->sendLog(log);
-            
             QString kingdom = player->getKingdom();
             if(kingdom == "nu" && damage.nature == DamageStruct::Air) {
                 LogMessage log;
@@ -439,6 +435,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 
                 player->updateMp(-1);
             }else if(kingdom == "qi" && damage.nature == DamageStruct::Poison) {
+                
+                LogMessage log;
+                log.type = "#DamagePunish";
+                log.arg = "spade";
+                room->sendLog(log);
                 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(spade):(.*)");
@@ -458,6 +459,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             }else if(kingdom == "ling" && damage.nature == DamageStruct::Thunder) {
                 foreach(ServerPlayer *ling, room->getOtherPlayers(player)){
                     if(ling->getKingdom() == "ling" && (ling->getArmor() || ling->getHorse())){
+                        
+                        LogMessage log;
+                        log.type = "#DamagePunish";
+                        log.arg = "diamond";
+                        room->sendLog(log);
                         
                         JudgeStruct judge;
                         judge.pattern = QRegExp("(.*):(diamond):(.*)");
@@ -493,6 +499,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     room->throwCard(card_id);
                 }
             }else if(kingdom == "yuan" && damage.nature == DamageStruct::Fire) {
+                
+                LogMessage log;
+                log.type = "#DamagePunish";
+                log.arg = "heart";
+                room->sendLog(log);
                 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart):(.*)");
