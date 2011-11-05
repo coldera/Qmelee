@@ -846,6 +846,19 @@ function SmartAI:askForUseCard(pattern, prompt, data)
 	end
 end
 
+-- used for SmartAI:askForSuit
+sgs.ai_suit_choice = {}
+
+function SmartAI:askForSuit(reason)
+self.room:writeToConsole("ai suit choice::"..reason)
+	local use_func = sgs.ai_suit_choice[reason]
+	if use_func then
+		return use_func(self) or "."
+	else
+		return "."
+	end
+end
+
 -- tiger-spear-slash
 sgs.ai_skill_use["slash"] = function(self, prompt)
 	if prompt ~= "@tiger-spear-slash" then return "." end

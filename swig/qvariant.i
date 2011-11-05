@@ -102,4 +102,5 @@ public:
 	PindianStruct *toPindian() const{
 		return $self->value<PindianStar>();
 	}
+    
 };

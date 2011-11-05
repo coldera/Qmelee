@@ -389,7 +389,6 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     
     local data = prompt:split(":")
     local card = sgs.Sanguosha:getCard(data[2])
-    
     if not card then return "." end
     
     local target = nil
@@ -657,3 +656,20 @@ sgs.ai_skill_invoke.luoxuan = function(self, data)
     
     return false
 end
+
+
+-- dan ---------------------------------------------------------------------------------
+
+sgs.ai_chaofeng["dan"] = 5
+
+-- tiaoxin
+sgs.ai_skill_invoke.tiaoxin = function(self, data)
+    if self.getHp()>3 or self.getHp() - #self.enemies>1 then return true end
+    return false
+end
+
+-- wodao
+sgs.ai_skill_invoke.wodao = true
+
+
+

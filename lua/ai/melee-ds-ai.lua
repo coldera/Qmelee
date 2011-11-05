@@ -337,6 +337,14 @@ sgs.ai_skill_use_func["LieqiCard"]=function(card,use,self)
     
 end
 
+sgs.ai_suit_choice.lieqi = function(self)
+    local last_suit = self.room:getTag("LieqiSuit"):toString()
+    
+    self.room:writeToConsole(last_suit)
+    
+    return last_suit or "."
+end
+
 -- guisu
 sgs.ai_skill_invoke.guisu = function (self, data)
     return #self.friends>0

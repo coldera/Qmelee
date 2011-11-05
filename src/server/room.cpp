@@ -2462,16 +2462,16 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     thread->trigger(ChoiceMade, player, data);
 }
 
-Card::Suit Room::askForSuit(ServerPlayer *player){
+Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason){
     AI *ai = player->getAI();
     if(ai)
-        return ai->askForSuit();
+        return ai->askForSuit(reason); //modify by ce add param reason
 
     player->invoke("askForSuit");
     getResult("chooseSuitCommand", player);
 
     if(result.isEmpty())
-        return askForSuit(player);
+        return askForSuit(player, reason);
 
     Card::Suit suit;
     if(result == ".")

@@ -2629,7 +2629,7 @@ public:
         Room *room = player->getRoom();
         
         if(player->askForSkillInvoke(objectName(), data)) {
-            Card::Suit suit1 = room->askForSuit(player);            
+            Card::Suit suit1 = room->askForSuit(player, objectName());            
             
             LogMessage log;
             log.type = "#ChoiceSuit";

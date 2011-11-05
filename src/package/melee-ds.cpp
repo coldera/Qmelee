@@ -1133,7 +1133,7 @@ void LieqiCard::onEffect(const CardEffectStruct &effect) const {
 
     lilith->updateMp(-1);
     
-    Card::Suit suit1 = room->askForSuit(lilith);
+    Card::Suit suit1 = room->askForSuit(lilith, objectName());
 
     LogMessage log;
     log.type = "#ChoiceSuit";
@@ -1147,7 +1147,12 @@ void LieqiCard::onEffect(const CardEffectStruct &effect) const {
     
     if(suit1 == suit2){
         room->obtainCard(lilith, card_id);
-    }    
+        //only for ai
+        room->setTag("LieqiSuit", ".");
+    }else {
+        //only for ai
+        room->setTag("LieqiSuit", Card::Suit2String(suit2));
+    }
 }
 
 class Lieqi: public ZeroCardViewAsSkill{
@@ -2533,7 +2538,7 @@ void YoubuCard::use(Room *room, ServerPlayer *bulleta, const QList<ServerPlayer 
 
     int card_id = bulleta->getRandomHandCardId();
     const Card *card = Sanguosha->getCard(card_id);
-    Card::Suit suit = room->askForSuit(target);
+    Card::Suit suit = room->askForSuit(target, objectName());
 
     LogMessage log;
     log.type = "#ChooseSuit";

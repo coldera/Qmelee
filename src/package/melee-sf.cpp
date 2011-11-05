@@ -1872,12 +1872,115 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------dan
+
+//----------------------------------------------------------------------------- Tiaoxin
+
+class TiaoxinOff: public TriggerSkill{
+public:
+    TiaoxinOff():TriggerSkill("#tiaoxin-off"){
+        frequency = Compulsory;
+        events << PhaseChange;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start || target->getMark("tiaoxin_on");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *source, QVariant &data) const{
+        Room *room = source->getRoom();
+        
+        if(source->getPhase() == Player::Start) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(source)){
+                int times = p->getMark("tiaoxin_on");
+                if(times==1) {
+                    p->loseMark("@card_forbid");
+                    if(!p->faceUp())
+                        p->turnOver();
+                }
+                
+                if(times>0) {
+                    int rest = times-1;                
+                    room->setPlayerMark(p, "tiaoxin_on", rest);
+                    
+                    if(rest>0) {
+                        LogMessage log;
+                        log.type = "#CountDown";
+                        log.from = p;
+                        log.arg = QString::number(rest);
+                        log.arg2 = "card_forbid";
+                        room->sendLog(log);
+                    }
+                }
+            } 
+        }
+        
+        return false;
+    }
+};
+
+class Tiaoxin: public PhaseChangeSkill{
+public:
+    Tiaoxin():PhaseChangeSkill("tiaoxin"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Finish && !target->getMark("@card_forbid");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *dan) const{
+        Room *room = dan->getRoom();
+        
+        if(room->askForSkillInvoke(dan, objectName())) {
+            
+            room->playSkillEffect(objectName());
+            
+            int x = room->getAllPlayers().length();
+            
+            dan->drawCards(x);
+            
+            if(dan->faceUp())
+                dan->turnOver();
+            dan->gainMark("@card_forbid");
+            room->setPlayerMark(dan, "tiaoxin_on", x-1);
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Wodao
+
+class Wodao: public PhaseChangeSkill{
+public:
+    Wodao():PhaseChangeSkill("wodao"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Discard && target->getMp()>=6;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *dan) const{
+        Room *room = dan->getRoom();
+        
+        if(room->askForSkillInvoke(dan, objectName())) {
+            
+            room->playSkillEffect(objectName());
+            
+            dan->updateMp(-6);
+            
+            dan->play();
+            
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -1965,6 +2068,12 @@ MeleeSFPackage::MeleeSFPackage()
     cammy = new General(this, "cammy", "kuang", 4, false);
     cammy->addSkill(new Jingzhun);
     cammy->addSkill(new Luoxuan);
+    
+    dan = new General(this, "dan", "qi");
+    dan->addSkill(new Tiaoxin);
+    dan->addSkill(new TiaoxinOff);
+    related_skills.insertMulti("tiaoxin", "#tiaoxin-off");
+    dan->addSkill(new Wodao);
 }
 
 ADD_PACKAGE(MeleeSF);
