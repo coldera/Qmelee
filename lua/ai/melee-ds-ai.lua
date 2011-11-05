@@ -770,7 +770,7 @@ local jiushu_skill={}
 jiushu_skill.name="jiushu"
 table.insert(sgs.ai_skills,jiushu_skill)
 jiushu_skill.getTurnUseCard=function(self)
-    if self.player:getMp()<20 then return end
+    if self.player:getMp()<26 then return end
     
     local all = self.room:getServerPlayers()
     for _, p in sgs.qlist(all) do

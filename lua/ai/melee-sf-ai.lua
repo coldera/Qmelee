@@ -400,7 +400,8 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     end
     if self:isFriend(target) then return "." end
     
-    if self.player:inMyAttackRange(target) or card:inherits("Cure") or card:inherits("Grab") or card:inherits("WoodElf") then
+    if (self.player:inMyAttackRange(target) and self:damageIsEffective("normal", target)) 
+    or card:inherits("Cure") or card:inherits("Grab") or card:inherits("WoodElf") then
         return ("@XuanfengCard=%d+%d->"):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
     end
     

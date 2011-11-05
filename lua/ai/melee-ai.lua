@@ -2704,6 +2704,7 @@ function SmartAI:askForCard(pattern, prompt, data)
             local to = data:toPlayer()
             local card_id = self:findEffectiveSlash(to)
             if card_id >= 0 then return "$"..card_id end
+            return "."
         --kongchan
         elseif (parsedPrompt[1] == "@kongchan-bang") then 
             local to = data:toPlayer()
@@ -2711,6 +2712,7 @@ function SmartAI:askForCard(pattern, prompt, data)
             
             local card_id = self:findEffectiveSlash(to)
             if card_id >= 0 then return "$"..card_id end
+            return "."
 		end
         return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then

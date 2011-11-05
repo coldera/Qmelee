@@ -2019,7 +2019,7 @@ JiushuCard::JiushuCard(){
 }
 
 void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *> &) const{
-    jedah->updateMp(-20);
+    jedah->updateMp(-26);
     
     ServerPlayer *dead = NULL;
     QStringList deadPlayersName;
@@ -2075,7 +2075,7 @@ public:
         QList<const Player *> players = jedah->parent()->findChildren<const Player *>();
         foreach(const Player *p, players){
             if(p->isDead())
-                return jedah->getMp()>=20;
+                return jedah->getMp()>=26;
         }
 
         return false;
@@ -2104,8 +2104,10 @@ bool QiyueCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void QiyueCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *> &targets) const{
     room->setPlayerFlag(targets.first(), "jiushu_qiyue");
-    if(!jedah->hasSkill("zhipei"))
+    if(!jedah->hasSkill("zhipei")) {
+        room->loseMaxHp(jedah);
         room->acquireSkill(jedah, "zhipei");
+    }
 }
 
 class QiyueViewAsSkill: public ZeroCardViewAsSkill{
