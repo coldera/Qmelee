@@ -1265,7 +1265,7 @@ public:
             }
         }
         
-        if(zangief->getCards("he").length()<2)
+        if(!zangief || zangief->getCards("he").length()<2)
             return false;
         
         CardUseStruct use = data.value<CardUseStruct>();   
@@ -2056,7 +2056,7 @@ public:
         }
         
         CardUseStruct use = data.value<CardUseStruct>();   
-        if(rose->getMp()>=2 && rose->getMark("caozonging")<=0 && !use.card->isVirtualCard() && !use.card->targetFixed()) {
+        if(rose && rose->getMp()>=2 && rose->getMark("caozonging")<=0 && !use.card->isVirtualCard() && !use.card->targetFixed()) {
             
             QVariant tohelp = QVariant::fromValue(use);
             if(room->askForSkillInvoke(rose, objectName(), tohelp)) {
