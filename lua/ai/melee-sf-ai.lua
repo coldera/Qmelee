@@ -659,7 +659,6 @@ end
 
 
 -- dan ---------------------------------------------------------------------------------
-
 sgs.ai_chaofeng["dan"] = 5
 
 -- tiaoxin
@@ -670,6 +669,76 @@ end
 
 -- wodao
 sgs.ai_skill_invoke.wodao = true
+
+
+-- rose ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["rose"] = 6
+
+sgs.caozong_target_is_friend = false
+-- caozong
+sgs.ai_skill_invoke.caozong = function(self, data)
+    local use = data:toCardUse()
+    
+    if self:isFriend(use.from) then return false end
+       
+    if use.card:inherits("Slash") then
+        for _,p in ipairs(self.enemies) do
+            if use.from:canSlash(p) then
+                return true
+            end
+        end
+    elseif use.card:inherits("Cure") then
+        for _,p in ipairs(self.friends) do
+            if use.from:distanceTo(p)<=1 and p:isWounded() then
+                sgs.caozong_target_is_friend = true
+                return true
+            end
+        end
+    elseif use.card:inherits("Grab") and self.player:getMp()>2 then
+        for _,p in ipairs(self.enemies) do
+            if use.from:distanceTo(p)<=1 and not p:isNude() then
+                return true
+            end
+        end
+    elseif use.card:inherits("SoulChain") and self.player:getMp()>2 then
+        for _,p in ipairs(self.enemies) do
+            if not p:isChained() then
+                return true
+            end
+        end
+    else
+        return self.player:getMp()>6
+    end
+    
+end
+
+sgs.ai_skill_playerchosen.caozong = function (self, targets)
+    for _, p in sgs.qlist(targets) do
+        if sgs.caozong_target_is_friend and self:isFriend(p) then
+            return p
+        elseif not sgs.caozong_target_is_friend and not self:isFriend(p) then
+            return p
+        end
+    end
+end
+
+-- xinling
+local xinling_skill={}
+xinling_skill.name="xinling"
+table.insert(sgs.ai_skills,xinling_skill)
+
+xinling_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("XinlingCard") or self.player:isWounded() or self.player:getMp()>5 then return end
+    return sgs.Card_Parse("@XinlingCard=.")
+end
+
+sgs.ai_skill_use_func["XinlingCard"]=function(card,use,self)
+    use.card = card
+end
+
+
+
+
 
 
 
