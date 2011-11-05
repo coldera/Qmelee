@@ -64,9 +64,6 @@ class IceBang: public NatureSlash{
 
 public:
     Q_INVOKABLE IceBang(Card::Suit suit, int number);
-    // virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-    
-    // static TriggerSkill *Skill;
 };
 
 

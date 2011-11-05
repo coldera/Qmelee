@@ -468,6 +468,10 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
     bool distance_limit = true;
 
+    if(Self->hasSkill("yuelun") && this->objectName() == "ice_bang") {
+        distance_limit = false;
+    }
+
     if(targets.length() >= slash_targets)
         return false;
 

@@ -1007,32 +1007,17 @@ public:
 
 //----------------------------------------------------------------------------- Yuelun
 
-class Yuelun: public TriggerSkill{
+class Yuelun: public GameStartSkill{
 public:
-    Yuelun():TriggerSkill("yuelun"){
-        events << CardUsed << CardFinished;
+    Yuelun():GameStartSkill("yuelun"){
         frequency = Compulsory;
     }
-    
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::Play && target->hasSkill("yuelun");
-    }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *suija, QVariant &data) const{
-        Room *room = suija->getRoom();
-    
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();            
-            if(use.card->inherits("IceBang")) {
-                room->setPlayerMark(suija, "no_distance_limit", 1);
-            }
-            
-        }else if(event == CardFinished) {
-            room->setPlayerMark(suija, "no_distance_limit", 0);
-        }
-
+    virtual bool triggerable(const ServerPlayer *genjuro) const{
         return false;
     }
+
+    virtual void onGameStart(ServerPlayer *suija) const{}
 };
 
 //----------------------------------------------------------------------------- Siyue

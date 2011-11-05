@@ -273,53 +273,12 @@ void PoisonBang::use(Room *room, ServerPlayer *player, const QList<ServerPlayer 
 
 //----------------------------------------------------------IceBang
 
-// class IceBangSkill: public TriggerSkill{
-// public:
-    // IceBangSkill():TriggerSkill("ice_bang"){
-        // frequency = Compulsory;
-        // events << Damage << SlashMissed << AskForPeachesDone;
-    // }
-    
-    // virtual bool triggerable(const ServerPlayer *target) const{
-        // return target->hasSkill(objectName()) || target->getMark("@frozen");
-    // }
-
-    // virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        
-        // if(event == Damage) {
-            // DamageStruct damage = data.value<DamageStruct>();
-            // if(damage.to->getHp()<= 0) {
-                // damage.to->gainMark("@frozen");
-            // }
-            
-        // }else if(event == AskForPeachesDone && player->getMark("@frozen")) {
-            // player->loseMark("@frozen");
-        // }
-        
-        // if(player->hasSkill(objectName())) {           
-            // player->getRoom()->detachSkillFromPlayer(player, objectName());
-        // }
-
-        // return false;
-    // }
-// };
-
 IceBang::IceBang(Suit suit, int number)
     :NatureSlash(suit, number, DamageStruct::Ice)
 {
     setObjectName("ice_bang");
     nature = DamageStruct::Ice;
 }
-
-// TriggerSkill *IceBang::Skill = new IceBangSkill;
-
-// void IceBang::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &targets) const{
-    // if(player->getPhase() == Player::Play) {    
-        // room->getThread()->addTriggerSkill(this->Skill);        
-        // room->attachSkillToPlayer(player, objectName());
-    // }
-    // NatureSlash::use(room, player, targets);
-// }
 
 //----------------------------------------------------------Dodge
 
