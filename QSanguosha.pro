@@ -36,6 +36,7 @@ SOURCES += src/main.cpp \
 	src/dialog/playercarddialog.cpp \
 	src/dialog/roleassigndialog.cpp \
 	src/dialog/scenario-overview.cpp \
+	src/dialog/gameinfomation.cpp \
 	src/dialog/halldialog.cpp \
 	src/package/standard.cpp \
 	src/package/meleecard.cpp \
@@ -96,6 +97,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/playercarddialog.h \
 	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
+	src/dialog/gameinfomation.h \
 	src/package/package.h \
 	src/package/standard.h \
 	src/package/meleecard.h \

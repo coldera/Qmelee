@@ -7,6 +7,7 @@
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
 #include "scenario-overview.h"
+#include "gameinfomation.h"
 #include "window.h"
 #include "halldialog.h"
 
@@ -73,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             //<< ui->actionScenario_Overview modify by ce
+            << ui->actionGame_Infomation
             << ui->actionAbout
             << ui->actionAcknowledgement;
 
@@ -494,6 +496,11 @@ void MainWindow::on_actionRole_assign_table_triggered()
 void MainWindow::on_actionScenario_Overview_triggered()
 {
     ScenarioOverview *dialog = new ScenarioOverview(this);
+    dialog->show();
+}
+
+void MainWindow::on_actionGame_Infomation_triggered() {
+    GameInfomation *dialog = new GameInfomation(this);
     dialog->show();
 }
 

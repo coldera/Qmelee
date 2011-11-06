@@ -472,7 +472,12 @@
         <translation>无效的登录字符串</translation>
     </message>
     <message>
-        <location filename="src/client/client.cpp" line="1084"/>
+        <location filename="src/client/client.cpp" line="1073"/>
+        <source>Your level is not enough</source>
+        <translation>你的等级不够</translation>
+    </message>
+    <message>
+        <location filename="src/client/client.cpp" line="1075"/>
         <source>Unknown warning: %1</source>
         <translation>未知警告: %1</translation>
     </message>
@@ -1691,6 +1696,11 @@
         <translation>剧情一览</translation>
     </message>
     <message>
+        <location filename="src/dialog/mainwindow.ui" line="260"/>
+        <source>Game infomation</source>
+        <translation>游戏说明</translation>
+    </message>
+    <message>
         <location filename="src/dialog/mainwindow.ui" line="273"/>
         <source>Script editor</source>
         <translation>脚本编辑器</translation>
@@ -2786,6 +2796,14 @@
         <location filename="src/dialog/scenario-overview.cpp" line="14"/>
         <source>Scenario overview</source>
         <translation>剧情一览</translation>
+    </message>
+</context>
+<context>
+    <name>GameInfomation</name>
+    <message>
+        <location filename="src/dialog/gameinfomation.cpp" line="14"/>
+        <source>Game infomation</source>
+        <translation>游戏说明</translation>
     </message>
 </context>
 <context>

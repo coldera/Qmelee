@@ -1911,12 +1911,10 @@ public:
         Room *room = source->getRoom();
         
         if(source->getPhase() == Player::Start) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(source)){
+            foreach(ServerPlayer *p, room->getAllPlayers()){
                 int times = p->getMark("tiaoxin_on");
                 if(times==1) {
                     p->loseMark("@card_forbid");
-                    if(!p->faceUp())
-                        p->turnOver();
                 }
                 
                 if(times>0) {
@@ -1957,11 +1955,9 @@ public:
             int x = room->getAllPlayers().length();
             
             dan->drawCards(x);
-            
-            if(dan->faceUp())
-                dan->turnOver();
+
             dan->gainMark("@card_forbid");
-            //because this skill invokes in finish phase so +1
+            //because it invokes on phase finish so +1
             room->setPlayerMark(dan, "tiaoxin_on", x-1+1);
         }
         

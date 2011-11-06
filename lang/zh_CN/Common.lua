@@ -29,7 +29,6 @@ return {
 	["cheat"] = "作弊", 
 	["yes"] = "是", 
 	["no"] = "否", 
-    
 
 	["#Murder"] = "%to [%arg] 挂了，凶手是 %from", 
 	["#Suicide"] = "%to [%arg] 自杀身亡", 
@@ -59,8 +58,8 @@ return {
 	["thunder_nature"] = "雷属性", 
 	["#Contingency"] = "%to [%arg] 挂了，死于天灾", 
 	["#DelayedTrick"] = "%from 的延时战术牌<b style='color:yellow'>【%arg】</b>开始判定", 
-	["#SkillNullify"] = "%from 的技能<b style='color:yellow'>【%arg】</b>被触发，<b>【%arg2】</b>对其无效", 
-	["#ArmorNullify"] = "%from 的防具<b style='color:yellow'>【%arg】</b>技能被触发，<b>【%arg2】</b>对其无效", 
+	["#SkillNullify"] = "%from 的技能<b style='color:yellow'>【%arg】</b>被触发，<b>%arg2</b> 对其无效", 
+	["#ArmorNullify"] = "%from 的防具<b style='color:yellow'>【%arg】</b>技能被触发，<b>%arg2</b> 对其无效", 
 	["#DrawNCards"] = "%from 摸了 %arg 张牌", 
 	["#MoveNCards"] = "%to 从 %from 处得到 %arg 张牌", 
 	["$TakeAG"] = "%from 拿走了 %card", 

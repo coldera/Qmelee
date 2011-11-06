@@ -985,6 +985,7 @@ public:
 class Yanzhilingyu: public TriggerSkill{
 public:
     Yanzhilingyu():TriggerSkill("yanzhilingyu$"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -2253,6 +2254,7 @@ public:
 class Sizhilingyu: public TriggerSkill{
 public:
     Sizhilingyu():TriggerSkill("sizhilingyu$"){
+        can_forbid = false;
         events << Death;
     }
     
@@ -2380,12 +2382,10 @@ public:
         Room *room = source->getRoom();
         
         if(event == PhaseChange && source->getPhase() == Player::Start) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(source)){
+            foreach(ServerPlayer *p, room->getAllPlayers()){
                 int times = p->getMark("zhicai_on");
                 if(times==1) {
                     p->loseMark("@card_forbid");
-                    if(!p->faceUp())
-                        p->turnOver();
                 }
                 
                 if(times>0) {
@@ -2404,8 +2404,6 @@ public:
             } 
         }else if(event == Damaged && source->getMark("zhicai_on")) {
             source->loseMark("@card_forbid");
-            if(!source->faceUp())
-                source->turnOver();
             room->setPlayerMark(source, "zhicai_on", 0);
             
             LogMessage log;
@@ -2439,7 +2437,6 @@ void ZhicaiCard::use(Room *room, ServerPlayer *anakaris, const QList<ServerPlaye
     
     anakaris->updateMp(-18);
     
-    target->turnOver();
     target->gainMark("@card_forbid");
     room->setPlayerMark(target, "zhicai_on", room->getAllPlayers().length()*3);
     
@@ -2597,12 +2594,11 @@ public:
     virtual bool onPhaseChange(ServerPlayer *bishamon) const{
         Room *room = bishamon->getRoom(); 
         
-        foreach(ServerPlayer *p, room->getOtherPlayers(bishamon)){
+        foreach(ServerPlayer *p, room->getAllPlayers()){
             if(p->getMark("guiyan_on")) {
                 room->setPlayerMark(p, "guiyan_on", 0);
                 p->loseMark("@card_forbid");
-                if(!p->faceUp())
-                    p->turnOver();
+
                 break;
             }
         }        
@@ -2642,7 +2638,6 @@ void GuiyanCard::use(Room *room, ServerPlayer *bishamon, const QList<ServerPlaye
     room->judge(judge);
     
     if(judge.isBad()) {    
-        target->turnOver();
         target->gainMark("@card_forbid");
         room->setPlayerMark(target, "guiyan_on", 1);
     }else {

@@ -1747,11 +1747,12 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.slash->isBlack()){
+        
             LogMessage log;
-            log.type = "#ArmorNullify";
+            log.type = "$KingShieldNullify";
             log.from = player;
-            log.arg = objectName();
-            log.arg2 = effect.slash->objectName();
+            log.to << effect.to;
+            log.card_str = effect.slash->toString();
             player->getRoom()->sendLog(log);
 
             return true;
@@ -1856,6 +1857,7 @@ public:
         if(damage.nature != DamageStruct::Normal) {
             LogMessage log;
             log.from = player;
+            log.to << damage.to;
             log.type = "#HolyWingNullify";
             player->getRoom()->sendLog(log);
             
@@ -1872,6 +1874,12 @@ HolyWing::HolyWing(Suit suit, int number):Armor(suit, number){
 }
 
 void HolyWing::onInstall(ServerPlayer *player) const{
+    
+    LogMessage log;
+    log.type = "#HolyWingCost";
+    log.from = player;
+    player->getRoom()->sendLog(log);
+    
     player->getRoom()->loseHp(player,1);
     EquipCard::onInstall(player);    
 }

@@ -41,6 +41,7 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
+    <addaction name="actionGame_Infomation"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
@@ -264,6 +265,11 @@
    </property>
   </action>
   -->
+  <action name="actionGame_Infomation">
+   <property name="text">
+    <string>Game infomation</string>
+   </property>
+  </action>
   <action name="actionAbout_irrKlang">
    <property name="text">
     <string>About irrKlang</string>

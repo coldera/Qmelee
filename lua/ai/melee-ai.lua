@@ -2696,11 +2696,12 @@ function SmartAI:askForCard(pattern, prompt, data)
 			self:speak("collateral", self.player:getGeneral():isFemale())
 			return "."
 		elseif (parsedPrompt[1] == "duel-slash") then
-			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0 and not self.player:hasSkill("buqu"))) then 
+			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0 )) then 
 				return self:getCardId("Slash")
 			else return "." end
         --bailie
         elseif (parsedPrompt[1] == "@bailie-slash") then 
+            self.room:writeToConsole("bailie-slash")
             local to = data:toPlayer()
             local card_id = self:findEffectiveSlash(to)
             if card_id >= 0 then return "$"..card_id end

@@ -30,6 +30,11 @@ int GameRule::getPriority() const{
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
+    
+    if(player->getMark("@card_forbid") 
+    && (player->getPhase()==Player::Draw || player->getPhase()==Player::Play || player->getPhase()==Player::Discard ))
+        return;
+    
     switch(player->getPhase()){
     case Player::Start: {
             player->setMark("SlashCount", 0);
@@ -205,10 +210,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case TurnStart:{
             player = room->getCurrent();
             
-            //modify by ce
-            if(player->getMark("@card_forbid"))
-                break;
-            else if(!player->faceUp())
+            if(!player->faceUp())
                 player->turnOver();
             else if(player->isAlive())
                 player->play();

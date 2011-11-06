@@ -1511,7 +1511,7 @@ public:
                 LogMessage log;
                 log.type = "#DamageNullify";
                 log.to << damage.to;
-                log.arg = objectName();
+                log.arg = "dianguang";
                 room->sendLog(log);   
 
                 return true;

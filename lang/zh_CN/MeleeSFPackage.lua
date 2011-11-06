@@ -168,7 +168,7 @@ return {
     ["dan"] = "火引弹",
     ["~dan"] = "你们都不要我的签名啦...",
     ["tiaoxin"] = "挑衅",
-    [":tiaoxin"] = "回合结束阶段，你可以摸X张牌，进入【封牌】状态（角色面朝下且不能使用或打出任何牌）X-1回合，X为场上存活角色数",
+    [":tiaoxin"] = "回合结束阶段，你可以摸X张牌，进入【封牌】状态X-1回合，X为场上存活角色数",
     ["$tiaoxin"] = "被我吓到了吧，敢来吗",
     ["wodao"] = "我道",
     [":wodao"] = "弃牌阶段，你可以消耗6点气，开始一个新的回合",
@@ -187,6 +187,6 @@ return {
     [":xinling"] = "出牌阶段，你可以失去1点体力，增加3点灵，每回合限用一次",
     ["$xinling"] = "我需要更多的灵力",
     ["#AnshiEffect"] = "%from <b style='color:yellow'>【暗示】</b>技能发动，%arg2 在暗示中选择了 %arg 效果需要选择的牌",
-    ["$CaozongEffect"] = "%from 发动<b style='color:yellow'>【操纵】</b>技能，%card 的目标变为 %to",
+    ["$CaozongEffect"] = "%from 发动<b style='color:yellow'>【操纵】</b>技能，<b>%card</b> 的目标变为 %to",
     
 }
