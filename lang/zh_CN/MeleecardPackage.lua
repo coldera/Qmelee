@@ -2,8 +2,11 @@
 
 local t = {
     ["#SystemLog"] = "系统日志：目标：%from；信息：%arg",
-    ["$SystemLog"] = "系统日志----使用者：%from；牌：%card",
-    ["#Probability"] = "概率事件----目标：%from；事件： %arg ；概率值：%arg2",
+    ["$SystemLog"] = "系统日志：使用者：%from；牌：%card",
+    ["#Probability"] = "<span style='color:#CCCCCC'>………………………………</span><br />\
+    %arg 效果将在机率计算结果小于 %arg2 发动",
+    ["#ProbabilityResult"] = "<b style='color:#FF0066'>机率计算：</b>[目标 %from] [事件 %arg] [结果 %arg2]<br />\
+    <span style='color:#CCCCCC'>………………………………</span>",
 
     ["meleecard"] = "乱斗卡牌",
     ["relic"] = "上古遗物",
@@ -18,17 +21,17 @@ local t = {
 	["@kuang"] = "狂暴", 
 	["@yuan"] = "怨念", 
 
-    ["#DamagePunish"] = "===== <b style='color:#FF0066'>属性惩罚判定：</b>结果 %arg 将受到惩罚 =====",    
-    ["#PunishNu"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--气脉逆行</b>\
-    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>怒型</b> 角色受到 <b style='color:#FF0066'>气属性</b> 惩罚：减少1点怒 ）</span>",
-    ["#PunishQi"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--毒气攻心</b>\
-    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>气型</b> 角色受到 <b style='color:#FF0066'>毒属性</b> 惩罚：失去1点体力 ）</span>",
-    ["#PunishLing"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--感同身受</b>\
-    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>灵型</b> 角色受到 <b style='color:#FF0066'>雷属性</b> 惩罚：失去防具和坐骑 ）</span>",
-    ["#PunishKuang"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--走火入魔</b>\
-    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>狂型</b> 角色受到 <b style='color:#FF0066'>冰属性</b> 惩罚：失去1张手牌 ）</span>",
-    ["#PunishYuan"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--天火焚身</b>\
-    <span style='color:#CCCCCC'>（ <b style='color:#FF0066'>怨型</b> 角色受到 <b style='color:#FF0066'>火属性</b> 惩罚：失去1点体力 ）</span>",
+    ["#DamagePunish"] = "<b style='color:#FF0066'>属性惩罚判定：</b>结果 %arg 将受到惩罚：",    
+    ["#PunishNu"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--气脉逆行</b><br />\
+    <span style='color:#CCCCCC'>（<b style='color:#FF0066'>怒型</b> 角色受到 <b style='color:#FF0066'>气属性</b> 惩罚：减少1点怒）</span>",
+    ["#PunishQi"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--毒气攻心</b><br />\
+    <span style='color:#CCCCCC'>（<b style='color:#FF0066'>气型</b> 角色受到 <b style='color:#FF0066'>毒属性</b> 惩罚：失去1点体力）</span>",
+    ["#PunishLing"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--感同身受</b><br />\
+    <span style='color:#CCCCCC'>（<b style='color:#FF0066'>灵型</b> 角色受到 <b style='color:#FF0066'>雷属性</b> 惩罚：失去防具和坐骑）</span>",
+    ["#PunishKuang"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--走火入魔</b><br />\
+    <span style='color:#CCCCCC'>（<b style='color:#FF0066'>狂型</b> 角色受到 <b style='color:#FF0066'>冰属性</b> 惩罚：失去1张手牌）</span>",
+    ["#PunishYuan"] = "%from <b style='color:#CCCCCC'>受到属性惩罚--天火焚身</b><br />\
+    <span style='color:#CCCCCC'>（<b style='color:#FF0066'>怨型</b> 角色受到 <b style='color:#FF0066'>火属性</b> 惩罚：失去1点体力）</span>",
     
     ["normal_nature"] = "[无属性]",
     ["fire_nature"] = "[火属性]",
@@ -69,21 +72,25 @@ local t = {
 	["slash-jink"] = "%src 使用了【杀】，请打出一张【闪】", 
 	["fire_bang"] = "火杀", 
 	[":fire_bang"] = "出牌阶段，对攻击范围内的任一角色使用，目标角色受到1点火属性伤害。若造成火属性伤害且目标角色没有装备防具，弃该角色1张手牌。", 
-    ["$FireBangEffect"] = "%to 的 %card 被<b>【火杀】</b>的效果破坏了 ",
+    ["$FireBangEffect"] = "%to 没有防具，将受到<b>【火杀】</b>影响：失去1张手牌<br />\
+    <b style='color:yellow'>【火杀--燃】</b>效果发动，%to 的 %card 被破坏了 ",
     ["thunder_bang"] = "雷杀", 
 	[":thunder_bang"] = "出牌阶段，对攻击范围内的任一角色使用，目标角色受到1点雷属性伤害。若造成雷属性伤害且目标角色有装备武器，进行判定。若判定牌为黑桃，弃掉装备的武器。", 
-    ["$ThunderBangEffect"] = "%to 的 %card 被<b>【雷杀】</b>的效果破坏了 ", 
+    ["#ThunderBangJudge"] = "%to 有装备武器，判定结果为 %arg  则受<b>【雷杀】</b>效果影响：失去武器",
+    ["$ThunderBangEffect"] = "<b style='color:yellow'>【雷杀--震】</b>效果发动，%to 的 %card 被破坏了",
 	["air_bang"] = "气杀", 
 	[":air_bang"] = "出牌阶段，对攻击范围内的任一角色使用，目标角色受到1点气属性伤害。若造成气属性伤害且目标角色装备防具，目标角色选择弃掉防具或再减少1点体力。", 
-    ["$AirBangEffect"] = "%to 的 %card 被<b>【气杀】</b>的效果破坏了 ", 
+    ["#AirBangChoice"] = "%to 有装备防具，受<b>【气杀】</b>效果影响：选择失去防具或失去1点体力", 
+    ["$AirBangEffect"] = "<b style='color:yellow'>【气杀--破】</b>效果发动，%to 的 %card 被破坏了 ", 
     ["AirEffectHp"] = "失去1点体力", 
     ["AirEffectArmor"] = "失去防具", 
 	["poison_bang"] = "毒杀", 
 	[":poison_bang"] = "出牌阶段，对你攻击范围内任一其他角色使用，目标角色受到1点毒属性伤害。若造成毒属性伤害，目标角色进行判定，为梅花则再减少1点体力。", 
-	["$PoisonBangEffect"] = "<b>【毒杀】</b>效果发动",
+	["#PoisonBangJudge"] = "%to 被<b>【毒杀】</b>击中，判定结果为 %arg  则受<b>【毒杀】</b>效果影响：失去1点体力",
+	["$PoisonBangEffect"] = "<b style='color:yellow'>【毒杀--蚀】</b>效果发动，%to 受到影响",
     ["ice_bang"] = "冰杀", 
 	[":ice_bang"] = "出牌阶段，对攻击范围内的任一角色使用，目标角色受到1点冰属性伤害。若造成冰属性伤害且目标角色进入濒死状态时，其他角色不能用【圣水】救回。", 
-    ["#DyingByIce"] = "<b>【冰杀】</b>的效果被触发，只能 %to 自救", 
+    ["#DyingByIce"] = "<b style='color:yellow'>【冰杀--困】</b>效果发动，只能 %to 自救", 
     ["dodge"] = "闪", 
     [":dodge"] = "任何时候，你可以打出用来抵销对你使用的一张【杀】的效果", 
     ["holy_water"] = "圣水", 

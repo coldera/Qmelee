@@ -193,18 +193,24 @@ void Room::detachSpecialSkill(ServerPlayer *player) {
 
 
 //modify by ce
-int Room::testRandomEvent(ServerPlayer *player, const QString &object_name) {
+bool Room::testRandomEvent(ServerPlayer *player, const QString &object_name, int expect) {
+    
+    LogMessage log;
+    log.type = "#Probability";
+    log.arg = object_name;
+    log.arg2 = QString::number(expect);
+    sendLog(log); 
+    
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
     int random = qrand()%100;
 
-    LogMessage log;
-    log.type = "#Probability";
+    log.type = "#ProbabilityResult";
     log.from = player;
     log.arg = object_name;
     log.arg2 = QString::number(random);
     sendLog(log); 
     
-    return random;
+    return random < expect;
 }
 
 void Room::output(const QString &message){

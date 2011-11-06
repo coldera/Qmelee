@@ -677,7 +677,7 @@ public:
     QList<ServerPlayer *> getServerPlayers() const;
     void allSkillForbid(ServerPlayer *player);
     void allSkillRelease(ServerPlayer *player);
-    int testRandomEvent(ServerPlayer *player, const QString &object_name);
+    bool testRandomEvent(ServerPlayer *player, const QString &object_name, int expect);
     
     void killPlayer(ServerPlayer *victim, DamageStruct *killer = NULL);
 	void revivePlayer(ServerPlayer *player);

@@ -1000,9 +1000,7 @@ public:
         
         Room *room = player->getRoom();
         
-        int random = room->testRandomEvent(player, objectName());
-        
-        if(random<20) {
+        if(room->testRandomEvent(player, objectName(), 20)) {
             DamageStruct damage = data.value<DamageStruct>();
             
             if(damage.nature != DamageStruct::Fire) {
@@ -1220,8 +1218,7 @@ public:
             
             room->setPlayerFlag(leilei, "-anqi_using");
 
-            int random = room->testRandomEvent(leilei, "anqi");
-            if(random<50) {
+            if(room->testRandomEvent(leilei, "anqi", 50)) {
                 room->slashResult(effect, NULL);
                 return true;
             }
@@ -2270,9 +2267,8 @@ public:
         ServerPlayer *killer = damage ? damage->from : NULL;
 
         if(killer){
-            int random = room->testRandomEvent(killer, objectName());
             
-            if(random<80) {
+            if(room->testRandomEvent(killer, objectName(), 80)) {
                 
                 LogMessage log;
                 log.type = "#Sizhilingyu";

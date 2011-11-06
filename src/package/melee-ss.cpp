@@ -1172,9 +1172,7 @@ public:
             
             kazuki->updateMp(-1);
             
-            int random = room->testRandomEvent(damage.from, "yanmie_bao");
-            
-            if(random<20) {
+            if(room->testRandomEvent(damage.from, "yanmie_bao", 20)) {
                 // room->getThread()->delay();
                 int card_id = room->askForCardChosen(kazuki, damage.to, "he", "yanmie_bao");       
 
@@ -2056,9 +2054,7 @@ public:
         
         Room *room = hanzo->getRoom();
         
-        int random = room->testRandomEvent(hanzo, objectName());
-        
-        if(random<50) {
+        if(room->testRandomEvent(hanzo, objectName(), 50)) {
             LogMessage log;
             log.type = "$Yingwu";
             log.from = hanzo;

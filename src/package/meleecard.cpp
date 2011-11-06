@@ -93,6 +93,13 @@ public:
                 const EquipCard *card = damage.to->getEquip(0);
                 
                 if(card) {
+                    
+                    LogMessage log;
+                    log.type = "#ThunderBangJudge";
+                    log.to << damage.to;
+                    log.arg = "spade";
+                    room->sendLog(log);
+                    
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*):(spade):(.*)");
                     judge.good = false;
@@ -161,12 +168,18 @@ public:
                 const EquipCard *card = damage.to->getEquip(1);
                 
                 if(card) {
+                    Room *room = damage.to->getRoom();
+
+                    LogMessage log;
+                    log.type = "#AirBangChoice";
+                    log.to << damage.to;
+                    room->sendLog(log);
+                
                     static QStringList choices;
                     if(choices.isEmpty()) {
                         choices << "AirEffectHp" << "AirEffectArmor"; 
                     }                    
-                    
-                    Room *room = damage.to->getRoom();
+                                        
                     QString choice = room->askForChoice(damage.to, objectName(), choices.join("+"));
                     
                     if(choice =="AirEffectHp") {
@@ -229,7 +242,9 @@ public:
                 Room *room = damage.to->getRoom();
                 
                 LogMessage log;
-                log.type = "$PoisonBangEffect";
+                log.type = "#PoisonBangJudge";
+                log.to << damage.to;
+                log.arg = "club";
                 room->sendLog(log);                
 
                 JudgeStruct judge;
@@ -241,6 +256,12 @@ public:
                 room->judge(judge);
 
                 if(judge.isBad()){
+                    
+                    LogMessage log;
+                    log.type = "$PoisonBangEffect";
+                    log.to << damage.to;
+                    room->sendLog(log);  
+                    
                     room->loseHp(damage.to,1);
                     // room->setEmotion(damage.to, "bad");
                 }
