@@ -1954,9 +1954,9 @@ public:
             
             int x = room->getAllPlayers().length();
             
-            x = x>4 ? x+1 : x-1;
-            
             dan->drawCards(x);
+            
+            x = x>4 ? x+1 : x-1;
 
             dan->gainMark("@card_forbid");
             //because it invokes on phase finish so +1
