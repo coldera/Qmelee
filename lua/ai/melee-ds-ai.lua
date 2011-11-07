@@ -686,56 +686,6 @@ sgs.ai_skill_use_func["AnitaCard"]=function(card,use,self)
     use.card = card
 end
 
- -- anita_anwei
-sgs.ai_skill_use["@@card_to_anita"]=function(self,prompt)    
-    if self.player:getMark("@anita")<=0 then return "." end
-
-    local card_str = nil
-    local can_give = false
-    local first_card, second_card
-        
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-    self:sortByUseValue(cards, true)
-    
-   for _,hcard in ipairs(cards) do
-        if hcard:inherits("Dodge") or hcard:inherits("HolyWater") then
-            if can_give then
-                first_card = hcard
-                break
-            else        
-                can_give = true
-            end
-        end
-    end
-    
-    if not first_card and self.player:getHandcardNum()>self.player:getHp() then
-        first_card = cards[1]
-    end
-    
-    if first_card and self.player:getHandcardNum()>self.player:getHp() then
-        if cards[1] == first_card then
-            second_card = cards[2]
-        else 
-            second_card = cards[1]
-        end        
-    end
-    
-    if first_card then
-        card_str = "@AnitaAnweiCard="..first_card:getEffectiveId()
-        
-        if second_card then
-            card_str = card_str.."+"..second_card:getEffectiveId()
-        end
-    end
-    
-    if card_str then
-        return card_str.."->."
-    end
-    
-    return "."
-end
-
 sgs.ai_skill_invoke.anita_anwei = function(self, data) 
     if self.player:getMark("@anita")>0 and self.player:getMp()>0 and (self.player:getHp()==1 or self.player:getHandcardNum()<2 or self.player:hasFlag("leishen_on")) then
         return true

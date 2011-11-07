@@ -185,7 +185,7 @@ return {
     ["$anita_xisheng"] = "我不要你死去~~~",
     ["attack_anita"] = "请选择攻击的对象",
     ["anita_dodge"] = "弃1张防御牌抵销对安妮塔的伤害",
-    ["@card_to_anita"] = "选择至多2张手牌给安妮塔",
+    ["@card_to_anita"] = "选择1张手牌给安妮塔，【闪】和【圣水】是安妮塔的防御牌",
     ["@card_to_donovan"] = "是否要取回安妮塔的所有牌",
     ["anita_card"] = "安妮塔的牌",
     ["anitaanwei"] = "安慰",

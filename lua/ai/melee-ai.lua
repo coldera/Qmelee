@@ -2670,6 +2670,38 @@ function SmartAI:askForCard(pattern, prompt, data)
         
         return "."
         
+    --anita_anwei
+    elseif parsedPrompt[1] == "@card_to_anita" then
+        if self.player:getMark("@anita")<=0 or self.player:getHandcardNum()<=0 then return "." end
+
+        local card_str = nil
+        local can_give = false
+        local card_to_anita
+            
+        local cards = self.player:getHandcards()
+        cards = sgs.QList2Table(cards)
+        self:sortByUseValue(cards, true)
+        
+       for _,hcard in ipairs(cards) do
+            if hcard:inherits("Dodge") or hcard:inherits("HolyWater") then
+                if can_give then
+                    card_to_anita = hcard
+                    break
+                else        
+                    can_give = true
+                end
+            end
+        end
+        
+        if not card_to_anita and self.player:getHandcardNum()>self.player:getHp() then
+            card_to_anita = cards[1]
+        end
+        
+        if card_to_anita then
+            return "$"..card_to_anita:getEffectiveId()
+        end
+        
+        return "."
     end
 	
 	-- aoe

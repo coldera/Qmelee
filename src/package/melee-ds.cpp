@@ -1841,49 +1841,9 @@ public:
 
 //-----------------------------------------------------------------------------AnitaAnwei
 
-AnitaAnweiCard::AnitaAnweiCard(){
-    target_fixed = true;
-}
-
-void AnitaAnweiCard::use(Room *room, ServerPlayer *donovan, const QList<ServerPlayer *> &) const{
-    foreach(int card_id, getSubcards()){
-        donovan->addToPile("anita_card", card_id, false);
-    }    
-}
-
-class AnitaAnweiViewAsSkill: public ViewAsSkill{
-public:
-    AnitaAnweiViewAsSkill():ViewAsSkill("anita_anwei"){
-        can_forbid = false;
-    }
-    
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@card_to_anita";
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return !to_select->isEquipped() && selected.length()<2;
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.isEmpty() || cards.length()>2)
-            return NULL;
-
-        AnitaAnweiCard *card = new AnitaAnweiCard;
-        card->addSubcards(cards);
-        // card->setSkillName(objectName());
-        return card;
-    }
-};
-
 class AnitaAnwei: public TriggerSkill{
 public:
     AnitaAnwei():TriggerSkill("anita_anwei"){
-        view_as_skill = new AnitaAnweiViewAsSkill;
         can_forbid = false;
         events << PhaseChange;
     }
@@ -1893,22 +1853,32 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *donovan, QVariant &data) const{
+        Room *room = donovan->getRoom();
+    
         if(donovan->getPhase() == Player::Start) {
             if(donovan->getMp()>0 && !donovan->getPile("anita_card").isEmpty()) {
-                if(donovan->getRoom()->askForSkillInvoke(donovan, objectName())) {
-                    donovan->getRoom()->playSkillEffect(objectName(), 2);
+                if(room->askForSkillInvoke(donovan, objectName())) {
+                    room->playSkillEffect(objectName(), 2);
                 
                     donovan->updateMp(-1);
                 
                     const QList<int> anita_cards = donovan->getPile("anita_card");
                     foreach(int card_id, anita_cards){
-                        donovan->getRoom()->moveCardTo(Sanguosha->getCard(card_id), donovan, Player::Hand, false);
+                        room->moveCardTo(Sanguosha->getCard(card_id), donovan, Player::Hand, false);
                     }
                 }
             } 
-        }else if(donovan->getPhase() == Player::Discard) {
-            if(donovan->getRoom()->askForUseCard(donovan, "@@card_to_anita", "@card_to_anita")) {
-                donovan->getRoom()->playSkillEffect(objectName(), 1);
+        }else if(donovan->getPhase() == Player::Discard && donovan->getHandcardNum()) {
+            const Card *first_card = room->askForCard(donovan, ".touse", "@card_to_anita", data);
+            if(first_card) {
+                donovan->addToPile("anita_card", first_card->getEffectiveId(), false);
+                
+                if(donovan->getHandcardNum()) {
+                    const Card *second_card = room->askForCard(donovan, ".touse", "@card_to_anita", data);
+                    if(second_card) {
+                        donovan->addToPile("anita_card", second_card->getEffectiveId(), false);
+                    }
+                }
             }
         }
 
@@ -3025,7 +2995,6 @@ MeleeDSPackage::MeleeDSPackage()
     skills << new AnitaAnwei << new AnitaXisheng;
     
     addMetaObject<AnitaCard>();
-    addMetaObject<AnitaAnweiCard>();
     
     jedah = new General(this, "jedah$", "yuan", 5);
     jedah->addSkill(new Jiushu);
