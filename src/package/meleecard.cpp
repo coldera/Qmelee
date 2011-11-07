@@ -481,7 +481,7 @@ void Roar::onEffect(const CardEffectStruct &effect) const{
         return;
     }
     
-    if(effect.to->getMark("@flood_dragon")) {   
+    if(effect.to->hasSkill("flood_dragon")) {   
         LogMessage log;
         log.type = "$FloodDragonEffect";
         log.from = effect.to;
@@ -595,7 +595,7 @@ PoisonMarish::PoisonMarish(Suit suit, int number)
 void PoisonMarish::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     
-    if(effect.to->getMark("@flood_dragon")) {
+    if(effect.to->hasSkill("flood_dragon")) {
         LogMessage log;
         log.type = "$FloodDragonEffect";
         log.from = effect.to;
@@ -1012,7 +1012,7 @@ bool SoulAwe::targetFilter(const QList<const Player *> &targets, const Player *t
     if(to_select == Self)
         return false;
         
-    if(to_select->getMark("@flood_dragon"))
+    if(to_select->hasSkill("flood_dragon"))
         return false;
 
     return true;
@@ -2345,16 +2345,12 @@ FloodDragon::FloodDragon(Suit suit, int number, int correct)
 void FloodDragon::onInstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
     
-    player->gainMark("@flood_dragon");
-
     if(skill)
         room->acquireSkill(player, skill->objectName());
 }
 
 void FloodDragon::onUninstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
-    
-    player->loseMark("@flood_dragon");
     
     if(skill)
         room->detachSkillFromPlayer(player, skill->objectName());
@@ -2851,7 +2847,7 @@ void Shtm::onUninstall(ServerPlayer *player) const{
 class HorseSkill: public DistanceSkill{
 public:
     HorseSkill():DistanceSkill("horse"){
-
+        can_forbid = false;
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
@@ -2925,11 +2921,8 @@ private:
 class PAPattern: public CardPattern{
 public:
     virtual bool match(const Player *player, const Card *card) const{
-        // return ! player->hasEquip(card) &&
-                // (card->objectName() == "peach" || card->objectName() == "analeptic");
-        // modify by ce
         return ! player->hasEquip(card) &&
-                (card->objectName() == "holy_water" || card->objectName() == "schnapps");
+            (card->objectName() == "holy_water" || card->objectName() == "schnapps");
     }
 };
 

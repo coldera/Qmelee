@@ -316,6 +316,7 @@ DistanceSkill::DistanceSkill(const QString &name)
 WeaponSkill::WeaponSkill(const QString &name)
     :TriggerSkill(name)
 {
+    can_forbid = false;
 }
 
 bool WeaponSkill::triggerable(const ServerPlayer *target) const{
@@ -326,6 +327,7 @@ bool WeaponSkill::triggerable(const ServerPlayer *target) const{
 RelicSkill::RelicSkill(const QString &name)
     :TriggerSkill(name)
 {
+    can_forbid = false;
 }
 
 bool RelicSkill::triggerable(const ServerPlayer *target) const{
@@ -335,7 +337,7 @@ bool RelicSkill::triggerable(const ServerPlayer *target) const{
 ArmorSkill::ArmorSkill(const QString &name)
     :TriggerSkill(name)
 {
-
+    can_forbid = false;
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
