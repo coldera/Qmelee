@@ -54,7 +54,7 @@ sgs.ai_skill_use["@@longjuan"]=function(self,prompt)
     local target = nil
     local slash = self:getCardId("Slash")
     
-	self:sort(self.enemies,"defense")    
+	self:sort(self.enemies,"defense")
     for _,enemy in ipairs(self.enemies) do
         if self.player:distanceTo(enemy) <= self.player:getAttackRange()+1 then
             if target then
@@ -671,9 +671,8 @@ end
 -- wodao
 sgs.ai_skill_invoke.wodao = true
 
-
 -- rose ---------------------------------------------------------------------------------
-sgs.ai_chaofeng["rose"] = 6
+sgs.ai_chaofeng["rose"] = 5
 
 sgs.caozong_target_is_friend = false
 -- caozong
@@ -737,9 +736,67 @@ sgs.ai_skill_use_func["XinlingCard"]=function(card,use,self)
     use.card = card
 end
 
+-- gen ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["gen"] = 6
 
+-- jiliu
+local jiliu_skill={}
+jiliu_skill.name="jiliu"
+table.insert(sgs.ai_skills,jiliu_skill)
 
+jiliu_skill.getTurnUseCard=function(self)
+    if self.player:getMp()<15 then return end
+    return sgs.Card_Parse("@JiliuCard=.")
+end
 
+sgs.ai_skill_use_func["JiliuCard"]=function(card,use,self)
+    use.card = card
+end
 
+sgs.ai_skill_playerchosen.jiliu = function (self, targets)
+    self:sort(self.enemies,"hp")    
+    return self.enemies[1]
+end
+
+sgs.ai_skill_invoke["#jiliu-on"] = function(self, data)
+    local mark = 0
+    
+    for _,enemy in ipairs(self.enemies) do
+        if enemy:getMark("jiliu") >= enemy:getHp() then return true end
+        mark = mark + enemy:getMark("jiliu")
+    end
+   
+   return self.player:getHp()==1 or mark>2 
+end
+
+-- sangliu
+local sangliu_skill={}
+sangliu_skill.name="sangliu"
+table.insert(sgs.ai_skills,sangliu_skill)
+
+sangliu_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("SangliuCard") then return end
+    
+    for _,enemy in ipairs(self.enemies) do
+        if enemy:getMark("@card_forbid")<=0 and enemy:getMark("sangliu_start")<=0 then
+            return sgs.Card_Parse("@SangliuCard=.")
+        end
+    end
+    
+end
+
+sgs.ai_skill_use_func["SangliuCard"]=function(card,use,self)
+    self:sort(self.enemies,"hp")    
+    for _,enemy in ipairs(self.enemies) do
+        if enemy:getMark("@card_forbid")<=0 and enemy:getMark("sangliu_start")<=0 then
+            use.card = card
+            if use.to then
+                use.to:append(enemy)
+            end
+            return
+        end
+    end
+
+end
 
 

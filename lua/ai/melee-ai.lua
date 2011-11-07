@@ -2403,6 +2403,7 @@ sgs.ai_skill_choice = {
         local dead
         local all = self.room:getServerPlayers()
 		for _, p in sgs.qlist(all) do
+            sgs.showFriendDebug = true;
 			if p:isDead() and self:isFriend(p) then
                 return p:getGeneralName()
             end
@@ -2629,7 +2630,8 @@ function SmartAI:askForCard(pattern, prompt, data)
     --shtm
     if parsedPrompt[1] == "revive-rite-handcard" then 
         local dead = data:toPlayer()
-        if self:isFriend(dead) then self.room:writeToConsole(self.player:getGeneralName().."is friend with"..dead:getGeneralName()) end
+        sgs.showFriendDebug = true;
+        if self:isFriend(dead) then self.room:writeToConsole(self.player:getGeneralName().." is friend with "..dead:getGeneralName()) end
         if dead and self:isFriend(dead) and self.player:getHandcardNum()>2 then
             local hcards = self.player:getHandcards()
             hcards=sgs.QList2Table(hcards)

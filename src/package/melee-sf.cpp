@@ -1954,11 +1954,13 @@ public:
             
             int x = room->getAllPlayers().length();
             
+            x = x>4 ? x+1 : x-1;
+            
             dan->drawCards(x);
 
             dan->gainMark("@card_forbid");
             //because it invokes on phase finish so +1
-            room->setPlayerMark(dan, "tiaoxin_on", x-1+1);
+            room->setPlayerMark(dan, "tiaoxin_on", x+1);
         }
         
         return false;
@@ -2146,12 +2148,306 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------gen
+
+//----------------------------------------------------------------------------- Sidou
+
+class SidouOff: public TriggerSkill{
+public:
+    SidouOff():TriggerSkill("#sidou-off"){
+        frequency = Compulsory;
+        events << PhaseChange;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Finish;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *source, QVariant &data) const{
+        Room *room = source->getRoom();
+        
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            if(p->getMark("sidou_on")) {
+                room->setPlayerMark(p, "sidou_on", 0);
+                p->loseMark("@invincible");
+                break;
+            }
+        } 
+        
+        return false;
+    }
+};
+
+class Sidou: public TriggerSkill{
+public:
+    Sidou():TriggerSkill("sidou"){
+        events << Damaged;
+        frequency = Compulsory;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *gen, QVariant &data) const{
+    
+        Room *room = gen->getRoom();
+        
+        LogMessage log;
+        log.type = "#Sidou";
+        log.from = gen;
+        room->sendLog(log);
+        
+        room->playSkillEffect(objectName());
+        
+        if(gen->getHandcardNum() < gen->getMaxHP()) {
+            gen->drawCards(gen->getMaxHP()-gen->getHandcardNum());
+        }
+        
+        gen->gainMark("@invincible");
+        room->setPlayerMark(gen, "sidou_on", 1);
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Jiliu
+
+class JiliuOn: public PhaseChangeSkill{
+public:
+    JiliuOn():PhaseChangeSkill("#jiliu-on"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        if(PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Start) {    
+            foreach(ServerPlayer *p, target->getRoom()->getAllPlayers()) {
+                if(p->getMark("jiliu")) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *gen) const{
+        Room *room = gen->getRoom();
+        
+        if(room->askForSkillInvoke(gen, objectName())) {
+        
+            LogMessage log;
+            log.type = "#JiliuEffect";
+            log.from = gen;
+            room->sendLog(log);
+            
+            room->playSkillEffect("jiliu");
+            
+            foreach(ServerPlayer *p, room->getOtherPlayers(gen)) {
+                int num = p->getMark("jiliu");
+                
+                if(num) {
+                    room->setPlayerMark(p, "jiliu", 0);
+                    room->loseHp(p, num);
+                }
+            }
+            
+        }
+        
+        return false;
+    }
+};
+
+JiliuCard::JiliuCard(){
+    mute = true;
+    target_fixed = true;
+}
+
+void JiliuCard::use(Room *room, ServerPlayer *gen, const QList<ServerPlayer *> &) const{
+
+    ServerPlayer *target = room->askForPlayerChosen(gen, room->getOtherPlayers(gen), objectName());
+    
+    if(target) {
+        gen->updateMp(-15);
+        
+        LogMessage log;
+        log.type = "#JiliuSet";
+        log.from = gen;
+        room->sendLog(log);
+        
+        target->addMark("jiliu");
+    }
+}
+
+class Jiliu: public ZeroCardViewAsSkill{
+public:
+    Jiliu():ZeroCardViewAsSkill("jiliu"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp()>=15;
+    }
+    
+    virtual const Card *viewAs() const{
+        JiliuCard *card = new JiliuCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Sangliu
+
+class SangliuOff: public PhaseChangeSkill{
+public:
+    SangliuOff():PhaseChangeSkill("#sangliu-off"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom(); 
+        
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            int times = p->getMark("sangliu_on");
+            if(times==1) {
+                p->loseMark("@card_forbid");
+            }
+            
+            if(times>0) {
+                int rest = times-1;                
+                room->setPlayerMark(p, "sangliu_on", rest);
+                
+                if(rest>0) {
+                    LogMessage log;
+                    log.type = "#CountDown";
+                    log.from = p;
+                    log.arg = QString::number(rest);
+                    log.arg2 = "card_forbid";
+                    room->sendLog(log);
+                }
+            }
+        }        
+       
+        return false;
+    }
+};
+
+class SangliuResult: public TriggerSkill{
+public:
+    SangliuResult():TriggerSkill("#sangliu-result"){
+        frequency = Compulsory;
+        events << Damage << PhaseChange;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start || target->getMark("sangliu_start");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *source, QVariant &data) const{
+        Room *room = source->getRoom();
+        
+        if(event == PhaseChange && source->getPhase() == Player::Start) {
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                int times = p->getMark("sangliu_start");
+                if(times==1) {
+                    
+                    LogMessage log;
+                    log.type = "#SangliuOn";
+                    log.from = p;
+                    room->sendLog(log);
+                
+                    p->gainMark("@card_forbid");
+                    room->setPlayerMark(p, "sangliu_on", room->getAllPlayers().length());
+                }
+                
+                if(times>0) {
+                    int rest = times-1;                
+                    room->setPlayerMark(p, "sangliu_start", rest);
+                    
+                    if(rest>0) {
+                        LogMessage log;
+                        log.type = "#SangliuCounter";
+                        log.from = p;
+                        log.arg = QString::number(rest);
+                        log.arg2 = "card_forbid";
+                        room->sendLog(log);
+                    }
+                }
+            } 
+        }else if(event == Damage && source->getMark("sangliu_start")) {
+        
+            DamageStruct damage = data.value<DamageStruct>();
+            QString gen_name = room->getTag("SangliuSource").toString();
+            
+            if(damage.to->objectName() == gen_name) {
+                room->setPlayerMark(source, "sangliu_start", 0);
+                
+                LogMessage log;
+                log.type = "#SangliuRemove";
+                log.from = source;
+                log.to << damage.to;
+                room->sendLog(log);
+            }
+        }
+        
+        return false;
+    }
+};
+
+SangliuCard::SangliuCard(){
+    once = true;
+}
+
+bool SangliuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(to_select->getMark("sangliu_start") || to_select->getMark("@card_forbid"))
+        return false;
+
+    return true;
+}
+
+void SangliuCard::onEffect(const CardEffectStruct &effect) const {
+    ServerPlayer *gen = effect.from;
+    Room *room = gen->getRoom();
+    
+    int num = room->getAllPlayers().length()*2;
+    
+    room->setPlayerMark(effect.to, "sangliu_start", num);
+    
+    LogMessage log;
+    log.type = "#SangliuStart";
+    log.from = gen;
+    log.to << effect.to;
+    log.arg = QString::number(num);
+    room->sendLog(log);
+    
+    room->setTag("SangliuSource", gen->objectName());
+}
+
+class Sangliu: public ZeroCardViewAsSkill{
+public:
+    Sangliu():ZeroCardViewAsSkill("sangliu"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{       
+        return !player->hasUsed("SangliuCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        SangliuCard *card = new SangliuCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose, *gen;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -2256,6 +2552,22 @@ MeleeSFPackage::MeleeSFPackage()
     rose->addSkill(new Xinling);
     
     addMetaObject<XinlingCard>();
+    
+    gen = new General(this, "gen", "yuan", 3);
+    gen->addSkill(new Sidou);
+    gen->addSkill(new SidouOff);
+    related_skills.insertMulti("sidou", "#sidou-off");
+    gen->addSkill(new Jiliu);
+    gen->addSkill(new JiliuOn);
+    related_skills.insertMulti("jiliu", "#jiliu-on");
+    gen->addSkill(new Sangliu);
+    gen->addSkill(new SangliuResult);
+    gen->addSkill(new SangliuOff);
+    related_skills.insertMulti("sangliu", "#sangliu-result");
+    related_skills.insertMulti("sangliu", "#sangliu-off");
+    
+    addMetaObject<JiliuCard>();
+    addMetaObject<SangliuCard>();
 }
 
 ADD_PACKAGE(MeleeSF);

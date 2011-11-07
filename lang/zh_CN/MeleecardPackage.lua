@@ -64,6 +64,8 @@ local t = {
     ["NoChoice"] = "什么也不选",
     ["#GetMark"] = "%from 得到了 %arg2 枚 %arg 标记", 
 	["#LoseMark"] = "%from 失去了 %arg2 枚 %arg 标记", 
+	["#MpUp"] = "<b style='color:yellow'>%from +%arg2%arg</b>", 
+	["#MpDown"] = "<b style='color:yellow'>%from -%arg2%arg</b>", 
     ["#AcquireSkill"] = "%from 获得了技能 <b style='color:yellow'>【%arg】</b>", 
     ["$Peek"] = "%from 翻开了 %card",
 

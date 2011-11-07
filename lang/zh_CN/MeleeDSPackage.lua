@@ -117,6 +117,7 @@ return {
     ["$tusha"] = "杀戮的快感",
     ["#YaogunEffect"] = "%to 受到<b style='color:yellow'>【摇滚】</b>效果的影响",
     ["#TushaEffect"] = "%from <b style='color:yellow'>【屠杀】</b>效果发动",
+    ["#YaogunFail"] = "<b style='color:#CCCCCC'>%from 怨念不足，发动<b style='color:yellow'>【摇滚】</b>失败</b>",
     
     -- 2011-10-04 +AI 迷失的灵魂
     ["lilith"] = "莉莉丝",

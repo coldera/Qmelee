@@ -406,6 +406,10 @@ bool ServerPlayer::hasNullification() const{
 
         return count >= n;
     }else{
+        //modify by ce
+        if(getMark("@card_forbid")) {
+            return false;
+        }
         foreach(const Card *card, handcards){
             if(card->objectName() == "unassailable")
                 return true;
@@ -521,9 +525,14 @@ void ServerPlayer::skip(Player::Phase phase){
 
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
+    
+    //modify by ce
+    QString log_type = "#GetMark";
+    if(mark == "@nu" || mark == "@qi" || mark == "@ling" || mark == "@kuang" || mark == "@yuan")
+        log_type = "#MpUp";
 
     LogMessage log;
-    log.type = "#GetMark";
+    log.type = log_type;
     log.from = this;
     log.arg = mark;
     log.arg2 = QString::number(n);
@@ -536,8 +545,13 @@ void ServerPlayer::gainMark(const QString &mark, int n){
 void ServerPlayer::loseMark(const QString &mark, int n){
     int value = getMark(mark) - n;
 
+    //modify by ce
+    QString log_type = "#LoseMark";
+    if(mark == "@nu" || mark == "@qi" || mark == "@ling" || mark == "@kuang" || mark == "@yuan")
+        log_type = "#MpDown";
+    
     LogMessage log;
-    log.type = "#LoseMark";
+    log.type = log_type;
     log.from = this;
     log.arg = mark;
     log.arg2 = QString::number(n);

@@ -491,6 +491,8 @@ void QuwuCard::use(Room *room, ServerPlayer *kyoshiro, const QList<ServerPlayer 
     
     const Card *show_card = NULL;
     
+    room->throwCard(this);
+    
     foreach(ServerPlayer *p, room->getOtherPlayers(kyoshiro)){
     
         QString suit_str = Sanguosha->getCard(getSubcards().first())->getSuitString();
@@ -500,20 +502,18 @@ void QuwuCard::use(Room *room, ServerPlayer *kyoshiro, const QList<ServerPlayer 
         show_card = room->askForCard(p, pattern, prompt);
         
         if(show_card){
-            LogMessage log;
-            log.type = "$QuwuCardShow";
-            log.from = p;
-            log.card_str = show_card->toString();
-            room->sendLog(log);
             
+            room->showCard(p, show_card->getEffectiveId());
+           
             kyoshiro->updateMp(1);
+
         }else if(p->getMp()){
             p->updateMp(-1);
         }
 
     }
     
-    room->throwCard(this);
+    
 }
 
 class Quwu: public OneCardViewAsSkill{

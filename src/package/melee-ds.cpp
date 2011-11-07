@@ -1027,13 +1027,29 @@ public:
 //----------------------------------------------------------------------------- Yaogun
 
 YaogunCard::YaogunCard(){
+    mute = true;
     target_fixed = true;
     once = true;
 }
 
 void YaogunCard::use(Room *room, ServerPlayer *zabal, const QList<ServerPlayer *> &) const{
-    int x = room->getAllPlayers().length();
-    zabal->updateMp(-qMax(x,4));
+    int x = qMax(room->getAllPlayers().length(), 4);
+    
+    if(x > zabal->getMp()) {
+        
+        LogMessage log;
+        log.type = "#YaogunFail";
+        log.from = zabal;
+        room->sendLog(log);
+        
+        return;
+        
+    }else {
+        
+        room->playSkillEffect("yaogun");
+        
+        zabal->updateMp(-x);
+    }
     
     foreach(ServerPlayer *p, room->getOtherPlayers(zabal)){
     
@@ -1065,10 +1081,7 @@ public:
     Yaogun():ZeroCardViewAsSkill("yaogun"){}
     
     virtual bool isEnabledAtPlay(const Player *zabal) const{
-        int x = Sanguosha->findChildren<const Player *>().length();
-        x = qMax(x,4);
-    
-        return !zabal->hasUsed("YaogunCard") && zabal->getMp()>=x;
+        return !zabal->hasUsed("YaogunCard") && zabal->getMp()>=4;
     }
     
     virtual const Card *viewAs() const{
