@@ -1025,14 +1025,10 @@ void SoulAwe::takeEffect(ServerPlayer *target) const{
 //----------------------------------------------------------Icebound
 
 Icebound::Icebound(Suit suit, int number)
-    :DelayedTrick(suit, number)
+    :DelayedTrick(suit, number, false, false)
 {
     setObjectName("icebound");
     target_fixed = false;
-
-    judge.pattern = QRegExp("(.*)");
-    judge.good = false;
-    judge.reason = objectName();
 }
 
 bool Icebound::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1889,6 +1885,7 @@ void HolyWing::onInstall(ServerPlayer *player) const{
 class QinglinHorseSkill: public TriggerSkill{
 public:
     QinglinHorseSkill():TriggerSkill("qinglin_horse"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -1948,6 +1945,7 @@ void QinglinHorse::onUninstall(ServerPlayer *player) const{
 class RhinocerosSkill: public TriggerSkill{
 public:
     RhinocerosSkill():TriggerSkill("rhinoceros"){
+        can_forbid = false;
         events << Predamage;
     }
     
@@ -2006,6 +2004,7 @@ void Rhinoceros::onUninstall(ServerPlayer *player) const{
 class LeopardSkill: public TriggerSkill{
 public:
     LeopardSkill():TriggerSkill("leopard"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -2065,6 +2064,7 @@ void Leopard::onUninstall(ServerPlayer *player) const{
 class FoxSkill: public TriggerSkill{
 public:
     FoxSkill():TriggerSkill("fox"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -2124,6 +2124,7 @@ void Fox::onUninstall(ServerPlayer *player) const{
 class XunleiBeastSkill: public TriggerSkill{
 public:
     XunleiBeastSkill():TriggerSkill("xunlei_beast"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -2183,6 +2184,7 @@ void XunleiBeast::onUninstall(ServerPlayer *player) const{
 class BoarSkill: public TriggerSkill{
 public:
     BoarSkill():TriggerSkill("boar"){
+        can_forbid = false;
         events << Damaged;
     }
     
@@ -2246,6 +2248,7 @@ void Boar::onUninstall(ServerPlayer *player) const{
 class TigerSkill: public TriggerSkill{
 public:
     TigerSkill():TriggerSkill("tiger"){
+        can_forbid = false;
         events << Predamaged;
     }
     
@@ -2305,8 +2308,8 @@ void Tiger::onUninstall(ServerPlayer *player) const{
 class FloodDragonSkill: public DrawCardsSkill{
 public:
     FloodDragonSkill():DrawCardsSkill("flood_dragon"){
+        can_forbid = false;
         frequency = Compulsory;
-        
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
@@ -2362,6 +2365,7 @@ class DeerSkill:public TriggerSkill{
 public:
     DeerSkill():TriggerSkill("deer"){
         frequency = Compulsory;
+        can_forbid = false;
         events <<PhaseChange << FinishJudge << CardAsked;
     }
 
@@ -2476,6 +2480,7 @@ void SpiderQueenSkillCard::use(Room *room, ServerPlayer *source, const QList<Ser
 class SpiderQueenVaskill:public ZeroCardViewAsSkill{
 public:
     SpiderQueenVaskill():ZeroCardViewAsSkill("spider_queen"){
+        can_forbid = false;
     }
     
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -2511,6 +2516,7 @@ void SpiderQueen::onUninstall(ServerPlayer *player) const{
 class CattleSkill: public TriggerSkill{
 public:
     CattleSkill():TriggerSkill("cattle"){
+        can_forbid = false;
         events << Predamaged;
     }
     

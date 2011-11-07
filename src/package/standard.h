@@ -114,7 +114,7 @@ class DelayedTrick:public TrickCard{
     Q_OBJECT
 
 public:
-    DelayedTrick(Suit suit, int number, bool movable = false);
+    DelayedTrick(Suit suit, int number, bool movable = false, bool need_judge = true);
     void onNullified(ServerPlayer *target) const;
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -126,9 +126,10 @@ public:
 
 protected:
     JudgeStruct judge;
-
+    
 private:
     bool movable;
+    bool need_judge;
 };
 
 class Disaster: public DelayedTrick{

@@ -199,8 +199,8 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<Server
     }
 }
 
-DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    :TrickCard(suit, number, true), movable(movable)
+DelayedTrick::DelayedTrick(Suit suit, int number, bool movable, bool need_judge)
+    :TrickCard(suit, number, true), movable(movable), need_judge(need_judge)
 {
 }
 
@@ -224,17 +224,26 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     log.type = "#DelayedTrick";
     log.arg = effect.card->objectName();
     room->sendLog(log);
-
-    JudgeStruct judge_struct = judge;
-    judge_struct.who = effect.to;
-    room->judge(judge_struct);
-
-    if(judge_struct.isBad()){
-        room->throwCard(this);
+    
+    //modify by ce
+    if(need_judge) {
+        JudgeStruct judge_struct = judge;
+        judge_struct.who = effect.to;
+        room->judge(judge_struct);
+        
+        if(judge_struct.isBad()){
+            room->throwCard(this);
+            takeEffect(effect.to);
+        }else if(movable){
+            onNullified(effect.to);
+        }
+    }else {
         takeEffect(effect.to);
-    }else if(movable){
-        onNullified(effect.to);
+        if(movable){
+            onNullified(effect.to);
+        }
     }
+
 }
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
