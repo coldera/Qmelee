@@ -81,7 +81,7 @@ end
 
 sgs.ai_skill_invoke["boar"] = function(self, data)
     local damage = data:toDamage()
-    return damage and not self:isFriend(damage.from)
+    return damage and damage.damage>0 and not self:isFriend(damage.from)
 end
 
 local snake_spear_skill={}

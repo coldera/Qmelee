@@ -298,7 +298,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             room->broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(-lose));
             
             //modify by ce add
-            if( player->getKingdom() == "nu") {
+            if( player->getKingdom() == "nu" && lose>0) {
                 player->updateMp(lose);
             }            
 
@@ -419,7 +419,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             room->applyDamage(player, damage);
             
             //modify by ce add
-            if( player->getKingdom() == "nu") {
+            if( player->getKingdom() == "nu" && damage.damage>0) {
                 player->updateMp(damage.damage);
             }            
             foreach(ServerPlayer *yuan, room->getAllPlayers()){

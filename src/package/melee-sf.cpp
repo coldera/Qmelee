@@ -1837,8 +1837,8 @@ public:
         Room *room = cammy->getRoom();
         
         bool canInvoke = cammy->distanceTo(effect.to) == cammy->getAttackRange();
-        QVariant tohelp = QVariant::fromValue((PlayerStar)effect.to);
         
+        QVariant tohelp = QVariant::fromValue(effect);
         if(canInvoke && cammy->getMp()>=2 && room->askForSkillInvoke(cammy, objectName(), tohelp)) {
             room->playSkillEffect(objectName());
         
@@ -2203,8 +2203,8 @@ public:
         if(gen->getHandcardNum() < gen->getMaxHP()) {
             gen->drawCards(gen->getMaxHP()-gen->getHandcardNum());
         }
-        
-        gen->gainMark("@invincible");
+        if(!gen->getMark("@invincible"))
+            gen->gainMark("@invincible");
         room->setPlayerMark(gen, "sidou_on", 1);
         
         return false;
@@ -2442,12 +2442,361 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------bison
+
+//----------------------------------------------------------------------------- Kuangniu
+
+class Kuangniu: public FilterSkill{
+public:
+    Kuangniu():FilterSkill("kuangniu"){}
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->inherits("TrickCard") && to_select->getCard()->isRed();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Bang *bang = new Bang(card->getSuit(), card->getNumber());
+        bang->addSubcard(card->getId());
+        bang->setSkillName(objectName());
+
+        return bang;
+    }
+};
+
+//----------------------------------------------------------------------------- Chongji
+
+class Chongji: public SlashBuffSkill{
+public:
+    Chongji():SlashBuffSkill("chongji"){
+        frequency = Compulsory;
+    }
+
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        effect.from->getRoom()->playSkillEffect(objectName());
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Shikong
+
+class Shikong: public PhaseChangeSkill{
+public:
+    Shikong():PhaseChangeSkill("shikong"){
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Finish;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *bison) const{
+        Room *room = bison->getRoom();
+        
+        if(bison->getSlashCount()==0 && !bison->hasUsed("PK")) {
+            
+            LogMessage log;
+            log.type = "#ShikongEffect",
+            log.from = bison;
+            room->sendLog(log);
+        
+            if(bison->getMp()>=4) {
+                room->playSkillEffect("shikong", 2);
+                
+                bison->updateMp(-4);
+            }else {
+                room->playSkillEffect("shikong", 1);
+                
+                room->loseHp(bison, 1);
+            }
+        }
+        
+        return false;
+    }
+};
+
+//--------------------------------------------------------------------------------------------------------------balrog
+
+//----------------------------------------------------------------------------- Wuxia
+
+class Wuxia:public OneCardViewAsSkill{
+public:
+    Wuxia():OneCardViewAsSkill("wuxia"){}
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        const Card *card = to_select->getFilteredCard();
+
+        if(ClientInstance->getStatus() == Client::Responsing) {
+        
+            QString pattern = ClientInstance->getPattern();
+        
+            if(pattern == "nullification")
+                return card->inherits("BasicCard");
+            else if(pattern == "jink")
+                return card->inherits("TrickCard");
+        }
+
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "jink" || pattern == "nullification";
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getFilteredCard();
+        if(card->inherits("TrickCard")){
+        
+            Dodge *jink = new Dodge(card->getSuit(), card->getNumber());
+            jink->addSubcard(card);
+            jink->setSkillName(objectName());
+            
+            return jink;
+            
+        }else if(card->inherits("BasicCard")){
+        
+            Unassailable *unassailable = new Unassailable(card->getSuit(), card->getNumber());
+            unassailable->addSubcard(card);
+            unassailable->setSkillName(objectName());
+            return unassailable;
+            
+        }else
+            return NULL;
+    }
+};
+
+//----------------------------------------------------------------------------- Tiemian
+
+class Tiemian: public TriggerSkill{
+public:
+    Tiemian():TriggerSkill("tiemian"){
+        events << CardLost;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMp()>=2 && target->getPhase() == Player::NotActive;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *balrog, QVariant &data) const{
+    
+        CardMoveStar move = data.value<CardMoveStar>();
+        const Card *card = Sanguosha->getCard(move->card_id);
+        
+        if(move->from_place == Player::Equip && card->inherits("Armor")){
+            Room *room = balrog->getRoom();
+            
+            if(room->askForSkillInvoke(balrog, objectName())) {
+                room->playSkillEffect(objectName());
+                
+                balrog->updateMp(-2);
+                
+                balrog->obtainCard(card);
+                
+                room->moveCardTo(card, balrog, Player::Equip, true);
+            }
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Kongsha
+
+class Kongsha: public TriggerSkill{
+public:
+    Kongsha():TriggerSkill("kongsha"){
+        events << Damage;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMp()>=2;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *balrog, QVariant &data) const{
+    
+        Room *room = balrog->getRoom();
+        DamageStruct damage = data.value<DamageStruct>();
+        
+        if(!damage.card)
+            return false;
+        
+        if(damage.to->isAlive() && damage.card->inherits("Slash")
+        && balrog->distanceTo(damage.to) < balrog->getAttackRange()
+        && room->askForSkillInvoke(balrog, objectName(), data)) {
+            
+            room->playSkillEffect(objectName());
+            
+            balrog->updateMp(-2);
+            
+            damage.to->turnOver();
+            
+        }
+        
+        return false;
+    }
+};
+
+//--------------------------------------------------------------------------------------------------------------sagat
+
+//----------------------------------------------------------------------------- Zengnu
+
+class ZengnuRyu: public GameStartSkill{
+public:
+    ZengnuRyu():GameStartSkill("#zengnu-ryu"){}
+
+    virtual bool triggerable(const ServerPlayer *sagat) const{
+        return GameStartSkill::triggerable(sagat) && sagat->getGeneralName() == "sagat";
+    }
+
+    virtual void onGameStart(ServerPlayer *sagat) const{
+        Room *room = sagat->getRoom();
+        foreach(ServerPlayer *p, room->getOtherPlayers(sagat)){
+            if(p->getGeneralName()== "ryu") {
+            
+                room->playSkillEffect("meet-ryu");
+                room->broadcastInvoke("skillInvoked", QString("%1:%2").arg(sagat->objectName()).arg("zengnu"));
+                
+                break;
+            }
+        }
+    }
+};
+
+ZengnuCard::ZengnuCard(){
+    target_fixed = true;
+}
+
+void ZengnuCard::use(Room *room, ServerPlayer *sagat, const QList<ServerPlayer *> &) const{
+    room->loseHp(sagat,1);
+    sagat->updateMp(1);
+}
+
+class Zengnu: public ZeroCardViewAsSkill{
+public:
+    Zengnu():ZeroCardViewAsSkill("zengnu"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("ZengnuCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        ZengnuCard *card = new ZengnuCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Huqie
+
+HuqieCard::HuqieCard(){}
+
+bool HuqieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(!Self->inMyAttackRange(to_select))
+        return false;
+
+    return true;
+}
+
+void HuqieCard::onEffect(const CardEffectStruct &effect) const {
+    ServerPlayer *sagat = effect.from;
+    Room *room = sagat->getRoom();
+    
+    int x = sagat->getMp();
+    int times = 0;
+    int y = 0;
+    
+    for(int i=0; i<x; i++) {
+        times++;
+        const Card *card = room->peek();
+        
+        LogMessage log;
+        log.type = "$Peek";
+        log.from = sagat;
+        log.card_str = card->toString();
+        room->sendLog(log);
+        
+        room->throwCard(card);
+        
+        if(card->isRed()){
+            y++;
+        }   
+    }
+    
+    sagat->updateMp(-x);
+    
+    room->broadcastInvoke("animate", "huqie");
+    
+    DamageStruct damageMaker;
+    damageMaker.card = this;
+    damageMaker.from = sagat;
+    damageMaker.to = effect.to;
+    damageMaker.damage = y;
+    damageMaker.nature = DamageStruct::Normal;
+    room->damage(damageMaker);
+    
+    if(y==0){
+        LogMessage log;
+        log.type = "#HuqieFail";
+        log.from = sagat;
+        log.to << effect.to;
+        room->sendLog(log);
+    }
+}
+
+class HuqieViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    HuqieViewAsSkill():ZeroCardViewAsSkill("huqie"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@huqie";
+    }
+    
+    virtual const Card *viewAs() const{
+        HuqieCard *card = new HuqieCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Huqie: public PhaseChangeSkill{
+public:
+    Huqie():PhaseChangeSkill("huqie"){
+        view_as_skill = new HuqieViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMp();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *sagat) const{
+        Room *room = sagat->getRoom();
+        
+        if(room->askForUseCard(sagat, "@@huqie", "@huqie")){
+            sagat->skip(Player::Play);
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose, *gen;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose, *gen, *bison, *balrog, *sagat;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -2568,6 +2917,25 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<JiliuCard>();
     addMetaObject<SangliuCard>();
+    
+    bison = new General(this, "bison", "kuang", 5);
+    bison->addSkill(new Kuangniu);
+    bison->addSkill(new Chongji);
+    bison->addSkill(new Shikong);
+    
+    balrog = new General(this, "balrog", "qi", 3);
+    balrog->addSkill(new Wuxia);
+    balrog->addSkill(new Tiemian);
+    balrog->addSkill(new Kongsha); 
+    
+    sagat = new General(this, "sagat", "nu");
+    sagat->addSkill(new Zengnu);
+    sagat->addSkill(new ZengnuRyu);
+    related_skills.insertMulti("zengnu", "#zengnu-ryu");
+    sagat->addSkill(new Huqie); 
+    
+    addMetaObject<ZengnuCard>();
+    addMetaObject<HuqieCard>();
 }
 
 ADD_PACKAGE(MeleeSF);

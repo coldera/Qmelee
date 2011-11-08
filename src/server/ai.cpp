@@ -263,25 +263,23 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
         QList<const Card *> cards = self->getHandcards();
 
         foreach(const Card *card, cards){
-            // if(card->objectName() == "nullification")
-                // return card;
             //modify by ce
             if(card->objectName() == "unassailable")
                 return card;
         }
         
-        //modify by ce del
-        // if(self->hasSkill("kanpo")){
-            // foreach(const Card *card, cards){
-                // if(card->isBlack()){
-                    // Nullification *ncard = new Nullification(card->getSuit(), card->getNumber());
-                    // ncard->addSubcard(card);
-                    // ncard->setSkillName("kanpo");
+        //modify by ce 
+        if(self->hasSkill("wuxia")){
+            foreach(const Card *card, cards){
+                if(card->inherits("BasicCard")){
+                    Unassailable *ncard = new Unassailable(card->getSuit(), card->getNumber());
+                    ncard->addSubcard(card);
+                    ncard->setSkillName("wuxia");
 
-                    // return ncard;
-                // }
-            // }
-        // }
+                    return ncard;
+                }
+            }
+        }
     }
 
     return NULL;

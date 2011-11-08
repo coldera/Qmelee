@@ -1,24 +1,24 @@
 sgs.ai_keep_value = {
-        HolyWater = 5,
-        Schnapps = 4.5,
-        Dodge = 4,
+    HolyWater = 5,
+    Schnapps = 4.5,
+    Dodge = 4,
 
-        Bang = 2,
-        ThunderBang = 2.5,
-        AirBang = 2.5,
-        FireBang = 2.6,
-        PoisonBang = 2.7,
-        IceBang = 2.8,
+    Bang = 2,
+    ThunderBang = 2.5,
+    AirBang = 2.5,
+    FireBang = 2.6,
+    PoisonBang = 2.7,
+    IceBang = 2.8,
 
-        Unassailable = 3.5,
-        NothingIsSomething=4.6,
-        Cure = 5,
-        
-        NvwaStone = 4.5,
-        Shtm = 4.5,
-        
-        ReadyToGo=-1,
-        Thunder=-1,
+    Unassailable = 3.5,
+    NothingIsSomething=4.6,
+    Cure = 5,
+    
+    NvwaStone = 4.5,
+    Shtm = 4.5,
+    
+    ReadyToGo=-1,
+    Thunder=-1,
 
 }
 

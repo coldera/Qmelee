@@ -209,7 +209,7 @@ end
 -- blanka ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["blanka"] = -4
 
-sgs.blank_keep_value = {
+sgs.blanka_keep_value = {
 	ThunderBang = 4,
 }
 
@@ -264,7 +264,7 @@ end
 -- dhalsim ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["dhalsim"] = 6
 
-sgs.dhaisim_keep_value = {
+sgs.dhalsim_keep_value = {
 	Weapon = 0,
     FireBang = 2,
 }
@@ -402,7 +402,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     
     if (self.player:inMyAttackRange(target) and self:damageIsEffective("normal", target)) 
     or card:inherits("Cure") or card:inherits("Grab") or card:inherits("WoodElf") then
-        return ("@XuanfengCard=%d+%d->"):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
+        return ("@XuanfengCard=%d+%d->."):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
     end
     
     return "."
@@ -574,7 +574,7 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
     
     local use_card
     for _, card in ipairs(cards) do
-        if card:getSuitString() == suit then
+        if card:getSuitString() == suit and self:getUseValue(card) >= self:getUseValue(ag_card) then
             use_card = card
             break
         end
@@ -637,9 +637,10 @@ sgs.ai_chaofeng["cammy"] = 2
 
 -- jingzhun
 sgs.ai_skill_invoke.jingzhun = function(self, data)
-    local target = data:toPlayer()
     
-    if self:isFriend(target) or target:getHandcardNum()==0 or not self:slashIsEffective(target) then return false end
+    local effect = data:toSlashEffect()
+    
+    if self:isFriend(effect.to) or effect.to:getHandcardNum()==0 or not self:slashIsEffective(effect.to) then return false end
     
     return true
     
@@ -739,6 +740,9 @@ end
 -- gen ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["gen"] = 6
 
+sgs.dynamic_value.damage_card["JiliuCard"] = true
+sgs.dynamic_value.control_card["SangliuCard"] = true
+
 -- jiliu
 local jiliu_skill={}
 jiliu_skill.name="jiliu"
@@ -799,4 +803,65 @@ sgs.ai_skill_use_func["SangliuCard"]=function(card,use,self)
 
 end
 
+-- bison ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["bison"] = 0
 
+-- balrog ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["balrog"] = 2
+
+sgs.balrog_keep_value = {
+    Unassailable = 1,
+    NothingIsSomething=6,
+    Cure = 6,
+    ReadyToGo=3,
+    Thunder=3,
+}
+
+-- tiemian
+sgs.ai_skill_invoke.tiemian = true
+
+-- kongsha
+sgs.ai_skill_invoke.kongsha = function(self, data)
+    local damage = data:toDamage()
+    
+    if self:isFriend(damage.to) and not damage.to:faceUp() then return true end    
+    if not self:isFriend(damage.to) and damage.to:faceUp() then return true end
+    
+    return false
+end
+
+-- sagat ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["sagat"] = 4
+
+sgs.dynamic_value.damage_card["HuqieCard"] = true
+
+-- zengnu
+local zengnu_skill={}
+zengnu_skill.name="zengnu"
+table.insert(sgs.ai_skills,zengnu_skill)
+
+zengnu_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("ZengnuCard") then return end
+    
+    if (self.player:getHp()>2 and self:getCardsNum("HolyWater")>0) or self.player:getHp()>3 then 
+        return sgs.Card_Parse("@ZengnuCard=.")
+    end
+end
+
+sgs.ai_skill_use_func["ZengnuCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- huqie
+sgs.ai_skill_use["@@huqie"]=function(self,prompt)
+    if self.player:getMp()<4 and self.player:getHp()>1 then return "." end
+    
+	self:sort(self.enemies,"defense")
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:inMyAttackRange(enemy) then
+            return "@HuqieCard=.->"..enemy:objectName()
+        end
+    end
+    
+    return "."    
+end

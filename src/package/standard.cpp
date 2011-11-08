@@ -477,7 +477,8 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
     bool distance_limit = true;
 
-    if(Self->hasSkill("yuelun") && this->objectName() == "ice_bang") {
+    if((Self->hasSkill("yuelun") && this->objectName() == "ice_bang")
+    || (Self->hasSkill("chongji") && this->getSuit() == Card::Heart)) {
         distance_limit = false;
     }
 

@@ -436,6 +436,7 @@ function SmartAI:objectiveLevel(player)
 		elseif not hasLoyal then
 			if player:getRole() == "lord" then return 5 
 			elseif player:getRole() == "renegade" then return 3.1
+            elseif player:getRole() == "loyalist" then return 2 -- the player is dead
 			else return -2
 			end
         elseif sgs.ai_explicit[player:objectName()]=="loyalist" then return 5-modifier
@@ -948,9 +949,14 @@ local function isCompulsoryView(card, class_name, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
+    
 	if class_name == "Slash" and card_place ~= sgs.Player_Equip then
-	    if player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id) end
-		if player:hasSkill("jiejiu") and card:inherits("Analeptic") then return ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id) end
+        if player:hasSkill("shoudao") and card:isRed() and card:inherits("Dodge") then 
+            return ("slash:shoudao[%s:%s]=%d"):format(suit, number, card_id)
+        end
+        if player:hasSkill("kuangniu") and card:isRed() and card:inherits("TrickCard") then 
+            return ("slash:kuangniu[%s:%s]=%d"):format(suit, number, card_id)
+        end
 	end	
 end
 
@@ -965,65 +971,20 @@ local function getSkillViewCard(card, class_name, player, card_place)
                 return ("fire_bang:huoshen[%s:%s]=%d"):format(suit, number, card_id)
             end
         end
+    elseif class_name == "Dodge" then
+        if player:hasSkill("wuxia") then
+            if card:inherits("TrickCard") and not card:inherits("Cure") and not card:inherits("NothingIsSomething") then
+                return ("dodge:wuxia[%s:%s]=%d"):format(suit, number, card_id)
+            end
+        end
+    elseif class_name == "Unassailable" then
+        if player:hasSkill("wuxia") then
+            if card:inherits("BasicCard") and not card:inherits("HolyWater") then
+                return ("unassailable:wuxia[%s:%s]=%d"):format(suit, number, card_id)
+            end
+        end
     end
-	-- if class_name == "Slash" then
-		-- if player:hasSkill("longhun") and player:getHp() <= 1 then
-			-- if card:getSuit() == sgs.Card_Diamond then
-				-- return ("slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end	
-		-- if card_place ~= sgs.Player_Equip then
-			-- if player:hasSkill("wusheng") then
-				-- if card:isRed() and not card:inherits("Peach") then
-					-- return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
-				-- end
-			-- end	
-			-- if player:hasSkill("longdan") and card:inherits("Jink") then
-				-- return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end
-	-- elseif class_name == "Jink" then
-		-- if player:hasSkill("longhun") and player:getHp() <= 1 then
-			-- if card:getSuit() == sgs.Card_Club then
-				-- return ("jink:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end	
-		-- if card_place ~= sgs.Player_Equip then
-			-- if player:hasSkill("longdan") and card:inherits("Slash") then
-				-- return ("jink:longdan[%s:%s]=%d"):format(suit, number, card_id)
-			-- elseif player:hasSkill("qingguo") and card:isBlack() then
-				-- return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end
-	-- elseif class_name == "Peach" then
-		-- if player:hasSkill("longhun") and player:getHp() <= 1 then
-			-- if card:getSuit() == sgs.Card_Heart then
-				-- return ("peach:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end	
-		-- if player:hasSkill("jijiu") and card:isRed() then 
-			-- return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
-		-- end
-	-- elseif class_name == "Analeptic" then
-		-- if card_place ~= sgs.Player_Equip then
-			-- if player:hasSkill("jiuchi") and card:getSuit() == sgs.Card_Spade then 
-				-- return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-			-- if player:hasSkill("jiushi") and player:faceUp() then 
-				-- player:turnOver()
-				-- return ("analeptic:jiushi[%s:%s]=%d"):format("no_suit", "0", -1)
-			-- end
-		-- end
-	-- elseif class_name == "Nullification" then
-		-- if card_place ~= sgs.Player_Equip then
-			-- if card:isBlack() and player:hasSkill("kanpo") then
-				-- return ("nullification:kanpo[%s:%s]=%d"):format(suit, number, card_id)
-			-- end
-		-- end
-		-- if card:getSuit() == sgs.Card_Spade and player:getHp() == 1 and player:hasSkill("longhun") then
-			-- return ("nullification:longhun[%s:%s]=%d"):format(suit, number, card_id)
-		-- end
- 	-- end
+
 end
 
 function SmartAI:searchForAnaleptic(use,enemy,slash)   
@@ -2738,6 +2699,7 @@ function SmartAI:askForCard(pattern, prompt, data)
             self.room:writeToConsole("bailie-slash")
             local to = data:toPlayer()
             local card_id = self:findEffectiveSlash(to)
+            self.room:writeToConsole(card_id)
             if card_id >= 0 then return "$"..card_id end
             return "."
         --kongchan
@@ -3246,13 +3208,6 @@ function SmartAI:canViewAs(card,class_name,player)
 end
 
 function SmartAI:isCompulsoryView(card,class_name,player)
-	player = player or self.player
-	local suit = card:getSuitString()
-	local number = card:getNumberString()
-	local card_id = card:getEffectiveId()
-end
-
-function SmartAI:getSkillViewCard(card,class_name,only_equip,player)
 	player = player or self.player
 	local suit = card:getSuitString()
 	local number = card:getNumberString()

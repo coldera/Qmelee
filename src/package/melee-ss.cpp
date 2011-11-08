@@ -881,6 +881,8 @@ public:
                 damage.to = victim;
                 room->killPlayer(victim, &damage);
                 
+                room->broadcastInvoke("animate", "zhansha");
+                
                 if(victim->getGeneralName() == "haohmaru") {
                     room->playSkillEffect("kill_haohmaru");
                 }else {

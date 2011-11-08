@@ -372,44 +372,21 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::hasNullification() const{
-    if(hasSkill("kanpo")){
-        foreach(const Card *card, handcards){
-            if(card->isBlack() || card->objectName() == "unassailable")
-                return true;
-        }
-    }else if(hasSkill("wushen")){
-        foreach(const Card *card, handcards){
-            if(card->objectName() == "unassailable" && card->getSuit() != Card::Heart)
-                return true;
-        }
-    }else if(hasSkill("guhuo")){
-        return !isKongcheng();
-    }else if(hasFlag("lexue")){
-        int card_id = getMark("lexue");
-        const Card *card = Sanguosha->getCard(card_id);
-        if(card->objectName() == "unassailable"){
-            foreach(const Card *c, handcards + getEquips()){
-                if(c->objectName() == "unassailable" || c->getSuit() == card->getSuit())
-                    return true;
-            }
-        }
-    }else if(hasSkill("longhun")){
-        int n = qMax(1, getHp());
-        int count = 0;
-        foreach(const Card *card, handcards + getEquips()){
-            if(card->objectName() == "unassailable")
-                return true;
 
-            if(card->getSuit() == Card::Spade)
-                count ++;
+    //modify by ce
+    if(getMark("@card_forbid")) {
+        return false;
+    }
+    
+    if(hasSkill("wuxia")) {
+    
+        foreach(const Card *card, handcards){
+            if(card->inherits("BasicCard") || card->objectName() == "unassailable")
+                return true;
         }
-
-        return count >= n;
+        
     }else{
-        //modify by ce
-        if(getMark("@card_forbid")) {
-            return false;
-        }
+
         foreach(const Card *card, handcards){
             if(card->objectName() == "unassailable")
                 return true;

@@ -187,4 +187,21 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class ZengnuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZengnuCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class HuqieCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HuqieCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // MELEESF_H
