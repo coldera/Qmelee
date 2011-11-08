@@ -2644,6 +2644,10 @@ class ZengnuRyu: public GameStartSkill{
 public:
     ZengnuRyu():GameStartSkill("#zengnu-ryu"){}
 
+    virtual int getPriority() const{
+        return -1;
+    }    
+
     virtual bool triggerable(const ServerPlayer *sagat) const{
         return GameStartSkill::triggerable(sagat) && sagat->getGeneralName() == "sagat";
     }
@@ -2652,9 +2656,13 @@ public:
         Room *room = sagat->getRoom();
         foreach(ServerPlayer *p, room->getOtherPlayers(sagat)){
             if(p->getGeneralName()== "ryu") {
-            
+
                 room->playSkillEffect("meet-ryu");
+                
                 room->broadcastInvoke("skillInvoked", QString("%1:%2").arg(sagat->objectName()).arg("zengnu"));
+                
+                room->loseHp(sagat,1);
+                sagat->updateMp(1);
                 
                 break;
             }
