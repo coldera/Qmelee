@@ -65,6 +65,7 @@ public:
     virtual void activate(CardUseStruct &card_use);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
 	virtual QString askForChoice(const char *skill_name, const char *choices);
+	virtual QString askForSuit(const char *reason);
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason);
 	virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason) ;
 	virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);

@@ -1838,8 +1838,7 @@ public:
         
         bool canInvoke = cammy->distanceTo(effect.to) == cammy->getAttackRange();
         
-        QVariant tohelp = QVariant::fromValue(effect);
-        if(canInvoke && cammy->getMp()>=2 && room->askForSkillInvoke(cammy, objectName(), tohelp)) {
+        if(canInvoke && cammy->getMp()>=2 && cammy->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
             room->playSkillEffect(objectName());
         
             cammy->updateMp(-2);
@@ -2799,12 +2798,217 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------vega
+
+//----------------------------------------------------------------------------- Cuimian
+
+class Cuimian: public PhaseChangeSkill{
+public:
+    Cuimian():PhaseChangeSkill("cuimian"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("cuimian") && target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        
+        ServerPlayer *vega = NULL;
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            if(p->hasSkill("cuimian") && p->getMp()) {
+                vega = p;
+                break;
+            }
+        }
+        
+        if(!vega)
+            return false;
+            
+        QVariant tohelp = QVariant::fromValue((PlayerStar)target);
+        if(room->askForSkillInvoke(vega, objectName(), tohelp)) {
+            room->playSkillEffect(objectName());
+            
+            vega->updateMp(-1);
+            
+            int x = vega->getMaxHP() - vega->getHp();
+            
+            QString prompt = QString("@cuimian-slash:%1").arg(vega->objectName());
+            const Card *slash = room->askForCard(target, "slash", prompt);
+            
+            QList<ServerPlayer *> players;
+            foreach(ServerPlayer *player, room->getOtherPlayers(target)) {
+                if(target->distanceTo(player) <= 1)
+                    players << player;
+            }
+            
+            if(slash && players.length()) {
+                
+                ServerPlayer *slash_target = room->askForPlayerChosen(target, players, objectName());
+                
+                LogMessage log;
+                log.type = "#CuimainSlash";
+                log.to << target;
+                room->sendLog(log);
+                
+                CardUseStruct use;
+                use.card = slash;
+                use.from = target;
+                use.to << slash_target;
+                room->useCard(use);
+                
+            }else {
+            
+                LogMessage log;
+                log.type = "#CuimainDiscard";
+                log.to << target;
+                room->sendLog(log);
+                
+                if(target->getHandcardNum() <= x) {
+                    target->throwAllHandCards();
+                }else if(x > 0){
+                    room->askForDiscard(target, "cuimain-discard:"+vega->objectName(), x, false, false);
+                }
+            }
+            
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Mofu
+
+class Mofu: public TriggerSkill{
+public:
+    Mofu():TriggerSkill("mofu"){
+        events << AskForPeaches;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMp()>1 && target->getHandcardNum();
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *vega, QVariant &data) const{
+        DyingStruct dying_data = data.value<DyingStruct>();
+        if(dying_data.who != vega)
+            return false;
+
+        Room *room = vega->getRoom();
+        if(vega->askForSkillInvoke(objectName(), data)){
+            
+            room->askForDiscard(vega, "mofu-discard", 1, false, false);
+        
+            room->playSkillEffect(objectName());            
+            room->broadcastInvoke("animate", "mofu:3000");
+            
+            int x = vega->getMp();            
+            vega->updateMp(-x);            
+            room->setPlayerProperty(vega, "hp", x/2);
+            
+        }
+
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Dianliu
+
+class Dianliu: public TriggerSkill{
+public:
+    Dianliu():TriggerSkill("dianliu"){
+        frequency = Compulsory;
+        events << Damage << Predamage;
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *vega, QVariant &data) const{
+    
+        Room *room = vega->getRoom();
+        DamageStruct damage = data.value<DamageStruct>();
+        
+        if(event == Damage && vega->getMp()<3) {
+            
+            LogMessage log;
+            log.type = "#DianliuEffect";
+            log.from = vega;
+            room->sendLog(log);
+            
+            room->playSkillEffect(objectName());
+        
+            vega->updateMp(1);
+        
+        }else if(event == Predamage) {
+        
+            if(damage.nature != DamageStruct::Thunder) {            
+
+                damage.nature = DamageStruct::Thunder;
+                data = QVariant::fromValue(damage);
+                
+                LogMessage log;
+                log.type = "#DamageToThunder";
+                log.to << damage.to;
+                log.arg = objectName();
+                room->sendLog(log);    
+            
+            }
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Mozhilingyu
+
+class Mozhilingyu: public PhaseChangeSkill{
+public:
+    Mozhilingyu():PhaseChangeSkill("mozhilingyu"){}
+    
+    virtual int getPriority() const{
+        return 3;
+    }    
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+
+        if(room->testRandomEvent(target, objectName(), 10)) {
+            
+            int mp=0;
+            
+            LogMessage log;
+            log.type = "#Mozhilingyu";
+            log.from = target;
+            room->sendLog(log);
+            
+            if(target->getKingdom() == "nu"){
+                mp = 1;
+            }else if(target->getKingdom() == "qi" || target->getKingdom() == "ling") {
+                mp = 2;
+            }else if(target->getKingdom() == "kuang") {
+                mp = 3;
+            }else if(target->getKingdom() == "yuan") {
+                mp = 8;
+            }
+            
+            target->updateMp(mp);
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSFPackage::MeleeSFPackage()
     :Package("meleesf")
 {
-    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose, *gen, *bison, *balrog, *sagat;
+    General *gouki, *ryu, *ken, *chunli, *blanka, *dhalsim, *honda, *zangief, *guile, *sakura, *cammy, *dan, *rose, *gen, *bison, *balrog, *sagat, *vega;
     
     gouki = new General(this, "gouki", "yuan");
     gouki->addSkill(new Shayi);
@@ -2944,8 +3148,12 @@ MeleeSFPackage::MeleeSFPackage()
     
     addMetaObject<ZengnuCard>();
     addMetaObject<HuqieCard>();
+    
+    vega = new General(this, "vega$", "ling", 3);
+    vega->addSkill(new Cuimian);
+    vega->addSkill(new Mofu);
+    vega->addSkill(new Dianliu); 
+    vega->addSkill(new Mozhilingyu); 
 }
 
 ADD_PACKAGE(MeleeSF);
-
-

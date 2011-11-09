@@ -3306,6 +3306,7 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["shenglong"] = &RoomScene::doSuperAnimation;
         map["dazhuang"] = &RoomScene::doSuperAnimation;
         map["huqie"] = &RoomScene::doSuperAnimation;
+        map["mofu"] = &RoomScene::doSuperAnimation;
     }
 
     AnimationFunc func = map.value(name, NULL);

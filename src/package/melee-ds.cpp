@@ -1936,7 +1936,7 @@ public:
             
             room->detachSkillFromPlayer(donovan, "anita");
             room->detachSkillFromPlayer(donovan, "anita_anwei");
-            room->detachSkillFromPlayer(donovan, "anita_xisheng");            
+            room->detachSkillFromPlayer(donovan, "anita_xisheng");
         }
 
         return false;

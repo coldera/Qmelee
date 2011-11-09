@@ -940,12 +940,26 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
 }
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value){
+    //modify by ce
+    bool is_mp = strcmp(property_name, "mp") == 0;
+    if(is_mp){
+        QVariant data = QVariant::fromValue(value.toInt()-player->getMp());
+        thread->trigger(MpChange, player, data);
+    }
+
     player->setProperty(property_name, value);
     broadcastProperty(player, property_name);
 
     if(strcmp(property_name, "hp") == 0){
         thread->trigger(HpChanged, player);
     }
+    
+    //modify by ce
+    if(is_mp){
+        thread->trigger(MpChanged, player);
+    }
+    
+    
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){

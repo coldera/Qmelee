@@ -726,7 +726,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const{
         return PhaseChangeSkill::triggerable(target)
             && target->getPhase() == Player::Draw
-            && target->getMp() >= 2
+            && target->getMp() >= 3
             && target->getHandcardNum();
     }
 

@@ -446,8 +446,10 @@ sgs.dynamic_value.damage_card["JiaodaoCard"] = true
 
 -- jiaodao
 sgs.ai_skill_use["@@jiaodao"]=function(self, prompt)
-
-	local cards = sgs.QList2Table(cards)
+    
+    local cards = self.player:getCards("h")
+    
+	cards = sgs.QList2Table(cards)
     self:sortByUseValue(cards, true)
     
     local first, second
@@ -638,9 +640,9 @@ sgs.ai_chaofeng["cammy"] = 2
 -- jingzhun
 sgs.ai_skill_invoke.jingzhun = function(self, data)
     
-    local effect = data:toSlashEffect()
+	local effect = data:toSlashEffect()
     
-    if self:isFriend(effect.to) or effect.to:getHandcardNum()==0 or not self:slashIsEffective(effect.to) then return false end
+    if self:isFriend(effect.to) or effect.to:getHandcardNum()==0 then return false end
     
     return true
     
@@ -758,7 +760,7 @@ sgs.ai_skill_use_func["JiliuCard"]=function(card,use,self)
 end
 
 sgs.ai_skill_playerchosen.jiliu = function (self, targets)
-    self:sort(self.enemies,"hp")    
+    self:sort(self.enemies,"hp")
     return self.enemies[1]
 end
 
@@ -852,6 +854,7 @@ sgs.ai_skill_use_func["ZengnuCard"]=function(card,use,self)
     use.card = card
 end
 
+
 -- huqie
 sgs.ai_skill_use["@@huqie"]=function(self,prompt)
     if self.player:getMp()<4 and self.player:getHp()>1 then return "." end
@@ -865,3 +868,39 @@ sgs.ai_skill_use["@@huqie"]=function(self,prompt)
     
     return "."    
 end
+
+-- vega ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["vega"] = -4
+
+-- cuimian
+sgs.ai_skill_invoke.cuimian = function(self, data)
+    local who = data:toPlayer()
+    
+    if not self.player:isWounded() or self:isFriend(who) then return false end
+    if who:getHandcardNum()<2 then return true end
+    
+    for _,friends in ipairs(self.friends) do
+        if who:distanceTo(friends)<=1 then
+            return false
+        end
+    end
+    
+    return true
+    
+end
+
+sgs.ai_skill_playerchosen.cuimian = function (self, targets)
+    
+    for _, p in sgs.qlist(targets) do
+        if not self:isFriend(p) then return p end
+    end
+    
+    targets = sgs.QList2Table(targets)
+    self:sort(targets,"hp")
+    
+    return targets[1]
+    
+end
+
+-- mofu
+sgs.ai_skill_invoke.mofu = true

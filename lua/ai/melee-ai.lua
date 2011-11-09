@@ -841,6 +841,7 @@ sgs.ai_skill_use = {}
 function SmartAI:askForUseCard(pattern, prompt, data)
 	local use_func = sgs.ai_skill_use[pattern]
 	if use_func then
+        self.room:writeToConsole("useCard:"..pattern)
 		return use_func(self, prompt, data) or "."
 	else
 		return "."
@@ -2370,6 +2371,14 @@ sgs.ai_skill_choice = {
             end
 		end
     end,
+    
+    air_bang = function(self, choices)
+        if self.player:getHp()<3 then 
+            return "AirEffectArmor"
+        else
+            return "AirEffectHp"
+        end
+    end,
 }
 
 function SmartAI:askForChoice(skill_name, choices)
@@ -2710,6 +2719,9 @@ function SmartAI:askForCard(pattern, prompt, data)
             local card_id = self:findEffectiveSlash(to)
             if card_id >= 0 then return "$"..card_id end
             return "."
+        --cuimian
+        elseif (parsedPrompt[1] == "@cuimian-slash") then 
+            if self.player:getHandcardNum()>3 then return "." end
 		end
         return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
@@ -3038,9 +3050,11 @@ function SmartAI:cardNeed(card)
     if card:inherits("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash") > 1) then return 6 end
 	if card:inherits("Unassailable") and self:getCardsNum("Unassailable") == 0 then
 		if self.player:containsTrick("soul_awe") or self.player:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 10 end
-		for _,friend in ipairs(self.friends) do
-			if friend:containsTrick("soul_awe") or friend:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 7 end
-		end
+        if #self.friends > 0 then
+            for _,friend in ipairs(self.friends) do
+                if friend:containsTrick("soul_awe") or friend:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 7 end
+            end
+        end
 	end
     return self:getUseValue(card)
 end
@@ -3135,7 +3149,9 @@ function SmartAI:needHelp(data)
 
     if data then
         local parse = data:toString()
-
+        
+        self.room:writeToConsole("needHelp : "..parse)
+        
         for _,p in ipairs(self.enemies) do
             if parse=="@huhuan-card" and p:hasSkill("huhuan") then
                 return false
