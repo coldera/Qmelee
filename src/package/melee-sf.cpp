@@ -99,6 +99,8 @@ void ShunyuCard::onEffect(const CardEffectStruct &effect) const{
     
     bool success = false;
     
+    gouki->updateMp(-18);
+    
     for(int i=0; i<3; i++) {
         const Card *card = room->peek();
         
@@ -187,7 +189,6 @@ public:
         Room *room = gouki->getRoom();
         
         if(room->askForUseCard(gouki, "@@shunyu", "@shunyu")){
-            gouki->updateMp(-18);
             gouki->skip(Player::Play);
         }
         
@@ -2964,14 +2965,14 @@ public:
 
 class Mozhilingyu: public PhaseChangeSkill{
 public:
-    Mozhilingyu():PhaseChangeSkill("mozhilingyu"){}
+    Mozhilingyu():PhaseChangeSkill("mozhilingyu$"){}
     
     virtual int getPriority() const{
         return 3;
     }    
     
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::Start;
+        return target->getPhase() == Player::Start && target->getRoom()->getLord()->hasSkill(objectName());
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{

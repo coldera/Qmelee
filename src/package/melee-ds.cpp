@@ -990,7 +990,7 @@ public:
     }
     
     virtual int getPriority() const{
-        return 3;
+        return -1;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -2803,6 +2803,10 @@ public:
 class Manyue: public PhaseChangeSkill{
 public:
     Manyue():PhaseChangeSkill("manyue"){}
+    
+    virtual int getPriority() const{
+        return -1;
+    }    
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return PhaseChangeSkill::triggerable(target)
@@ -2838,6 +2842,8 @@ public:
                 
                     room->setPlayerMark(gallon,"manyue_on", 1);
                     room->setPlayerMark(gallon, "no_handcard_limit", 1);
+                    
+                    gallon->turnOver();
                 }else {
                     LogMessage log;
                     log.type = "#ManyueFail";
