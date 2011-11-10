@@ -662,29 +662,19 @@ void BailieCard::onEffect(const CardEffectStruct &effect) const {
     ServerPlayer *chunli = effect.from;
     Room *room = chunli->getRoom();
     
-    QVariant tohelp = QVariant::fromValue((PlayerStar)effect.to);
-    
-    for(int i=0; i<3; i++) {
-        
-        const Card *bang = room->askForCard(chunli, "slash", "@bailie-slash:" + effect.to->objectName(), tohelp);
-        
-        if(bang) {
-        
-            CardUseStruct use;
-            use.card = bang;
-            use.from = chunli;
-            use.to << effect.to;
+    foreach(int card_id, getSubcards()) {
+        CardUseStruct use;
+        use.card = Sanguosha->getCard(card_id);
+        use.from = chunli;
+        use.to << effect.to;
 
-            room->useCard(use);
-        }else {
-            break;
-        }
+        room->useCard(use);
     }
 }
 
-class BailieViewAsSkill: public ZeroCardViewAsSkill{
+class BailieViewAsSkill: public ViewAsSkill{
 public:
-    BailieViewAsSkill():ZeroCardViewAsSkill("bailie"){}
+    BailieViewAsSkill():ViewAsSkill("bailie"){}
     
     virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
@@ -694,9 +684,24 @@ public:
         return pattern == "@@bailie";
     }
     
-    virtual const Card *viewAs() const{
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.length() >= 3)
+            return false;
+
+        if(!to_select->getFilteredCard()->inherits("Slash"))
+            return false;
+
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() >3 || cards.length() < 1)
+            return NULL;
+
         BailieCard *card = new BailieCard;
+        card->addSubcards(cards);
         card->setSkillName(objectName());
+        
         return card;
     }
 };
@@ -2473,7 +2478,8 @@ public:
     }
 
     virtual bool buff(const SlashEffectStruct &effect) const{
-        effect.from->getRoom()->playSkillEffect(objectName());
+        if(effect.slash->getSuit() == Card::Heart)
+            effect.from->getRoom()->playSkillEffect(objectName());
         return false;
     }
 };
@@ -2941,7 +2947,7 @@ public:
         
             vega->updateMp(1);
         
-        }else if(event == Predamage) {
+        }else if(event == Predamage && vega->getMp()>5) {
         
             if(damage.nature != DamageStruct::Thunder) {            
 

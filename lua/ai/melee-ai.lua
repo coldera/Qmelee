@@ -612,7 +612,7 @@ function SmartAI:filterEvent(event, player, data)
 				end
 				
 			end
-			self.room:output(eachTo:objectName())
+			-- self.room:output(eachTo:objectName())
 		end
 	elseif event == sgs.CardLost then
 		local move=data:toCardMove()
@@ -841,7 +841,7 @@ sgs.ai_skill_use = {}
 function SmartAI:askForUseCard(pattern, prompt, data)
 	local use_func = sgs.ai_skill_use[pattern]
 	if use_func then
-        self.room:writeToConsole("useCard:"..pattern)
+        self.room:writeToConsole(self.player:getGeneralName().." useCard ["..pattern.."]")
 		return use_func(self, prompt, data) or "."
 	else
 		return "."
@@ -933,9 +933,11 @@ function SmartAI:slashIsAvailable(player)
 end
 
 local function prohibitUseDirectly(card, player)
-	-- if player:hasSkill("jiejiu") then return card:inherits("Analeptic") 
-	-- elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
-	-- end
+    if player:hasSkill("shoudao") then 
+        return card:inherits("Dodge") and card:isRed() 
+    elseif player:hasSkill("kuangniu") then
+        return card:inherits("TrickCard") and card:isRed()
+    end
 end
 
 local function zeroCardView(class_name, player)
@@ -953,10 +955,10 @@ local function isCompulsoryView(card, class_name, player, card_place)
     
 	if class_name == "Slash" and card_place ~= sgs.Player_Equip then
         if player:hasSkill("shoudao") and card:isRed() and card:inherits("Dodge") then 
-            return ("slash:shoudao[%s:%s]=%d"):format(suit, number, card_id)
+            return ("bang:shoudao[%s:%s]=%d"):format(suit, number, card_id)
         end
         if player:hasSkill("kuangniu") and card:isRed() and card:inherits("TrickCard") then 
-            return ("slash:kuangniu[%s:%s]=%d"):format(suit, number, card_id)
+            return ("bang:kuangniu[%s:%s]=%d"):format(suit, number, card_id)
         end
 	end	
 end
@@ -1919,10 +1921,13 @@ function SmartAI:activate(use)
 
 	self:updatePlayers()
 	self:assignKeep(self.player:getHp(),true)
+    self.room:writeToConsole("======"..self.player:getGeneralName().."=====")
+    self.room:writeToConsole("======kept=====")
 	self:printCards(self.kept)
 	self.toUse =self:getTurnUse()
+    self.room:writeToConsole("======toUse=====")
 	self:printCards(self.toUse)
-	-- self:sortByUsePriority(self.toUse)
+    self.room:writeToConsole("===============================")
     self:sortByDynamicUsePriority(self.toUse)
     
 	for _, card in ipairs(self.toUse) do
@@ -2425,7 +2430,7 @@ end
 
 sgs.ai_skill_cardchosen = {}
 function SmartAI:askForCardChosen(who, flags, reason)
-	self.room:output(reason)
+	-- self.room:output(reason)
 
 	local cardchosen = sgs.ai_skill_cardchosen[string.gsub(reason,"%-","_")]
 	local card
@@ -2578,7 +2583,7 @@ function SmartAI:findEffectiveSlash(to)
 end
 
 function SmartAI:askForCard(pattern, prompt, data)
-	self.room:output(prompt)
+	-- self.room:output(prompt)
 	
 	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
 	local target, target2
@@ -2703,14 +2708,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0 )) then 
 				return self:getCardId("Slash")
 			else return "." end
-        --bailie
-        elseif (parsedPrompt[1] == "@bailie-slash") then 
-            self.room:writeToConsole("bailie-slash")
-            local to = data:toPlayer()
-            local card_id = self:findEffectiveSlash(to)
-            self.room:writeToConsole(card_id)
-            if card_id >= 0 then return "$"..card_id end
-            return "."
         --kongchan
         elseif (parsedPrompt[1] == "@kongchan-bang") then 
             local to = data:toPlayer()
@@ -2988,30 +2985,14 @@ end
 
 function SmartAI:fillSkillCards(cards)
     for _,skill in ipairs(sgs.ai_skills) do
-        if self:hasSkill(skill) then            
-            if skill.name=="wushen" then 
-                for i=#cards,1,-1 do 
-                    
-                    if cards[i]:getSuitString()=="heart" then
-                        self:log("cant use "..cards[i]:className()..i)
-                        table.remove(cards,i)
-                    end
-                end
-            end
-            
-			if skill.name == "ganran" then 				
-				 for i=#cards,1,-1 do 
-                    
-                    if cards[i]:inherits("EquipCard") then
-                        self:log("cant use "..cards[i]:className()..i)
-                        table.remove(cards,i)
-                    end
-                end
-			end	
-			
-            local card=skill.getTurnUseCard(self)
-            if #cards==0 then card=skill.getTurnUseCard(self,true) end
-            if card then table.insert(cards,card) end            
+        if self:hasSkill(skill) then       
+			for _, card in ipairs(cards) do
+				if prohibitUseDirectly(card, self.player) then table.remove(cards, card) end
+			end
+
+            local skill_card = skill.getTurnUseCard(self)
+            if #cards == 0 then skill_card = skill.getTurnUseCard(self,true) end
+            if skill_card then table.insert(cards, skill_card) end            
         end
     end
 end
@@ -3408,14 +3389,8 @@ end
 
 function SmartAI:getCard(class_name, player)
 	player = player or self.player
-    local cards = player:getHandcards()
-    cards=sgs.QList2Table(cards)
-    self:sortByUsePriority(cards)
-    
-    for _, card in ipairs(cards) do
-        if card:inherits(class_name) then return card end
-    end
-    return nil
+	local card_id = self:getCardId(class_name, player)
+	if card_id then return sgs.Card_Parse(card_id) end
 end
 
 function getCards(class_name, player, room, flag)

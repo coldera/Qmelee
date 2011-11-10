@@ -195,11 +195,31 @@ end
 -- bailie
 sgs.ai_skill_use["@@bailie"]=function(self,prompt)
     if self:getCardsNum("Slash")<2 then return "." end
-
+    
+    local target
+    local slashes = {}
+    
 	self:sort(self.enemies,"defense")    
     for _,enemy in ipairs(self.enemies) do
         if self.player:inMyAttackRange(enemy) then
-            return "@BailieCard=.->"..enemy:objectName()
+            target = enemy:objectName()
+            break
+        end
+    end
+    
+    if target then
+        local cards = self.player:getCards("h")
+        cards = sgs.QList2Table(cards)
+        
+        for _, card in ipairs(cards) do
+            if card:inherits("Slash") and #slashes<3 then
+                table.insert(slashes, card:getEffectiveId())
+            end
+        end
+        
+        if #slashes>0 then
+            local all_slash = table.concat(slashes, "+")
+            return "@BailieCard="..all_slash.."->"..target
         end
     end
     
@@ -718,6 +738,7 @@ end
 sgs.ai_skill_playerchosen.caozong = function (self, targets)
     for _, p in sgs.qlist(targets) do
         if sgs.caozong_target_is_friend and self:isFriend(p) then
+            sgs.caozong_target_is_friend = false
             return p
         elseif not sgs.caozong_target_is_friend and not self:isFriend(p) then
             return p
