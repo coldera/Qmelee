@@ -463,6 +463,35 @@ sgs.zangief_keep_value = {
 
 sgs.dynamic_value.damage_card["JiaodaoCard"] = true
 
+--shoudao
+shoudao_skill={}
+shoudao_skill.name="shoudao"
+table.insert(sgs.ai_skills,shoudao_skill)
+shoudao_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("h")
+	cards=sgs.QList2Table(cards)
+
+	local dodge
+
+	for _,card in ipairs(cards)  do
+		if card:inherits("Dodge") and card:isRed() then
+			dodge = card
+			break
+		end
+	end
+
+	if dodge then
+		local suit = dodge:getSuitString()
+		local number = dodge:getNumberString()
+		local card_id = dodge:getEffectiveId()
+		local card_str = ("bang:shoudao[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+
+		assert(slash)
+
+		return slash
+	end
+end
 
 -- jiaodao
 sgs.ai_skill_use["@@jiaodao"]=function(self, prompt)
@@ -828,6 +857,38 @@ end
 
 -- bison ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["bison"] = 0
+
+--kuangniu
+kuangniu_skill={}
+kuangniu_skill.name="kuangniu"
+table.insert(sgs.ai_skills,kuangniu_skill)
+kuangniu_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("h")
+	cards=sgs.QList2Table(cards)
+
+	local trick_card
+
+	self:sortByUseValue(cards,true)
+
+	for _,card in ipairs(cards)  do
+		if card:inherits("TrickCard") and card:isRed() then
+			trick_card = card
+			break
+		end
+	end
+
+	if trick_card then
+		local suit = trick_card:getSuitString()
+		local number = trick_card:getNumberString()
+		local card_id = trick_card:getEffectiveId()
+		local card_str = ("bang:kuangniu[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+
+		assert(slash)
+
+		return slash
+	end
+end
 
 -- balrog ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["balrog"] = 2

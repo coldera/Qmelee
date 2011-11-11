@@ -1558,9 +1558,6 @@ void DianguangCard::use(Room *room, ServerPlayer *galford, const QList<ServerPla
     galford->updateMp(-3);
     galford->gainMark("@dianguang");
     
-    // galford->loseSkill("dianguang");
-    // room->acquireSkill(galford, "dianguang_on");
-    
 }
 
 class Dianguang: public ZeroCardViewAsSkill{

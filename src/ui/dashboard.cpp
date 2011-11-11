@@ -36,6 +36,8 @@ Dashboard::Dashboard()
 
 void Dashboard::createLeft(){
     left = new QGraphicsRectItem(QRectF(left_pixmap.rect()), this);
+    //modify by ce
+    left->setPen(Qt::NoPen);
 
     equips << &weapon << &armor << &defensive_horse << &offensive_horse << &relic; //modify by ce
 
@@ -49,6 +51,8 @@ void Dashboard::createLeft(){
 
 void Dashboard::createMiddle(){
     middle = new QGraphicsRectItem(this);
+    //modify by ce
+    middle->setPen(Qt::NoPen);
 
     QPixmap middle_pixmap("image/system/dashboard-hand.png");
     QBrush middle_brush(middle_pixmap);
@@ -73,6 +77,8 @@ void Dashboard::createMiddle(){
 
 void Dashboard::createRight(){
     right = new QGraphicsRectItem(QRectF(right_pixmap.rect()), this);
+    //modify by ce
+    right->setPen(Qt::NoPen);
 
     avatar = new Pixmap;
     avatar->setPos(22, 64);

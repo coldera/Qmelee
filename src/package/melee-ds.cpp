@@ -1644,6 +1644,10 @@ public:
     Leishen():PhaseChangeSkill("leishen"){
         view_as_skill = new LeishenViewAsSkill;
     }
+    
+    virtual int getPriority() const{
+        return 2;
+    } 
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return PhaseChangeSkill::triggerable(target)

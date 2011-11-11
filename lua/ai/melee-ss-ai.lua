@@ -149,7 +149,7 @@ sgs.ai_chaofeng["ukyo"] = 6
 sgs.dynamic_value.damage_card["LiulianCard"] = true
 
 -- juhe
-sgs.ai_skill_invoke.juhe = function(self, data) 
+sgs.ai_skill_invoke.juhe = function(self, data)
 	local effect = data:toSlashEffect()
     
     if self:isFriend(effect.to) then return false end

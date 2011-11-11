@@ -1031,15 +1031,15 @@ void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     ServerPlayer *dhalsim = card_use.from;
 
-    const Card *card = Sanguosha->getCard(getSubcards().first());    
+    const Card *card = Sanguosha->getCard(getSubcards().first());
     FireBang *fire_bang = new FireBang(card->getSuit(), card->getNumber());
 
-    LogMessage log;
-    log.type = "$Huoyan";
-    log.from = dhalsim;
-    log.to << card_use.to;
-    log.card_str = fire_bang->toString();
-    room->sendLog(log); 
+    // LogMessage log;
+    // log.type = "$Huoyan";
+    // log.from = dhalsim;
+    // log.to << card_use.to;
+    // log.card_str = card->toString();
+    // room->sendLog(log); 
     
     room->playSkillEffect("huoyan");
     
@@ -1067,6 +1067,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         HuoyanCard *card = new HuoyanCard;
         card->addSubcard(card_item->getFilteredCard());
+        card->setSkillName(objectName());
         return card;
     }
 };
