@@ -733,6 +733,11 @@
         <translation>设置背景图片</translation>
     </message>
     <message>
+        <location filename="src/dialog/configdialog.ui" line="209"/>
+        <source>Setup skin path</source>
+        <translation>设置皮肤目录</translation>
+    </message>
+    <message>
         <location filename="src/dialog/configdialog.ui" line="92"/>
         <location filename="src/dialog/configdialog.ui" line="243"/>
         <source>Browse ...</source>
@@ -779,6 +784,11 @@
         <source>Background</source>
         <oldsource>GroupBox</oldsource>
         <translation>背景</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="192"/>
+        <source>Background and skin</source>
+        <translation>背景和皮肤</translation>
     </message>
     <message>
         <location filename="src/dialog/configdialog.ui" line="268"/>
@@ -900,6 +910,11 @@
         <location filename="src/dialog/configdialog.cpp" line="81"/>
         <source>Select a background image</source>
         <translation>请选择一个背景图片</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.cpp" line="81"/>
+        <source>Select a skin folder</source>
+        <translation>请选择一个皮肤目录</translation>
     </message>
     <message>
         <location filename="src/dialog/configdialog.cpp" line="83"/>

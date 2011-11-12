@@ -89,6 +89,8 @@ void Settings::init(){
     Volume = value("Volume", 1.0f).toFloat();
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/mid-autumn.jpg").toString();
+    //modify by ce
+    SkinPath = value("SkinPath", "image/system").toString();
 
     if(!contains("1v1/Banlist")){
         QStringList banlist;

@@ -444,7 +444,7 @@ void ReplayerControlBar::toggle(){
     if(button){
         QString new_name = button->objectName() == "pause" ? "play" : "pause";
         button->setObjectName(new_name);
-        button->setIcon(QIcon(QString("image/system/button/%1.png").arg(new_name)));
+        button->setIcon(QIcon(QString("%1/button/%2.png").arg(Config.SkinPath).arg(new_name)));
     }
 }
 
@@ -2744,7 +2744,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 void RoomScene::createStateItem(){
     bool circular = Config.value("CircularView", false).toBool();
 
-    QPixmap state("image/system/state.png");
+    QPixmap state(QString("%1/state.png").arg(Config.SkinPath));
 
     QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(-110, -90);

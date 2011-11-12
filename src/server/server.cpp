@@ -132,10 +132,11 @@ QWidget *ServerDialog::createPackageTab(){
 
 QWidget *ServerDialog::createAdvancedTab(){
     QVBoxLayout *layout = new QVBoxLayout;
-
-    contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
-    contest_mode_checkbox->setChecked(Config.ContestMode);
-    contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
+    
+    //modify by ce
+    // contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
+    // contest_mode_checkbox->setChecked(Config.ContestMode);
+    // contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
 
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
@@ -197,7 +198,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     port_edit->setText(QString::number(Config.ServerPort));
     port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
 
-    layout->addWidget(contest_mode_checkbox);
+    // layout->addWidget(contest_mode_checkbox);
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
     layout->addWidget(free_choose_checkbox);
@@ -714,7 +715,10 @@ bool ServerDialog::config(){
     Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
-    Config.ContestMode = contest_mode_checkbox->isChecked();
+    //modify by ce
+    // Config.ContestMode = contest_mode_checkbox->isChecked();
+    Config.ContestMode = false;
+    
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();

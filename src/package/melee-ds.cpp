@@ -1266,6 +1266,8 @@ void AnqiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     
     room->setPlayerFlag(leilei, "anqi_using");
     
+    room->throwCard(this);
+    
     CardUseStruct use;
     use.card = bang;
     use.from = leilei;
@@ -1273,7 +1275,6 @@ void AnqiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     room->useCard(use);
     
-    room->throwCard(this);
 }
 
 class Anqi: public OneCardViewAsSkill{

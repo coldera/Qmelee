@@ -876,12 +876,12 @@ public:
                 QList<ServerPlayer *> players = room->getAllPlayers();            
                 genjuro->updateMp(-qMax(30, players.length()*5));
             
+                room->broadcastInvoke("animate", "zhansha:3000");
+            
                 DamageStruct damage;
                 damage.from = genjuro;
                 damage.to = victim;
                 room->killPlayer(victim, &damage);
-                
-                room->broadcastInvoke("animate", "zhansha");
                 
                 if(victim->getGeneralName() == "haohmaru") {
                     room->playSkillEffect("kill_haohmaru");

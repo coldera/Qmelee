@@ -1034,12 +1034,12 @@ void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
     const Card *card = Sanguosha->getCard(getSubcards().first());
     FireBang *fire_bang = new FireBang(card->getSuit(), card->getNumber());
 
-    // LogMessage log;
-    // log.type = "$Huoyan";
-    // log.from = dhalsim;
-    // log.to << card_use.to;
-    // log.card_str = card->toString();
-    // room->sendLog(log); 
+    LogMessage log;
+    log.type = "$Huoyan";
+    log.from = dhalsim;
+    log.to << card_use.to;
+    log.card_str = card->toString();
+    room->sendLog(log); 
     
     room->playSkillEffect("huoyan");
     

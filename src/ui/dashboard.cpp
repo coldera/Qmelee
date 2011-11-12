@@ -13,7 +13,7 @@
 #include <QMenu>
 
 Dashboard::Dashboard()
-    :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
+    :left_pixmap(QString("%1/dashboard-equip.png").arg(Config.SkinPath)), right_pixmap(QString("%1/dashboard-avatar.png").arg(Config.SkinPath)),
     selected(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),relic(NULL), //modify by ce add
     view_as_skill(NULL), filter(NULL)
@@ -54,7 +54,7 @@ void Dashboard::createMiddle(){
     //modify by ce
     middle->setPen(Qt::NoPen);
 
-    QPixmap middle_pixmap("image/system/dashboard-hand.png");
+    QPixmap middle_pixmap(QString("%1/dashboard-hand.png").arg(Config.SkinPath));
     QBrush middle_brush(middle_pixmap);
     middle->setBrush(middle_brush);
     middle->setRect(0, 0, middle_pixmap.width(), middle_pixmap.height());
@@ -109,7 +109,7 @@ void Dashboard::createRight(){
     back_icon->hide();
 
     QGraphicsPixmapItem *handcard_pixmap = new QGraphicsPixmapItem(right);
-    handcard_pixmap->setPixmap(QPixmap("image/system/handcard.png"));
+    handcard_pixmap->setPixmap(QPixmap(QString("%1/handcard.png").arg(Config.SkinPath)));
     handcard_pixmap->setPos(25, 127);
 
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
@@ -376,8 +376,8 @@ QPushButton *Dashboard::createButton(const QString &name){
     QPushButton *button = new QPushButton;
     button->setEnabled(false);
 
-    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(name));
-    QPixmap icon_pixmap_disabled(QString("image/system/button/%1-disabled.png").arg(name));
+    QPixmap icon_pixmap(QString("%1/button/%2.png").arg(Config.SkinPath).arg(name));
+    QPixmap icon_pixmap_disabled(QString("%1/button/%2-disabled.png").arg(Config.SkinPath).arg(name));
 
     QIcon icon(icon_pixmap);
     icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);

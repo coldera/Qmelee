@@ -103,6 +103,30 @@ void ConfigDialog::on_resetBgButton_clicked()
     emit bg_changed();
 }
 
+//modify by ce
+void ConfigDialog::on_browseSkinButton_clicked()
+{
+    // QString location = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a skin folder"));
+
+    if(!dir.isEmpty()){
+        ui->skinPathLineEdit->setText(dir);
+
+        Config.SkinPath = dir;
+        Config.setValue("SkinPath", dir);
+
+    }
+}
+
+void ConfigDialog::on_resetSkinButton_clicked()
+{
+    ui->skinPathLineEdit->clear();
+
+    QString path = "image/system/";
+    Config.SkinPath = path;
+    Config.setValue("SkinPath", path);
+}
+
 void ConfigDialog::saveConfig()
 {
     int count_down = ui->nullificationSpinBox->value();

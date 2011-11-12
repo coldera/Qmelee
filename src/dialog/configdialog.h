@@ -27,6 +27,9 @@ private slots:
     void on_browseBgMusicButton_clicked();
     void on_resetBgButton_clicked();
     void on_browseBgButton_clicked();
+    //modify by ce
+    void on_resetSkinButton_clicked();
+    void on_browseSkinButton_clicked();
     void saveConfig();
 
 signals:

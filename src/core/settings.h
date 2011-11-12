@@ -63,6 +63,7 @@ public:
     float Volume;
 
     QString BackgroundBrush;
+    QString SkinPath; //modify by ce
 };
 
 extern Settings Config;

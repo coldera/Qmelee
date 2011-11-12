@@ -21,9 +21,9 @@
 #include <QMenu>
 
 Photo::Photo()
-    :Pixmap("image/system/photo-back.png"),
+    :Pixmap(QString("%1/photo-back.png").arg(Config.SkinPath)),
     player(NULL),
-    handcard("image/system/handcard.png"),
+    handcard(QString("%1/handcard.png").arg(Config.SkinPath)),
     chain("image/system/chain.png"), action_item(NULL), save_me_item(NULL), permanent(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), relic(NULL),//modify by ce add
     order_item(NULL), hide_avatar(false)
@@ -589,7 +589,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QString title = player->screenName();
     painter->drawText(QRectF(0,0,132,19), title, QTextOption(Qt::AlignHCenter));
 
-    static QPixmap wait_frame("image/system/wait-frame.png");
+    static QPixmap wait_frame(QString("%1/wait-frame.png").arg(Config.SkinPath));
     if(kingdom_frame.isNull())
         painter->drawPixmap(3, 13, wait_frame);
 
@@ -640,7 +640,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
                     << "play" << "discard" << "finish";
 
             foreach(QString name, names)
-                phase_pixmaps << QPixmap(QString("image/system/phase/%1.png").arg(name));
+                phase_pixmaps << QPixmap(QString("%1/phase/%2.png").arg(Config.SkinPath).arg(name));
         }
 
         int index = static_cast<int>(player->getPhase());
