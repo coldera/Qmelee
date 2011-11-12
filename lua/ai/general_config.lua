@@ -14,8 +14,8 @@ sgs.ai_keep_value = {
     NothingIsSomething=4.6,
     Cure = 5,
     
-    NvwaStone = 4.5,
-    Shtm = 4.5,
+    NvwaStone = 1,
+    Shtm = 1,
     
     ReadyToGo=-1,
     Thunder=-1,

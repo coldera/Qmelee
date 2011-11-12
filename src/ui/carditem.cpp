@@ -22,7 +22,7 @@ CardItem::CardItem(const Card *card)
 
     setToolTip(card->getDescription());
 
-    QPixmap frame_pixmap("image/system/frame/good.png");
+    QPixmap frame_pixmap(QString("%1/frame/good.png").arg(Config.SkinPath));
     frame = new QGraphicsPixmapItem(frame_pixmap, this);
     frame->setPos(-6, -6);
     frame->hide();

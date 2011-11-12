@@ -3,6 +3,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "client.h"
+#include "settings.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -18,7 +19,7 @@ void GrabCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
 }
 
 CardContainer::CardContainer() :
-    Pixmap("image/system/card-container.png", false)
+    Pixmap(QString("%1/card-container.png").arg(Config.SkinPath), false)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
@@ -202,7 +203,7 @@ void CardContainer::view(const ClientPlayer *player){
 }
 
 GuanxingBox::GuanxingBox()
-    :Pixmap("image/system/guanxing-box.png", false)
+    :Pixmap(QString("%1/guanxing-box.png").arg(Config.SkinPath), false)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);

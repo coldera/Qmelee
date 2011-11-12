@@ -198,7 +198,7 @@ void Photo::setDrankState(){
 void Photo::setActionState(){
     if(action_item == NULL){
         action_item = new QGraphicsPixmapItem(this);
-        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPixmap(QPixmap(QString("%1/3v3/actioned.png").arg(Config.SkinPath)));
         action_item->setPos(75, 40);
     }
 
@@ -489,9 +489,9 @@ void Photo::drawHp(QPainter *painter){
 }
 
 void Photo::setFrame(FrameType type){
-    static QPixmap playing_frame("image/system/frame/playing.png");
-    static QPixmap responsing_frame("image/system/frame/responsing.png");
-    static QPixmap sos_frame("image/system/frame/sos.png");
+    static QPixmap playing_frame(QString("%1/frame/playing.png").arg(Config.SkinPath));
+    static QPixmap responsing_frame(QString("%1/frame/responsing.png").arg(Config.SkinPath));
+    static QPixmap sos_frame(QString("%1/frame/sos.png").arg(Config.SkinPath));
 
     QPixmap *to_draw = NULL;
     switch(type){

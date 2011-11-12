@@ -1365,6 +1365,12 @@ public:
                 if(p->hasFlag("fanxiang_target")){
                     room->setPlayerFlag(p, "-fanxiang_target");
                     effect.to = p;
+                    
+                    LogMessage log;
+                    log.type = "$FanxiangChange";
+                    log.to << p;
+                    log.card_str = effect.card->toString();
+                    room->sendLog(log);
 
                     room->cardEffect(effect);
                     

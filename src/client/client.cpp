@@ -1611,9 +1611,9 @@ void Client::askForOrder(const QString &reason){
         dialog->setWindowTitle(tr("The order who first in turn"));
 
     QLabel *prompt = new QLabel(tr("Please select the order"));
-    OptionButton *warm_button = new OptionButton("image/system/3v3/warm.png", tr("Warm"));
+    OptionButton *warm_button = new OptionButton(QString("%1/3v3/warm.png").arg(Config.SkinPath), tr("Warm"));
     warm_button->setObjectName("warm");
-    OptionButton *cool_button = new OptionButton("image/system/3v3/cool.png", tr("Cool"));
+    OptionButton *cool_button = new OptionButton(QString("%1/3v3/cool.png").arg(Config.SkinPath), tr("Cool"));
     cool_button->setObjectName("cool");
 
     QHBoxLayout *hlayout = new QHBoxLayout;
@@ -1712,10 +1712,10 @@ void Client::askForDirection(const QString &){
 
     QLabel *prompt = new QLabel(dialog->windowTitle());
 
-    OptionButton *cw_button = new OptionButton("image/system/3v3/cw.png", tr("CW"));
+    OptionButton *cw_button = new OptionButton(QString("%1/3v3/cw.png").arg(Config.SkinPath), tr("CW"));
     cw_button->setObjectName("cw");
 
-    OptionButton *ccw_button = new OptionButton("image/system/3v3/ccw.png", tr("CCW"));
+    OptionButton *ccw_button = new OptionButton(QString("%1/3v3/ccw.png").arg(Config.SkinPath), tr("CCW"));
     ccw_button->setObjectName("ccw");
 
     QHBoxLayout *hlayout = new QHBoxLayout;

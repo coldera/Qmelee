@@ -401,7 +401,7 @@ function SmartAI:objectiveLevel(player)
     elseif self.role=="loyalist" then
 		
 		if not hasRebel then
-			if player:getRole() == "renegade" then return 5 else return -2 end
+			if player:getRole() == "renegade" or player:getRole() == "rebel" then return 5 else return -2 end
 		end
 		
 		if loyalish_num <= rebel_num then 
@@ -1893,6 +1893,11 @@ function SmartAI:getTurnUse()
 
         if dummy_use.card then
             if (card:inherits("Slash")) then 
+            
+                if self.player:hasFlag("drank") then
+                    self.room:writeToConsole("slashAvail after drinking: "..slashAvail)
+                end
+                
                 if slashAvail>0 then
                     slashAvail=slashAvail-1
                     table.insert(turnUse,card)                    
@@ -1921,13 +1926,13 @@ function SmartAI:activate(use)
 
 	self:updatePlayers()
 	self:assignKeep(self.player:getHp(),true)
-    self.room:writeToConsole("======"..self.player:getGeneralName().."=====")
-    self.room:writeToConsole("======kept=====")
-	self:printCards(self.kept)
+    -- self.room:writeToConsole("======"..self.player:getGeneralName().."=====")
+    -- self.room:writeToConsole("======kept=====")
+	-- self:printCards(self.kept)
 	self.toUse =self:getTurnUse()
-    self.room:writeToConsole("======toUse=====")
-	self:printCards(self.toUse)
-    self.room:writeToConsole("===============================")
+    -- self.room:writeToConsole("======toUse=====")
+	-- self:printCards(self.toUse)
+    -- self.room:writeToConsole("===============================")
     self:sortByDynamicUsePriority(self.toUse)
     
 	for _, card in ipairs(self.toUse) do
@@ -2376,7 +2381,7 @@ sgs.ai_skill_choice = {
             end
 		end
     end,
-    
+      
     air_bang = function(self, choices)
         if self.player:getHp()<3 then 
             return "AirEffectArmor"
@@ -2714,7 +2719,7 @@ function SmartAI:askForCard(pattern, prompt, data)
             if self:isFriend(to) then return "." end
             
             local card_id = self:findEffectiveSlash(to)
-            if card_id >= 0 then return "$"..card_id end
+            if card_id >= 0 then return card_id end
             return "."
         --cuimian
         elseif (parsedPrompt[1] == "@cuimian-slash") then 

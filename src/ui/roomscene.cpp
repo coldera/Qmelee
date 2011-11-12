@@ -2845,14 +2845,14 @@ void RoomScene::showPlayerCards(){
 KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 {
     QString basename = self ? "self" : "enemy";
-    QString path = QString("image/system/1v1/%1.png").arg(basename);
+    QString path = QString("%1/1v1/%2.png").arg(Config.SkinPath).arg(basename);
     setPixmap(QPixmap(path));
 
     scene->addItem(this);
 
     int i;
     for(i=0; i<3; i++){
-        Pixmap *avatar = new Pixmap("image/system/1v1/unknown.png");
+        Pixmap *avatar = new Pixmap(QString("%1/1v1/unknown.png").arg(Config.SkinPath));
         avatar->setParentItem(this);
         avatar->setPos(5, 23 + 62 *i);
         avatar->setObjectName("unknown");
@@ -3168,7 +3168,7 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
 }
 
 void RoomScene::doSuperAnimation(const QString &name, const QStringList &args) {
-    int duration = 1500;
+    int duration = 2000;
     if(args.length() && args.at(0)!="")
         duration = args.at(0).toInt();
     
@@ -3389,7 +3389,7 @@ void RoomScene::surrender(){
 }
 
 void RoomScene::fillGenerals1v1(const QStringList &names){
-    selector_box = new Pixmap("image/system/1v1/select.png", true);
+    selector_box = new Pixmap(QString("%1/1v1/select.png").arg(Config.SkinPath), true);
     addItem(selector_box);
     selector_box->shift();
 
@@ -3432,7 +3432,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     else
         temperature = "cool";
 
-    QString path = QString("image/system/3v3/select-%1.png").arg(temperature);
+    QString path = QString("%1/3v3/select-%2.png").arg(Config.SkinPath).arg(temperature);
     selector_box = new Pixmap(path, true);
     addItem(selector_box);
     selector_box->shift();
@@ -3570,7 +3570,7 @@ void RoomScene::startArrange(){
                 << QPointF(344, 269);
     }
 
-    selector_box->changePixmap(QString("image/system/%1/arrange.png").arg(mode));
+    selector_box->changePixmap(QString("%1/%2/arrange.png").arg(Config.SkinPath).arg(mode));
 
     foreach(CardItem *item, down_generals){
         item->setFlag(QGraphicsItem::ItemIsFocusable);

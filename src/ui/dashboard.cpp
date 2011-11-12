@@ -128,7 +128,7 @@ void Dashboard::createRight(){
 void Dashboard::setActionState(){
     if(action_item == NULL){
         action_item = new QGraphicsPixmapItem(right);
-        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPixmap(QPixmap(QString("%1/3v3/actioned.png").arg(Config.SkinPath)));
         action_item->setPos(64, 138);
     }
 

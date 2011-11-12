@@ -344,16 +344,16 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     or card:inherits("DestroyAll")
     or card:inherits("Burn")
     or card:inherits("HolyWater")
-    or card:inherits("SoulChain") then return false end
+    or card:inherits("SoulChain") 
+    or (card:inherits("AOE") and self:isEquip("VineArmor")) then return false end
     
     local cards = self.player:getHandcards()
-    
     cards=sgs.QList2Table(cards)
     self:sortByUseValue(cards, true)    
     
     if cards[1] and self:getKeepValue(cards[1]) >= 3.5 and self.player:getHp()>=2 then return false end
     
-    if self.player:getHp()<2 or allcards:length()>3 then return true end
+    if self.player:getHp()<2 or allcards:length()>4 then return true end
     
     return false
 end
@@ -361,6 +361,10 @@ end
 -- jiefang
 sgs.ai_skill_use["@@jiefang"]=function(self,prompt)
     if self.player:getMp()<4 or self.player:getHp()<2 then return "." end
+    
+    if self.player:getMp()>10 and self.player:getHandcardNum()>2 then
+        return "@JiefangCard=.->."
+    end
      
     for _, p in ipairs(self.enemies) do        
         if p:getHp()<2 and self.player:getMp()>4 then
@@ -401,7 +405,7 @@ sgs.ai_skill_use_func["SiyueCard"]=function(card,use,self)
         if  self:damageIsEffective("ice", enemy) then 
             use.card = card
             if use.to then 
-                use.to:append(self.enemies[1])
+                use.to:append(enemy)
             end    
         end
     end 
