@@ -20,6 +20,7 @@ return {
     ["#ZizunEffect1"] = "%from <b style='color:yellow'>【自尊】</b> 正面效果发动",
     ["#ZizunEffect2"] = "%from <b style='color:#CCCCCC'>【自尊】</b> 负面效果发动",
     ["#WuyeOn"] = "<b style='color:yellow'>【午夜】</b> 发动成功，<b style='color:yellow'>【吸血】</b>技能增强",
+    ["#XixieEffect"] = "%from 对 %to 发动 <b style='color:yellow'>【吸血】</b>",
     
     -- 2011-09-23 +AI 夜之女王
     ["morrigan"] = "莫莉卡",

@@ -122,6 +122,8 @@ public:
             
             if(judge.isGood()) {
             
+                room->playSkillEffect(objectName());
+            
                 LogMessage log;
                 log.type = "#WuyeOn";
                 log.from = demitri;
@@ -165,6 +167,12 @@ public:
             if(demitri->distanceTo(damage.to) > 1) 
                 return false;
         }
+        
+        LogMessage log;
+        log.type = "#XixieEffect";
+        log.from = demitri;
+        log.to << damage.to;
+        room->sendLog(log);
         
         RecoverStruct recover;
         recover.recover = dp;
@@ -297,6 +305,8 @@ public:
         Room *room = morrigan->getRoom();
         
         if(room->askForSkillInvoke(morrigan, objectName())){
+            
+            room->playSkillEffect(objectName());
             room->broadcastInvoke("animate", "huanying");
             
             morrigan->updateMp(-6);

@@ -31,6 +31,7 @@ void ServerPlayer::playCardEffect(const Card *card){
         room->playSkillEffect(skill_name, index);
     }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
+        
 }
 
 int ServerPlayer::getRandomHandCardId() const{

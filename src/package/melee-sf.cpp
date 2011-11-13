@@ -235,7 +235,9 @@ void LongjuanCard::onUse(Room *room, const CardUseStruct &card_use) const{
     log.type = "#LongjuanBang";
     log.from = ryu;
     room->sendLog(log);
-
+    
+    room->playSkillEffect("longjuan");
+    
     room->useCard(use);
 }
 
@@ -281,11 +283,8 @@ public:
 
     virtual bool trigger(TriggerEvent, ServerPlayer *ryu, QVariant &data) const{
 
-        Room *room = ryu->getRoom();
-        
-        if(room->askForUseCard(ryu, "@@longjuan", "@longjuan")) {
-            room->playSkillEffect(objectName());
-        }
+        Room *room = ryu->getRoom();        
+        room->askForUseCard(ryu, "@@longjuan", "@longjuan");
 
         return false;
     }
