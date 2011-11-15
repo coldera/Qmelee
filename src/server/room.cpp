@@ -727,15 +727,17 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     QVariant asked = QString("%1:%2").arg(pattern).arg(prompt);
     thread->trigger(CardAsked, player, asked);
     
-    //modify by ce
-    if(player->getMark("@card_forbid")) {
-        return Card::Parse(".");
-    }
-    
+   
     if(provided){
         card = provided;
         provided = NULL;
     }else if(pattern.startsWith("@") || !player->isNude()){
+    
+        //modify by ce
+        if(player->getMark("@card_forbid")) {
+            return Card::Parse(".");
+        }
+    
         AI *ai = player->getAI();
         if(ai){
             thread->delay(Config.AIDelay);

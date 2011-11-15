@@ -861,3 +861,93 @@ sgs.ai_skill_use["@@daoqu"]=function(self,prompt)
 
     return "."
 end
+
+-- shizumaru ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["shizumaru"] = 8
+
+sgs.shizumaru_suit_value = {
+    spade = 5,
+    club = 3.5,
+}
+
+sgs.dynamic_value.benefit["WuyuCard"] = true
+sgs.dynamic_value.benefit["MeiyuCard"] = true
+sgs.dynamic_value.damage_card["BaoyuCard"] = true
+
+-- wuyu
+sgs.ai_skill_use["@@wuyu"]=function(self,prompt)
+    self:sort(self.enemies, "defense")
+    
+    local cards = self.player:getHandcards()
+    cards=sgs.QList2Table(cards) 
+    self:sortByUseValue(cards,true)
+    
+    local spade = {}
+    local lose_hp = self.player:getMaxHP()-self.player:getHp()
+    
+    for _,card in ipairs(cards) do
+        if card:getSuit() == sgs.Card_Spade then 
+            table.insert(spade, card:getEffectiveId())
+            if #spade >= lose_hp then
+                break
+            end
+        end
+    end
+    
+    if #spade>0 then
+        return "@WuyuCard=" .. table.concat(spade, "+") .. "->."
+    end
+
+    return "."
+end
+
+
+-- meiyu
+local meiyu_skill={}
+meiyu_skill.name="meiyu"
+table.insert(sgs.ai_skills,meiyu_skill)
+meiyu_skill.getTurnUseCard=function(self)
+    if self.player:getMp()>0 and (self.player:getHandcardNum()<3 or self.player:getHp()==1) then return end
+    
+    local cards = self.player:getHandcards()
+    cards=sgs.QList2Table(cards) 
+    self:sortByUseValue(cards,true)
+    
+    for _,card in ipairs(cards) do
+        if card:getSuit() == sgs.Card_Club then 
+            return sgs.Card_Parse("@MeiyuCard="..card:getEffectiveId())
+        end
+    end
+    
+end
+
+sgs.ai_skill_use_func["MeiyuCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- baoyu
+sgs.ai_skill_use["@@baoyu"]=function(self,prompt)
+    
+    local black_card = 0
+    
+    local cards = self.player:getCards("he")
+    cards=sgs.QList2Table(cards) 
+    
+    for _,card in ipairs(cards) do
+        if card:isBlack() then 
+            black_card = black_card+1
+        end
+    end 
+    
+    if black_card<2 or self.player:getHp()<2 then return "." end
+
+    self:sort(self.enemies, "defense")
+
+    for _,enemy in ipairs(self.enemies) do
+        if self:inMyAttackRange(enemy) and self:damageIsEffective("normal", enemy) then 
+            return "@BaoyuCard=.->"..enemy:objectName()
+        end
+    end
+
+    return "."
+end

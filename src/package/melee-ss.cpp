@@ -59,8 +59,10 @@ bool TianbaCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void TianbaCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();   
-	
+
+    effect.from->updateMp(-3);
+
+    Room *room = effect.from->getRoom();   	
     room->broadcastInvoke("animate", "tianba");
     
 	room->throwCard(this);
@@ -148,7 +150,6 @@ public:
         Room *room = haohmaru->getRoom();
         
         if(room->askForUseCard(haohmaru, "@@tianba", "@tianba")){
-            haohmaru->updateMp(-3);
             haohmaru->skip(Player::Play);
         }
         
@@ -2448,12 +2449,217 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------shizumaru
+
+//----------------------------------------------------------------------------- Wuyu
+
+WuyuCard::WuyuCard(){
+    target_fixed = true;
+}
+
+void WuyuCard::use(Room *room, ServerPlayer *shizumaru, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);
+    
+    int num = getSubcards().length();
+    
+    if(num) {
+        RecoverStruct recover;
+        recover.recover = num;
+        room->recover(shizumaru, recover);
+    }
+}
+
+class WuyuRecover: public ViewAsSkill{
+public:
+    WuyuRecover():ViewAsSkill("wuyu"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@wuyu";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        int lose_hp = Self->getMaxHP() - Self->getHp();
+        
+        if(to_select->isEquipped())
+            return false;
+        
+        if(to_select->getFilteredCard()->getSuit() != Card::Spade)
+            return false;
+        
+        if(selected.length()>=lose_hp)
+            return false;
+        
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.isEmpty())
+            return NULL;
+
+        WuyuCard *card = new WuyuCard;
+        card->addSubcards(cards);
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Wuyu:public MasochismSkill{
+public:
+    Wuyu():MasochismSkill("wuyu"){
+        view_as_skill = new WuyuRecover;
+    }
+
+    virtual void onDamaged(ServerPlayer *shizumaru, const DamageStruct &damage) const{
+        Room *room = shizumaru->getRoom();
+
+        if(shizumaru->isAlive()) {
+            room->askForUseCard(shizumaru, "@@wuyu", "@wuyu");
+        }
+    }
+};
+
+//----------------------------------------------------------------------------- Meiyu
+
+MeiyuCard::MeiyuCard(){
+    target_fixed = true;
+}
+
+void MeiyuCard::use(Room *room, ServerPlayer *shizumaru, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);    
+    
+    shizumaru->updateMp(-1);
+    shizumaru->drawCards(2);
+}
+
+class Meiyu: public OneCardViewAsSkill{
+public:
+    Meiyu():OneCardViewAsSkill("meiyu"){}
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp() && player->getHandcardNum();
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Club;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        MeiyuCard *card = new MeiyuCard;
+        card->addSubcard(card_item->getCard()->getId());
+        card->setSkillName(objectName());
+
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Baoyu
+
+BaoyuCard::BaoyuCard(){}
+
+bool BaoyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(!Self->inMyAttackRange(to_select)) 
+        return false;
+
+    return true;
+}
+
+void BaoyuCard::onEffect(const CardEffectStruct &effect) const{
+
+    ServerPlayer *shizumaru = effect.from;
+    Room *room = shizumaru->getRoom();   	
+    
+    shizumaru->updateMp(-5);    
+    room->broadcastInvoke("animate", "baoyu");    
+	room->throwCard(this);
+    
+    QList<const Card *> cards = shizumaru->getCards("he");
+    
+    foreach(const Card *card, cards) {
+        if(card->isBlack()) {
+            room->throwCard(card);
+            
+            const Card *jink = room->askForCard(effect.to, "jink", "@baoyu-jink:"+shizumaru->objectName());
+            
+            if(!jink) {
+                DamageStruct damageMaker;
+                damageMaker.from = shizumaru;
+                damageMaker.to = effect.to;
+                room->damage(damageMaker);
+            }
+        }
+    }
+
+}
+
+class BaoyuViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    BaoyuViewAsSkill():ZeroCardViewAsSkill("baoyu"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@baoyu";
+    }
+    
+    virtual const Card *viewAs() const{
+        BaoyuCard *card = new BaoyuCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class Baoyu: public PhaseChangeSkill{
+public:
+    Baoyu():PhaseChangeSkill("baoyu"){
+        view_as_skill = new BaoyuViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        bool can_invoke = PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMp() >= 5
+                && !target->isNude();
+                
+        if(can_invoke) {
+            foreach(const Card *card, target->getCards("he")) {
+                if(card->isBlack())
+                    return true;
+            }
+        }
+        
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shizumaru) const{
+        Room *room = shizumaru->getRoom();
+        
+        if(room->askForUseCard(shizumaru, "@@baoyu", "@baoyu")){
+            shizumaru->skip(Player::Play);
+            shizumaru->turnOver();
+        }
+        
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
-    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei;
+    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -2576,6 +2782,15 @@ MeleeSSPackage::MeleeSSPackage()
     
     skills << new Shuangyue << new ShuangyueOff;
     related_skills.insertMulti("shuangyue", "#shuangyue-off");
+    
+    shizumaru = new General(this, "shizumaru", "kuang", 3);
+    shizumaru->addSkill(new Wuyu);
+    shizumaru->addSkill(new Meiyu);
+    shizumaru->addSkill(new Baoyu);
+    
+    addMetaObject<WuyuCard>();
+    addMetaObject<MeiyuCard>();
+    addMetaObject<BaoyuCard>();
     
 }
 
