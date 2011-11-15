@@ -259,8 +259,8 @@ sgs.ai_skill_invoke["@shenyu"]=function(self,prompt)
 	return "."
 end
 
--- zabal ---------------------------------------------------------------------------------
-sgs.ai_chaofeng["zabal"] = 0
+-- zabel ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["zabel"] = 0
 
 -- yaogun
 local yaogun_skill={}

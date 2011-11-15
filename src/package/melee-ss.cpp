@@ -1009,24 +1009,24 @@ public:
 
 //----------------------------------------------------------------------------- Yuelun
 
-class Yuelun: public GameStartSkill{
+class Yuelun: public SlashBuffSkill{
 public:
-    Yuelun():GameStartSkill("yuelun"){
+    Yuelun():SlashBuffSkill("yuelun"){
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *genjuro) const{
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        if(effect.slash->inherits("IceBang") && !effect.slash->isVirtualCard())
+            effect.from->getRoom()->playSkillEffect(objectName());
+            
         return false;
     }
-
-    virtual void onGameStart(ServerPlayer *suija) const{}
 };
 
 //----------------------------------------------------------------------------- Siyue
 
 SiyueCard::SiyueCard(){
     once = true;
-    setObjectName("ice_bang");
 }
 
 bool SiyueCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1094,6 +1094,9 @@ public:
         Room *room = suija->getRoom();
         
         if(room->askForSkillInvoke(suija, objectName())) {
+            
+            room->playSkillEffect(objectName());
+        
             suija->updateMp(-1);
             room->transfigure(suija, "sogetsu", false, false);
         }

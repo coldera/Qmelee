@@ -1032,7 +1032,7 @@ public:
     }
 };
 
-//--------------------------------------------------------------------------------------------------------------zabal
+//--------------------------------------------------------------------------------------------------------------zabel
 
 //----------------------------------------------------------------------------- Yaogun
 
@@ -1042,14 +1042,14 @@ YaogunCard::YaogunCard(){
     once = true;
 }
 
-void YaogunCard::use(Room *room, ServerPlayer *zabal, const QList<ServerPlayer *> &) const{
+void YaogunCard::use(Room *room, ServerPlayer *zabel, const QList<ServerPlayer *> &) const{
     int x = qMax(room->getAllPlayers().length(), 4);
     
-    if(x > zabal->getMp()) {
+    if(x > zabel->getMp()) {
         
         LogMessage log;
         log.type = "#YaogunFail";
-        log.from = zabal;
+        log.from = zabel;
         room->sendLog(log);
         
         return;
@@ -1058,10 +1058,10 @@ void YaogunCard::use(Room *room, ServerPlayer *zabal, const QList<ServerPlayer *
         
         room->playSkillEffect("yaogun");
         
-        zabal->updateMp(-x);
+        zabel->updateMp(-x);
     }
     
-    foreach(ServerPlayer *p, room->getOtherPlayers(zabal)){
+    foreach(ServerPlayer *p, room->getOtherPlayers(zabel)){
     
         JudgeStruct judge;
         judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -1079,7 +1079,7 @@ void YaogunCard::use(Room *room, ServerPlayer *zabal, const QList<ServerPlayer *
             room->loseHp(p, 1);
             
             RecoverStruct recover;
-            room->recover(zabal, recover);
+            room->recover(zabel, recover);
         }
 
     }
@@ -1090,8 +1090,8 @@ class Yaogun: public ZeroCardViewAsSkill{
 public:
     Yaogun():ZeroCardViewAsSkill("yaogun"){}
     
-    virtual bool isEnabledAtPlay(const Player *zabal) const{
-        return !zabal->hasUsed("YaogunCard") && zabal->getMp()>=4;
+    virtual bool isEnabledAtPlay(const Player *zabel) const{
+        return !zabel->hasUsed("YaogunCard") && zabel->getMp()>=4;
     }
     
     virtual const Card *viewAs() const{
@@ -1114,17 +1114,17 @@ public:
         return TriggerSkill::triggerable(target);
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zabal, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zabel, QVariant &data) const{
     
         DamageStruct damage = data.value<DamageStruct>();
         
         LogMessage log;
         log.type = "#TushaEffect";
-        log.from = zabal;
+        log.from = zabel;
         log.arg = objectName();
-        zabal->getRoom()->sendLog(log);
+        zabel->getRoom()->sendLog(log);
         
-        zabal->updateMp(damage.damage*6);
+        zabel->updateMp(damage.damage*6);
         
         return false;
     }
@@ -2933,7 +2933,7 @@ public:
 MeleeDSPackage::MeleeDSPackage()
     :Package("meleeds")
 {
-    General *demitri, *morrigan, *victor, *sasquatch, *aulbath, *qbee, *pyron, *zabal, *lilith, *leilei, *phobos, *donovan, *jedah, *anakaris, *bulleta, *bishamon, *felicia, *gallon;
+    General *demitri, *morrigan, *victor, *sasquatch, *aulbath, *qbee, *pyron, *zabel, *lilith, *leilei, *phobos, *donovan, *jedah, *anakaris, *bulleta, *bishamon, *felicia, *gallon;
     
     demitri = new General(this, "demitri", "nu");
     demitri->addSkill(new Zizun);
@@ -2990,9 +2990,9 @@ MeleeDSPackage::MeleeDSPackage()
     
     addMetaObject<ShenyuCard>();
 
-    zabal = new General(this, "zabal", "yuan", 5);
-    zabal->addSkill(new Yaogun);
-    zabal->addSkill(new Tusha);
+    zabel = new General(this, "zabel", "yuan", 5);
+    zabel->addSkill(new Yaogun);
+    zabel->addSkill(new Tusha);
     
     addMetaObject<YaogunCard>();
     

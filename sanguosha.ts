@@ -1325,9 +1325,9 @@
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="359"/>
-        <source>MiddleAutumn</source>
-        <translation>中秋版</translation>
+        <location filename="src/core/engine.cpp" line="362"/>
+        <source>Chibi</source>
+        <translation>赤壁版</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="436"/>
@@ -1373,7 +1373,7 @@
     <message>
         <location filename="src/dialog/generaloverview.ui" line="47"/>
         <source>Kingdom</source>
-        <translation>特性</translation>
+        <translation>类型</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.ui" line="52"/>
@@ -1556,7 +1556,7 @@
         <location filename="src/dialog/mainwindow.ui" line="14"/>
         <location filename="src/dialog/mainwindow.cpp" line="137"/>
         <source>Sanguosha</source>
-        <translation>太阳神大乱斗</translation>
+        <translation>大乱斗</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="28"/>
@@ -2524,7 +2524,7 @@
     <message>
         <location filename="src/ui/roomscene.cpp" line="305"/>
         <source>Sanguosha</source>
-        <translation>太阳神大乱斗</translation>
+        <translation>大乱斗</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="1025"/>

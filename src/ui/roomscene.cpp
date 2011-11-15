@@ -157,6 +157,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
     connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
+    connect(ClientInstance, SIGNAL(role_state_changed(QString)),this, SLOT(update_state_item(QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
@@ -246,7 +247,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // chat box
         chat_box = new QTextEdit;
-        chat_box->resize(230 + widen_width, 195);
+        chat_box->resize(230 + widen_width, 175);
 
         QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
         chat_box_widget->setPos(-343 - widen_width, -83);
@@ -271,7 +272,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
         if(circular){
-            chat_box->resize(268, 180);
+            chat_box->resize(268, 165);
             chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
@@ -287,7 +288,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // log box
         log_box = new ClientLogBox;
-        log_box->resize(chat_box->width(), 213);
+        log_box->resize(chat_box->width(), 205);
         log_box->setTextColor(Config.TextEditColor);
 
         QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
@@ -344,7 +345,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
     skill_dock->titleBarWidget()->hide();
+    skill_dock->setFixedHeight(32);
+
     main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
+
+    QFile file("sanguosha.qss");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        skill_dock->setStyleSheet(stream.readAll());
+    }
 
     addWidgetToSkillDock(sort_combobox, true);
 
@@ -563,10 +572,8 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 }
 
 void RoomScene::changeTextEditBackground(){
-    QPalette palette;
-    palette.setBrush(QPalette::Base, backgroundBrush());
-    chat_box->setPalette(palette);
-    log_box->setPalette(palette);
+    chat_box->setStyleSheet("background-color: rgba(0,0,0,20%);");
+    log_box->setStyleSheet("background-color: rgba(0,0,0,20%);");
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -1277,17 +1284,20 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 }
 
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
-    widget->setFixedHeight(30);
+    if(widget->inherits("QComboBox"))
+        widget->setFixedHeight(22);
+    else 
+        widget->setFixedHeight(26);
 
     QWidget *container = skill_dock->widget();
     QHBoxLayout *container_layout = NULL;
     if(container == NULL){
         container = new QWidget;
         QHBoxLayout *layout = new QHBoxLayout;
-        QMargins margins = layout->contentsMargins();
-        margins.setTop(0);
-        margins.setBottom(5);
-        layout->setContentsMargins(margins);
+        // QMargins margins = layout->contentsMargins();
+        // margins.setTop(0);
+        // margins.setBottom(5);
+        // layout->setContentsMargins(margins);
         container->setLayout(layout);
         layout->addStretch();
 
@@ -2746,34 +2756,11 @@ void RoomScene::createStateItem(){
 
     QPixmap state(QString("%1/state.png").arg(Config.SkinPath));
 
-    QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
+    state_item = addPixmap(state);
     state_item->setPos(-110, -90);
-    char roles[100] = {0}, *role;
+    char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
-    for(role = roles; *role!='\0'; role++){
-        static QPixmap lord("image/system/roles/small-lord.png");
-        static QPixmap loyalist("image/system/roles/small-loyalist.png");
-        static QPixmap rebel("image/system/roles/small-rebel.png");
-        static QPixmap renegade("image/system/roles/small-renegade.png");
-
-        QPixmap *to_add = NULL;
-        switch(*role){
-        case 'Z': to_add = &lord; break;
-        case 'C': to_add = &loyalist; break;
-        case 'N': to_add = &renegade; break;
-        case 'F': to_add = &rebel; break;
-        default:
-            break;
-        }
-
-        if(to_add){
-            QGraphicsPixmapItem *item = addPixmap(*to_add);
-            item->setPos(21*role_items.length(), 6);
-            item->setParentItem(state_item);
-
-            role_items << item;
-        }
-    }
+    updateStateItem(roles);
 
     QGraphicsTextItem *text_item = addText("");
     text_item->setParentItem(state_item);
@@ -3285,7 +3272,7 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["air"] = &RoomScene::doAppearingAnimation;
         map["poison"] = &RoomScene::doAppearingAnimation;
         map["thunder"] = &RoomScene::doAppearingAnimation;
-        map["typhoon"] = &RoomScene::doAppearingAnimation;
+        // map["typhoon"] = &RoomScene::doAppearingAnimation;
         map["bang"] = &RoomScene::doAppearingAnimation;
         map["dodge"] = &RoomScene::doAppearingAnimation;
 
@@ -3661,4 +3648,40 @@ void RoomScene::finishArrange(){
     ClientInstance->request("arrange " + names.join("+"));
 }
 
+void RoomScene::update_state_item(const QString &qstr)
+{
+    char *c_str2 = qstr.toLocal8Bit().data();
+    updateStateItem(c_str2);
+}
 
+void RoomScene::updateStateItem(char* roles)
+{
+    foreach(QGraphicsItem *item, role_items)
+        removeItem(item);
+    role_items.clear();
+
+    for(char *role = roles; *role!='\0'; role++){
+        static QPixmap lord("image/system/roles/small-lord.png");
+        static QPixmap loyalist("image/system/roles/small-loyalist.png");
+        static QPixmap rebel("image/system/roles/small-rebel.png");
+        static QPixmap renegade("image/system/roles/small-renegade.png");
+
+        QPixmap *to_add = NULL;
+        switch(*role){
+        case 'Z': to_add = &lord; break;
+        case 'C': to_add = &loyalist; break;
+        case 'N': to_add = &renegade; break;
+        case 'F': to_add = &rebel; break;
+        default:
+            break;
+        }
+
+        if(to_add){
+            QGraphicsPixmapItem *item = addPixmap(*to_add);
+            item->setPos(21*role_items.length(), 6);
+            item->setParentItem(state_item);
+
+            role_items << item;
+        }
+    }
+}

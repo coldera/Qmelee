@@ -809,7 +809,7 @@ sgs.ai_skill_use["slash"] = function(self, prompt)
 	if not slash then return "." end
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
-			return ("%d->%s"):format(slash:getId(), enemy:objectName())
+			return ("%s->%s"):format(slash:toString(), enemy:objectName())
 		end
 	end
 	return "."
@@ -1006,7 +1006,7 @@ function SmartAI:slashProhibit(card,enemy)
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
     else    
 		if enemy:hasSkill("liuli") then 
-			if enemy:getHandcardNum()<1 then return false end
+			if enemy:getHandcardNum() < 1 then return false end
 			for _, friend in ipairs(self.friends_noself) do
 				if enemy:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
 			end
@@ -1967,23 +1967,23 @@ function SmartAI:getUseValue(card)
 		if self.weaponUsed and card:inherits("Weapon") then v=2 end
 		if self.player:hasSkill("qiangxi") and card:inherits("Weapon") then v = 2 end
 		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
-		if self:hasSkill("bazhen") or self:hasSkill("yizhong") and card:inherits("Armor") then v=2 end
+		if self:hasSkill("bazhen") or self:hasSkill("yizhong") and card:inherits("Armor") then v = 2 end
 		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
 	elseif card:getTypeId() == sgs.Card_Basic then
 		if card:inherits("Slash") then
 			if (self.player:hasFlag("drank") or self.player:hasFlag("tianyi_success") or self.player:hasFlag("luoyi")) then v = 8.7 end
 			if self:isEquip("CrossBow") then v = v + 4 end
-			v=v+self:getCardsNum("Slash") 
+			v = v+self:getCardsNum("Slash") 
 		elseif card:inherits("Jink") then
 			if self:getCardsNum("Jink") > 1 then v = v-6 end
 		elseif card:inherits("Shit") and self.player:hasSkill("kuanggu") and card:getSuit()~= sgs.Card_Spade then
 			v = 0.1
 		end
 	elseif card:getTypeId() == sgs.Card_Trick then
-		if self.player:getWeapon() and not self:hasSkills(sgs.lose_equip_skill) and card:inherits("Collateral") then v=2 end
-		if self.player:getMark("shuangxiong") and card:inherits("Duel") then v=8 end
+		if self.player:getWeapon() and not self:hasSkills(sgs.lose_equip_skill) and card:inherits("Collateral") then v = 2 end
+		if self.player:getMark("shuangxiong") and card:inherits("Duel") then v = 8 end
 		if self.player:hasSkill("jizhi") then v = 8.7 end
-		if not self:hasTrickEffective(card) then v=0 end
+		if not self:hasTrickEffective(card) then v = 0 end
 	end
 	
 	if self:hasSkills(sgs.need_kongcheng) then
@@ -2899,8 +2899,8 @@ end
 function SmartAI:fillSkillCards(cards)
     for _,skill in ipairs(sgs.ai_skills) do
         if self:hasSkill(skill) then       
-			for _, card in ipairs(cards) do
-				if prohibitUseDirectly(card, self.player) then table.remove(cards, card) end
+			for index, card in ipairs(cards) do
+				if prohibitUseDirectly(card, self.player) then table.remove(cards, index) end
 			end
 
             local skill_card = skill.getTurnUseCard(self)
