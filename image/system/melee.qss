@@ -1,0 +1,71 @@
+*{
+	background-image: url(image/system/skill_dock/skill-dock.png);
+}
+
+QDockWidget{
+    padding:0 5px 2px 5px;
+}
+
+QPushButton{
+	background: url(image/system/skill_dock/back.png) left center;
+	border: 1px solid gray;
+    border-radius: 3px;
+	color: rgba(255,255,255,80%);
+	font-size: 12px;
+    font-weight: 700;
+    padding: 0 10px;
+    margin-bottom: 4px;
+}
+
+QPushButton:hover{
+    color: yellow;
+}
+
+QPushButton:disabled{
+	background: url(image/system/skill_dock/back_shade.png) left center;
+	color: gray;
+}
+
+QCheckBox{
+	border: 1px solid gray;
+    border-radius: 3px;
+	color: rgba(255,255,255,80%);
+	font-size: 12px;
+    font-weight: 700;
+    padding: 0 10px 0 20px;
+    margin-bottom: 4px;
+}
+
+QCheckBox::indicator{
+	height: 0px;
+	width: 0px;
+}
+QCheckBox:unchecked{
+	background: url(image/system/skill_dock/unchecked.png) left center;
+}
+QCheckBox:checked{
+	background: url(image/system/skill_dock/checked.png) left center;
+}
+
+QComboBox{
+	background-image: url(image/system/skill_dock/back2.png);
+	border: 1px solid gray;
+	border-radius: 3px;
+	color: white;
+	padding: 1px 0 1px 8px;
+}
+
+QComboBox:on{
+	padding-left: 10px;
+}
+QComboBox::drop-down{
+	border-bottom-right-radius: 3px;
+	border-top-right-radius: 3px;
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 15px;
+}
+
+QComboBox QAbstractItemView {
+    background: none;
+}

@@ -349,7 +349,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
 
-    QFile file("sanguosha.qss");
+    QFile file(QString("%1/melee.qss").arg(Config.SkinPath));
     if(file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);
         skill_dock->setStyleSheet(stream.readAll());
