@@ -1122,6 +1122,8 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *kazuki) const{
     
+        kazuki->getRoom()->playSkillEffect(objectName());
+    
         LogMessage log;
         log.type = "#Rexue";
         log.from = kazuki;
@@ -1134,10 +1136,15 @@ public:
 
 //----------------------------------------------------------------------------- Yanmie
 
-YanmieBang::YanmieBang(Card::Suit suit, int number)
-    :FireBang(suit, number) {
+YanmieBang::YanmieBang(Card::Suit suit, int number):FireBang(suit, number) {
+    mute = true;
 }
 
+void YanmieBang::use(Room *room, ServerPlayer *kazuki, const QList<ServerPlayer *> &targets) const{
+    room->playSkillEffect("yanmie", 1);
+    FireBang::use(room, kazuki, targets);
+}
+    
 class Yanmie: public FilterSkill{
 public:
     Yanmie():FilterSkill("yanmie"){
@@ -1179,7 +1186,9 @@ public:
             kazuki->updateMp(-1);
             
             if(room->testRandomEvent(damage.from, "yanmie_bao", 20)) {
-                // room->getThread()->delay();
+                
+                room->playSkillEffect("yanmie", 2);
+
                 int card_id = room->askForCardChosen(kazuki, damage.to, "he", "yanmie_bao");       
 
                 LogMessage log;
@@ -1194,10 +1203,7 @@ public:
                 log.type = "#YanmieFail";
                 log.from = kazuki;
                 room->sendLog(log);
-                
-                // room->setEmotion(kazuki, "bad");
             }
-            
             
         }
         
@@ -1221,6 +1227,8 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *kazuki) const{
         Room *room = kazuki->getRoom();
+        
+        room->playSkillEffect(objectName());
 
         LogMessage log;
         log.type = "#Juexing";
