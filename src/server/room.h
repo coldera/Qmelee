@@ -122,6 +122,9 @@ public:
 
     void setEmotion(ServerPlayer *target, const QString &emotion);
 
+    //modify by ce
+    const Card *getOffCourtCard(const QString &name);
+    
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);

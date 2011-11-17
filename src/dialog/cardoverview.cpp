@@ -55,6 +55,10 @@ void CardOverview::addCard(int i, const Card *card){
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
     name_item->setData(Qt::UserRole, card->getId());
+    
+    //modify by ce
+    if(card->isExclusive())
+        name_item->setBackgroundColor(Qt::gray);
 
     ui->tableWidget->setItem(i, 0, name_item);
     ui->tableWidget->setItem(i, 1, new QTableWidgetItem(suit_icon, suit_str));

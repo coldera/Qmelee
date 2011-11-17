@@ -31,6 +31,7 @@ class Card : public QObject
     Q_PROPERTY(bool once READ isOnce CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
+    Q_PROPERTY(bool exclusive READ isExclusive WRITE setExclusive) //modify by ce
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -45,11 +46,11 @@ public:
         Skill,
         Basic,
         Trick,
-        Equip,
+        Equip
     };
 
     // constructor
-    Card(Suit suit, int number, bool target_fixed = false);
+    Card(Suit suit, int number, bool target_fixed = false, bool exclusive = false);
 
     // property getters/setters
     QString getSuitString() const;
@@ -66,6 +67,10 @@ public:
 
     Suit getSuit() const;
     void setSuit(Suit suit);
+    
+    //modify by ce
+    bool isExclusive() const;
+    void setExclusive(bool exclusive);
 
     bool sameColorWith(const Card *other) const;
     bool isEquipped() const;
@@ -142,6 +147,7 @@ private:
     Suit suit;
     int number;
     int id;
+    bool exclusive; //modify by ce
 };
 
 class SkillCard: public Card{

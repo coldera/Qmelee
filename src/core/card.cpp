@@ -14,12 +14,22 @@ const Card::Suit Card::AllSuits[4] = {
     Card::Diamond
 };
 
-Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
+Card::Card(Suit suit, int number, bool target_fixed, bool exclusive)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1), exclusive(exclusive)
 {
     if(number < 1 || number > 13)
         number = 0;
 }
+
+//modify by ce
+bool Card::isExclusive() const{
+    return exclusive;
+}
+
+void Card::setExclusive(bool exclusive){
+    this->exclusive = exclusive;
+}
+
 
 QString Card::getSuitString() const{
     return Suit2String(suit);

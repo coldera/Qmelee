@@ -2322,12 +2322,26 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         return;
 
     const Card *card = Sanguosha->getCard(move.card_id);
+    
+    //modify by ce
+    if(move.to && card->isExclusive() && !move.to->getMark(card->objectName()) && move.to_place != Player::DiscardedPile) {
+        
+        LogMessage log;
+        log.type = "$CantUseExclusive";
+        log.from = move.to;
+        log.card_str = card->toString();
+        sendLog(log);
+        
+        throwCard(card);
+        move.to->drawCards(1);
+        return;
+    }
+    
     if(move.from){
         if(move.from_place == Player::Special){
             QString pile_name = move.from->getPileName(move.card_id);
             Q_ASSERT(!pile_name.isEmpty());
-            QString pile_str = QString("%1:%2-%3")
-                               .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
+            QString pile_str = QString("%1:%2-%3").arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
 
             if(move.open)
                 broadcastInvoke("pile", pile_str);
@@ -2366,11 +2380,16 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         }
     }else{
         switch(move.to_place){
-        case Player::DiscardedPile: discard_pile->prepend(move.card_id); break;
-        case Player::DrawPile: draw_pile->prepend(move.card_id); break;
-        case Player::Special: table_cards.append(move.card_id); break;
-        default:
-            break;
+            //modiby by ce
+            case Player::DiscardedPile: {
+                if(!card->isExclusive())
+                    discard_pile->prepend(move.card_id); 
+                break;
+            }
+            case Player::DrawPile: draw_pile->prepend(move.card_id); break;
+            case Player::Special: table_cards.append(move.card_id); break;
+            default:
+                break;
         }
     }
 
@@ -2663,6 +2682,28 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
 void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place){
     owner_map.insert(card_id, owner);
     place_map.insert(card_id, place);
+}
+
+//modify by ce
+const Card *Room::getOffCourtCard(const QString &name) {
+    int count = Sanguosha->getCardCount();
+    
+    for(int i=0; i<count; i++) {
+        const Card *card = Sanguosha->getCard(i);
+        
+        if(owner_map.value(card->getId()))
+            continue;
+
+        Player::Place place = place_map.value(card->getId());
+
+        if(card && card->objectName() == name 
+        && place != Player::Judging && place != Player::Special) {
+            return card;
+        }
+    }
+    
+    return NULL;
+
 }
 
 ServerPlayer *Room::getCardOwner(int card_id) const{

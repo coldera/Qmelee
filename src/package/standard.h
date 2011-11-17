@@ -60,7 +60,7 @@ public:
             RelicLocation,
         };
 
-    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
+    EquipCard(Suit suit, int number):Card(suit, number, true, false), skill(NULL){}
     TriggerSkill *getSkill() const;
 
     virtual QString getType() const;

@@ -30,27 +30,11 @@
 Engine *Sanguosha = NULL;
 
 extern "C" {
-    // Package *NewStandard();
-    //Package *NewWind();
-    //Package *NewFire();
-    //Package *NewThicket();
-    //Package *NewMountain();
-    //Package *NewGod();
-    //Package *NewYitian();
-    //Package *NewSP();
-    //Package *NewYJCM();
-    //Package *NewWisdom();
     Package *NewMeleeCard();
+    Package *NewExclusiveCard();
     Package *NewMeleeSS();
     Package *NewMeleeDS();
     Package *NewMeleeSF();
-    // Package *NewTest();
-	
-    //Package *NewStandardCard();
-    //Package *NewManeuvering();
-    //Package *NewNostalgia();
-    //Package *NewYitianCard();
-    //Package *NewJoy();
 
     //Scenario *NewGuanduScenario();
     //Scenario *NewFanchengScenario();
@@ -69,29 +53,11 @@ Engine::Engine()
 {
     Sanguosha = this;
 
-    // addPackage(NewStandard());
-    //addPackage(NewWind());
-    //addPackage(NewFire());
-    //addPackage(NewThicket());
-    //addPackage(NewMountain());
-    //addPackage(NewGod());
-    //addPackage(NewSP());
-    //addPackage(NewYJCM());
-    //addPackage(NewYitian());
-    //addPackage(NewWisdom());
     addPackage(NewMeleeCard());
+    addPackage(NewExclusiveCard());
     addPackage(NewMeleeSS());
     addPackage(NewMeleeDS());
     addPackage(NewMeleeSF());
-    // addPackage(NewTest());
-
-
-    //addPackage(NewStandardCard());
-	//addPackage(NewStandardExCard());
-    //addPackage(NewManeuvering());
-    //addPackage(NewYitianCard());
-    //addPackage(NewNostalgia());
-    //addPackage(NewJoy());
 
     //addScenario(NewGuanduScenario());
     //addScenario(NewFanchengScenario());
@@ -142,7 +108,7 @@ lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
 
     luaopen_sgs(L);
 
-    int error = luaL_dofile(L, "sanguosha.lua");
+    int error = luaL_dofile(L, "melee.lua");
     if(error){
         error_msg = lua_tostring(L, -1);
         return NULL;
@@ -232,8 +198,9 @@ void Engine::addPackage(Package *package){
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach(Card *card, all_cards){
         card->setId(cards.length());
-        cards << card;
 
+        cards << card;
+        
         QString card_name = card->objectName();
         metaobjects.insert(card_name, card->metaObject());
     }
@@ -627,11 +594,12 @@ QList<int> Engine::getRandomCards() const{
 
     QList<int> list;
     foreach(Card *card, cards){
-        if(exclude_disaters && card->inherits("Disaster"))
+        if((exclude_disaters && card->inherits("Disaster")) || card->isExclusive()) //modify by ce
             continue;
 
         if(!ban_package.contains(card->getPackage()))
             list << card->getId();
+            
     }
 
     qShuffle(list);

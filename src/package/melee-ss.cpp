@@ -269,11 +269,11 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        YingxuanCard *yingxuan_card = new YingxuanCard;
-        yingxuan_card->addSubcard(card_item->getCard()->getId());
-        yingxuan_card->setSkillName(objectName());
+        YingxuanCard *card = new YingxuanCard;
+        card->addSubcard(card_item->getCard()->getId());
+        card->setSkillName(objectName());
 
-        return yingxuan_card;
+        return card;
     }
 };
 
@@ -2662,12 +2662,119 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------genan
+
+//----------------------------------------------------------------------------- ChaoxiuGet
+
+ChaoxiuCard::ChaoxiuCard(){
+    target_fixed = true;
+    mute = true;
+}
+
+void ChaoxiuCard::use(Room *room, ServerPlayer *genan, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);    
+    
+    room->setPlayerMark(genan, "chaoxiu", 1);
+    
+    room->playSkillEffect("chaoxiu_get");
+    
+    LogMessage log;
+    log.type = "#ChaoxiuGet";
+    log.from = genan;
+    room->sendLog(log);
+    
+    const Card *chaoxiu = room->getOffCourtCard("chaoxiu");
+    genan->obtainCard(chaoxiu);
+}
+
+class ChaoxiuGet: public OneCardViewAsSkill{
+public:
+    ChaoxiuGet():OneCardViewAsSkill("chaoxiu_get"){}
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+    
+        if(player->hasWeapon("chaoxiu"))
+            return false;
+            
+        foreach(const Card *card, Self->getCards()) {
+            if(card->inherits("Chaoxiu"))
+                return false;
+        }
+        
+        return true;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("Weapon");
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ChaoxiuCard *card = new ChaoxiuCard;
+        card->addSubcard(card_item->getCard()->getId());
+        card->setSkillName(objectName());
+
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Duchui
+
+DuchuiCard::DuchuiCard(){
+    once = true;
+}
+
+bool DuchuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+        
+    if(!Self->inMyAttackRange(to_select))
+        return false;
+
+    return true;
+}
+
+void DuchuiCard::use(Room *room, ServerPlayer *genan, const QList<ServerPlayer *> &targets) const{
+    genan->updateMp(-4);
+    
+    PoisonBang *poison_bang = new PoisonBang(Card::NoSuit, 0);
+
+    LogMessage log;
+    log.type = "#DuchuiEffect";
+    log.from = genan;
+    log.to << targets;
+    log.card_str = poison_bang->toString();
+    room->sendLog(log);    
+    
+    room->throwCard(this);
+    
+    poison_bang->use(room, genan, targets);
+
+}
+
+class Duchui: public ZeroCardViewAsSkill{
+public:
+    Duchui():ZeroCardViewAsSkill("duchui"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp() >= 4 && !player->hasUsed("DuchuiCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        DuchuiCard *card = new DuchuiCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
-    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru;
+    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -2800,6 +2907,12 @@ MeleeSSPackage::MeleeSSPackage()
     addMetaObject<MeiyuCard>();
     addMetaObject<BaoyuCard>();
     
+    genan = new General(this, "genan", "kuang");
+    genan->addSkill(new ChaoxiuGet);
+    genan->addSkill(new Duchui);
+    
+    addMetaObject<ChaoxiuCard>();
+    addMetaObject<DuchuiCard>();
 }
 
 ADD_PACKAGE(MeleeSS);

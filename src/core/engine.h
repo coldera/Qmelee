@@ -106,7 +106,7 @@ private:
     QHash<QString, const Scenario *> scenarios;
     ChallengeModeSet *challenge_mode_set;
 
-    QList<Card*> cards;
+    QList<Card*> cards, hidden_cards;
     QStringList lord_list, nonlord_list;
     QSet<QString> ban_package;
 
