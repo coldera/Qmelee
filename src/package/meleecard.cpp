@@ -18,7 +18,7 @@ class FireBangSkill: public TriggerSkill{
 public:
     FireBangSkill():TriggerSkill("fire_bang"){
         frequency = Compulsory;
-        events << Damage << SlashMissed;
+        events << Damage << CardFinished;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -63,7 +63,7 @@ FireBang::FireBang(Suit suit, int number)
 TriggerSkill *FireBang::Skill = new FireBangSkill;
 
 void FireBang::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &targets) const{
-    if(player->getPhase() == Player::Play) {    
+    if(player->getPhase() == Player::Play) {
         room->getThread()->addTriggerSkill(this->Skill);        
         room->attachSkillToPlayer(player, objectName());
     }
@@ -76,7 +76,7 @@ class ThunderBangSkill: public TriggerSkill{
 public:
     ThunderBangSkill():TriggerSkill("thunder_bang"){
         frequency = Compulsory;
-        events << Damage << SlashMissed;
+        events << Damage << CardFinished;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -152,7 +152,7 @@ class AirBangSkill: public TriggerSkill{
 public:
     AirBangSkill():TriggerSkill("air_bang"){
         frequency = Compulsory;
-        events << Damage << SlashMissed;
+        events << Damage << CardFinished;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -226,7 +226,7 @@ class PoisonBangSkill: public TriggerSkill{
 public:
     PoisonBangSkill():TriggerSkill("poison_bang"){
         frequency = Compulsory;
-        events << Damage << SlashMissed;
+        events << Damage << CardFinished;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{

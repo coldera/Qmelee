@@ -1710,6 +1710,7 @@ void ChuixueBang::onEffect(const CardEffectStruct &effect) const{
 }
 
 ChuixueCard::ChuixueCard(){
+    mute = true;
     once = true;
     target_fixed = true;
 }
@@ -1720,6 +1721,8 @@ void ChuixueCard::onUse(Room *room, const CardUseStruct &card_use) const{
     rimururu->updateMp(-5);
     
     QList<ServerPlayer *> targets = room->getOtherPlayers(rimururu);
+    
+    room->playSkillEffect("chuixue");
     
     CardUseStruct use;
     use.card = new ChuixueBang;
@@ -1760,8 +1763,6 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *rimururu, QVariant &data) const{
     
         Room *room = rimururu->getRoom();
-    
-        room->playSkillEffect(objectName());
         
         LogMessage log;
         log.type = "$Shenjing";
@@ -1777,6 +1778,8 @@ public:
         room->judge(judge);
         
         if(judge.isGood()) {
+        
+            room->playSkillEffect(objectName());
             
             LogMessage log;
             log.type = "#DamageNullify";
@@ -1815,6 +1818,8 @@ public:
         
         if(horse) {
             if(charlotte->askForSkillInvoke(objectName(), data)) {
+            
+                room->playSkillEffect(objectName());
                 
                 LogMessage log;
                 log.type = "$PokongEffect";
@@ -1897,6 +1902,8 @@ public:
                 if(open_card->isAvailable(charlotte)) {
                     room->setPlayerMark(charlotte, "xunguangcard", open_card->getId()+1);
                     
+                    room->playSkillEffect(objectName());
+                    
                     AI *ai = charlotte->getAI();
                     if(ai){
                         CardUseStruct ai_card_use;                        
@@ -1935,6 +1942,7 @@ public:
 //----------------------------------------------------------------------------- Kongchan
 
 KongchanCard::KongchanCard(){
+    mute = true;
     target_fixed = true;
 }
 
@@ -1984,6 +1992,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         
         if(room->askForUseCard(hanzo, "@@kongchan", "@kongchan")) {
+        
+            room->playSkillEffect(objectName());
 
             if(damage.from && damage.from != hanzo) {
                 QVariant tohelp = QVariant::fromValue((PlayerStar)damage.from);
@@ -1991,6 +2001,7 @@ public:
                 const Card *bang = room->askForCard(hanzo, "slash", "@kongchan-bang:"+damage.from->objectName(), tohelp);
                 
                 if(bang) {
+                
                     CardUseStruct use;
                     use.card = bang;
                     use.from = hanzo;
@@ -2034,7 +2045,6 @@ public:
         room->sendLog(log);
         
         hanzo->loseMark("@yingwu");
-        room->detachSkillFromPlayer(hanzo, "yingwu_on");
 
         return false;
     }
@@ -2042,13 +2052,13 @@ public:
 
 class YingwuOn: public TriggerSkill{
 public:
-    YingwuOn():TriggerSkill("yingwu_on"){
+    YingwuOn():TriggerSkill("#yingwu-on"){
         events << CardEffected;
         frequency = Compulsory;
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target);
+        return TriggerSkill::triggerable(target) && target->getMark("@yingwu");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *hanzo, QVariant &data) const{
@@ -2065,7 +2075,7 @@ public:
         
         Room *room = hanzo->getRoom();
         
-        if(room->testRandomEvent(hanzo, objectName(), 50)) {
+        if(room->testRandomEvent(hanzo, "yingwu", 50)) {
             LogMessage log;
             log.type = "$Yingwu";
             log.from = hanzo;
@@ -2098,11 +2108,12 @@ public:
         Room *room = hanzo->getRoom();
         
         if(hanzo->askForSkillInvoke(objectName(), data)) {
+        
+            room->playSkillEffect(objectName());
             
             hanzo->updateMp(-1);
             hanzo->gainMark("@yingwu");
             
-            room->acquireSkill(hanzo, "yingwu_on");
         }
         
         return false;
@@ -2147,7 +2158,9 @@ public:
     }
 };
 
-ChenyinCard::ChenyinCard(){}
+ChenyinCard::ChenyinCard(){
+    mute = true;
+}
 
 bool ChenyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty()
@@ -2172,6 +2185,7 @@ void ChenyinCard::onUse(Room *room, const CardUseStruct &card_use) const {
     
     if(success) {
     
+        room->playSkillEffect("chenyin");    
         room->broadcastInvoke("animate", "chenyin");
     
         DamageStruct damageMaker;
@@ -2876,15 +2890,16 @@ MeleeSSPackage::MeleeSSPackage()
     hanzo = new General(this, "hanzo", "qi", 3);
     hanzo->addSkill(new Kongchan);
     hanzo->addSkill(new Yingwu);
+    hanzo->addSkill(new YingwuOn);
+    hanzo->addSkill(new YingwuOff);
+    related_skills.insertMulti("yingwu", "#yingwu-on");
+    related_skills.insertMulti("yingwu", "#yingwu-off");
     hanzo->addSkill(new Chenyin);
     hanzo->addSkill(new ChenyinOff);
     related_skills.insertMulti("chenyin", "#chenyin-off");
     
     addMetaObject<KongchanCard>();
     addMetaObject<ChenyinCard>();
-    
-    skills << new YingwuOn << new YingwuOff;
-    related_skills.insertMulti("yingwu_on", "#yingwu-off");
     
     jubei = new General(this, "jubei", "qi");
     jubei->addSkill(new Xinyan);

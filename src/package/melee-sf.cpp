@@ -1701,7 +1701,6 @@ void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer 
         
         return;
     }
-        
     
     QList<int> card_ids;
     foreach(QVariant card_id, mofang_list)
