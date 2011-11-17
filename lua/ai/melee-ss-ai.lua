@@ -10,8 +10,6 @@ sgs.haohmaru_keep_value = {
 	IceBang = 3.8,
 }
 
-sgs.dynamic_value.damage_card["TianbaCard"] = true
-
 -- jiuqi
 jiuqi_skill={}
 jiuqi_skill.name="jiuqi"
@@ -42,6 +40,8 @@ jiuqi_skill.getTurnUseCard=function(self)
 end
 
 -- tianba
+sgs.dynamic_value.damage_card["TianbaCard"] = true
+
 sgs.ai_skill_use["@@tianba"]=function(self,prompt)
     self:updatePlayers()
 	local cards = self.player:getHandcards()
@@ -65,9 +65,9 @@ end
 -- nakoruru ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["nakoruru"] = 2
 
-sgs.dynamic_value.benefit["YingxuanCard"] = true
-
 -- goutong
+sgs.ai_use_priority.GoutongCard = 3
+
 local goutong_skill={}
 goutong_skill.name="goutong"
 table.insert(sgs.ai_skills,goutong_skill)
@@ -119,6 +119,11 @@ sgs.ai_skill_use_func["GoutongCard"]=function(card,use,self)
 end
 
 -- yingxuan
+sgs.dynamic_value.benefit["YingxuanCard"] = true
+sgs.ai_use_priority.YingxuanCard = function(self)
+    return self.player:isWounded() ? 2 : 6
+end
+
 local yingxuan_skill={}
 yingxuan_skill.name="yingxuan"
 table.insert(sgs.ai_skills,yingxuan_skill)
@@ -146,8 +151,6 @@ end
 -- ukyo ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["ukyo"] = 6
 
-sgs.dynamic_value.damage_card["LiulianCard"] = true
-
 -- juhe
 sgs.ai_skill_invoke.juhe = function(self, data)
 	local effect = data:toSlashEffect()
@@ -162,8 +165,9 @@ sgs.ai_skill_invoke.juhe = function(self, data)
 end
 
 -- liulian
+sgs.dynamic_value.damage_card["LiulianCard"] = true
+
 sgs.ai_skill_use["@@liulian"]=function(self,prompt)
-    
     if self.player:getHp() >=2 then
         self:sort(self.enemies, "defense")
         
@@ -182,6 +186,8 @@ end
 sgs.ai_chaofeng["kyoshiro"] = 0
 
 -- quwu
+sgs.ai_use_priority.QuwuCard = 6
+
 local quwu_skill={}
 quwu_skill.name="quwu"
 table.insert(sgs.ai_skills,quwu_skill)
@@ -378,9 +384,10 @@ end
 -- suija ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["sogetsu"] = 4
 
+-- siyue
+sgs.ai_use_priority.SiyueCard = 2
 sgs.dynamic_value.damage_card["SiyueCard"] = true
 
--- siyue
 local siyue_skill={}
 siyue_skill.name="siyue"
 table.insert(sgs.ai_skills,siyue_skill)
@@ -522,10 +529,10 @@ end
 -- galford ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["galford"] = 6
 
-sgs.dynamic_value.damage_card["RenquanCard"] = true
-sgs.dynamic_value.benefit["DianguangCard"] = true
-
 -- renquan
+sgs.ai_use_priority.RenquanCard = 3
+sgs.dynamic_value.damage_card["RenquanCard"] = true
+
 local renquan_skill={}
 renquan_skill.name="renquan"
 table.insert(sgs.ai_skills,renquan_skill)
@@ -575,6 +582,8 @@ sgs.ai_skill_use_func["RenquanCard"]=function(card,use,self)
 end
 
 -- dianguang
+sgs.dynamic_value.benefit["DianguangCard"] = true
+
 local dianguang_skill={}
 dianguang_skill.name="dianguang"
 table.insert(sgs.ai_skills,dianguang_skill)
@@ -594,9 +603,9 @@ sgs.rimururu_keep_value = {
     Armor = 0,
 }
 
+-- bingren
 sgs.dynamic_value.benefit["BingrenCard"] = true
 
--- bingren
 local bingren_skill={}
 bingren_skill.name="bingren"
 table.insert(sgs.ai_skills,bingren_skill)
@@ -662,6 +671,8 @@ bingren_on_skill.getTurnUseCard=function(self)
 end
 
 -- chuixue
+sgs.dynamic_value.damage_card["ChuixueCard"] = true
+
 local chuixue_skill={}
 chuixue_skill.name="chuixue"
 table.insert(sgs.ai_skills,chuixue_skill)
@@ -749,10 +760,9 @@ sgs.hanzo_keep_value = {
     EquipCard = 6,
 }
 
-sgs.dynamic_value.benefit["KongchanCard"] = true
-sgs.dynamic_value.control_card["ChenyinCard"] = true
-
 -- kongchan
+sgs.dynamic_value.benefit["KongchanCard"] = true
+
 sgs.ai_skill_use["@@kongchan"]=function(self,prompt)
     local equip
     local cards = self.player:getCards("he")
@@ -774,11 +784,13 @@ sgs.ai_skill_use["@@kongchan"]=function(self,prompt)
 end
 
  -- yingwu
- sgs.ai_skill_invoke.yingwu = function(self, data)
+sgs.ai_skill_invoke.yingwu = function(self, data)
     return self.player:isWounded() and self.player:getMp()>=1    
 end
 
 -- chenyin
+sgs.dynamic_value.control_card["ChenyinCard"] = true
+
 sgs.ai_skill_use["@@chenyin"]=function(self,prompt)
     self:sort(self.enemies, "chaofeng")
     local cards = self.player:getHandcards()
@@ -801,11 +813,9 @@ end
 -- jubei ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["jubei"] = 0
 
-sgs.dynamic_value.control_card["DaoquCard"] = true
-sgs.dynamic_value.benefit["ErdaoCard"] = true
-sgs.dynamic_value.benefit["ShuangyueCard"] = true
-
 -- erdao
+sgs.dynamic_value.benefit["ErdaoCard"] = true
+
 local erdao_skill={}
 erdao_skill.name="erdao"
 table.insert(sgs.ai_skills,erdao_skill)
@@ -831,6 +841,8 @@ sgs.ai_skill_use_func["ErdaoCard"]=function(card,use,self)
 end
 
 -- shuangyue
+sgs.dynamic_value.benefit["ShuangyueCard"] = true
+
 local shuangyue_skill={}
 shuangyue_skill.name="shuangyue"
 table.insert(sgs.ai_skills,shuangyue_skill)
@@ -846,6 +858,8 @@ sgs.ai_skill_use_func["ShuangyueCard"]=function(card,use,self)
 end
 
  -- daoqu
+sgs.dynamic_value.control_card["DaoquCard"] = true
+
 sgs.ai_skill_use["@@daoqu"]=function(self,prompt)
     self:sort(self.enemies, "defense")
     
@@ -870,11 +884,9 @@ sgs.shizumaru_suit_value = {
     club = 3.5,
 }
 
-sgs.dynamic_value.benefit["WuyuCard"] = true
-sgs.dynamic_value.benefit["MeiyuCard"] = true
-sgs.dynamic_value.damage_card["BaoyuCard"] = true
-
 -- wuyu
+sgs.dynamic_value.benefit["WuyuCard"] = true
+
 sgs.ai_skill_use["@@wuyu"]=function(self,prompt)
     self:sort(self.enemies, "defense")
     
@@ -902,6 +914,9 @@ sgs.ai_skill_use["@@wuyu"]=function(self,prompt)
 end
 
 -- meiyu
+sgs.ai_use_priority.MeiyuCard = 5
+sgs.dynamic_value.benefit["MeiyuCard"] = true
+
 local meiyu_skill={}
 meiyu_skill.name="meiyu"
 table.insert(sgs.ai_skills,meiyu_skill)
@@ -925,6 +940,8 @@ sgs.ai_skill_use_func["MeiyuCard"]=function(card,use,self)
 end
 
 -- baoyu
+sgs.dynamic_value.damage_card["BaoyuCard"] = true
+
 sgs.ai_skill_use["@@baoyu"]=function(self,prompt)
     
     local black_card = 0
@@ -954,11 +971,11 @@ end
 -- genan ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["genan"] = 2
 
-sgs.dynamic_value.damage_card["DuchuiCard"] = true
-
 sgs.ai_use_value.chaoxiu = 8
 
 -- chaoxiu_get
+sgs.ai_use_priority.ChaoxiuCard = 3
+
 local chaoxiu_get_skill={}
 chaoxiu_get_skill.name="chaoxiu_get"
 table.insert(sgs.ai_skills,chaoxiu_get_skill)
@@ -989,6 +1006,9 @@ sgs.ai_skill_use_func["ChaoxiuCard"]=function(card,use,self)
 end
 
 -- duchui
+sgs.ai_use_priority.DuchuiCard = 2
+sgs.dynamic_value.damage_card["DuchuiCard"] = true
+
 local duchui_skill={}
 duchui_skill.name="duchui"
 table.insert(sgs.ai_skills,duchui_skill)

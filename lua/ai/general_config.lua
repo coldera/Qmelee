@@ -77,7 +77,7 @@ sgs.ai_use_priority = {
     Grab=4.3,
     NothingIsSomething=4.6,
 
-    WoodElf=3.9,
+    WoodElf=4.9,
 
     ThousandsArrowsShot=3.5,
     AlienInvasion=3.5,
@@ -88,13 +88,15 @@ sgs.ai_use_priority = {
     BorrowWeapon=2.75,
 
     Schnapps = 2.7,
-
-    OffensiveHorse = 4.7,
+    
+    Boar=4.8,
+    SpiderQueen=4.7,
     FloodDragon=4.6,
-    SpiderQueen=4.5,
+    OffensiveHorse = 4.5,
+    
     DefensiveHorse = 2.6998,
     Rhinoceros=2.6997,
-    Boar=4.6996,
+    
     Deer=2.6995,
     Cattle=2.6994,
     
@@ -113,8 +115,8 @@ sgs.ai_use_priority = {
     PeacockTear = 2.62,
     EvilDirk=2.61,
     
-    PoisonBang = 2.6,
-    FireBang = 2.55,
+    PoisonBang = 2.55,
+    FireBang = 2.54,
     AirBang = 2.5,
     ThunderBang = 2.45,
     IceBang = 2.4,

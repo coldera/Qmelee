@@ -2041,7 +2041,7 @@ function SmartAI:getUsePriority(card)
 	local class_name = card:className()
 	local v=0
 	if card:inherits("EquipCard") then
-	if self:hasSkill(sgs.lose_equip_skill) then return 10 end
+        if self:hasSkill(sgs.lose_equip_skill) then return 10 end
         if card:inherits("Armor") and not self.player:getArmor() then v = 6
         elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 5.7
         elseif card:inherits("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
@@ -2058,8 +2058,13 @@ function SmartAI:getUsePriority(card)
 		-- if v then return v else return sgs.ai_use_priority[class_name] end
 	-- end	
 	
-	v = sgs.ai_use_priority[class_name] or 0
-	
+    v = sgs.ai_use_priority[class_name]
+    if type(v) == "function" then
+		v = v(self)
+	else
+        v = v or 0
+	end
+    
 	if card:inherits("Slash") and (card:getSuit()==sgs.Card_NoSuit) then v=v-0.1 end
 	return v
 end

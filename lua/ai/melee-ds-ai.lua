@@ -11,14 +11,7 @@ sgs.ai_chaofeng["morrigan"] = 2
 
 -- huanying
 sgs.ai_skill_invoke.huanying = function(self, data) 
-    local invoke = self.player:getHandcardNum()>=2 and self.player:getMp()>=6
-    if invoke then        
-        -- self.player:invoke("animate", "huanying")    
-        return true
-    end
-    
-    return false
-    
+    return self.player:getHandcardNum()>=2 and self.player:getMp()>=6
 end
 
 -- victor ---------------------------------------------------------------------------------
@@ -46,9 +39,10 @@ end
 -- sasquatch ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["sasquatch"] = 3
 
+-- bingzhu
+sgs.ai_use_priority.BingzhuCard = 2
 sgs.dynamic_value.damage_card["BingzhuCard"] = true
 
--- bingzhu
 local bingzhu_skill={}
 bingzhu_skill.name="bingzhu"
 table.insert(sgs.ai_skills,bingzhu_skill)
@@ -84,9 +78,10 @@ end
 -- aulbath ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["aulbath"] = 0
 
+-- zuanji
+sgs.ai_use_priority.ZuanjiCard = 3
 sgs.dynamic_value.benefit["ZuanjiCard"] = true
 
--- zuanji
 local zuanji_skill={}
 zuanji_skill.name="zuanji"
 table.insert(sgs.ai_skills,zuanji_skill)
@@ -106,9 +101,10 @@ end
 -- qbee ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["qbee"] = 3
 
+-- rongjie
+sgs.ai_use_priority.RongjieCard = 3
 sgs.dynamic_value.control_card["RongjieCard"] = true
 
--- rongjie
 local rongjie_skill={}
 rongjie_skill.name="rongjie"
 table.insert(sgs.ai_skills,rongjie_skill)
@@ -263,6 +259,8 @@ end
 sgs.ai_chaofeng["zabel"] = 0
 
 -- yaogun
+sgs.ai_use_priority.YaogunCard = 5
+
 local yaogun_skill={}
 yaogun_skill.name="yaogun"
 table.insert(sgs.ai_skills,yaogun_skill)
@@ -297,9 +295,10 @@ end
 -- lilith ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["lilith"] = -4
 
+-- lieqi
+sgs.ai_use_priority.LieqiCard = 6
 sgs.dynamic_value.control_card["LieqiCard"] = true
 
--- lieqi
 local lieqi_skill={}
 lieqi_skill.name="lieqi"
 table.insert(sgs.ai_skills,lieqi_skill)
@@ -358,10 +357,10 @@ end
 -- leilei ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["leilei"] = 6
 
-sgs.dynamic_value.damage_card["AnqiCard"] = true
-sgs.dynamic_value.control_card["LingfuCard"] = true
-
 -- anqi
+sgs.ai_use_priority.AnqiCard = 3
+sgs.dynamic_value.damage_card["AnqiCard"] = true
+
 local anqi_skill={}
 anqi_skill.name="anqi"
 table.insert(sgs.ai_skills,anqi_skill)
@@ -452,6 +451,9 @@ sgs.ai_skill_use["@@fanxiang"]=function(self,prompt)
 end
 
 -- lingfu
+sgs.ai_use_priority.LingfuCard = 6
+sgs.dynamic_value.control_card["LingfuCard"] = true
+
 local lingfu_skill={}
 lingfu_skill.name="lingfu"
 table.insert(sgs.ai_skills,lingfu_skill)
@@ -521,9 +523,6 @@ sgs.donovan_keep_value = {
 	ThunderBang = 3.5,
 }
 
-sgs.dynamic_value.benefit["LeishenCard"] = true
-sgs.dynamic_value.damage_card["XueshenCard"] = true
-
 -- huoshen
 local huoshen_skill={}
 huoshen_skill.name="huoshen"
@@ -556,6 +555,8 @@ huoshen_skill.getTurnUseCard=function(self)
 end
 
  -- leishen
+sgs.dynamic_value.benefit["LeishenCard"] = true
+
 sgs.ai_skill_use["@@leishen"]=function(self,prompt)    
     if self.player:getMp()<=3 or self.player:getHandcardNum()<=1 then return "." end
     
@@ -578,7 +579,6 @@ sgs.ai_skill_use["@@leishen"]=function(self,prompt)
     return "."
 end
 
- -- leishen
 local leishen_skill={}
 leishen_skill.name="leishen"
 table.insert(sgs.ai_skills,leishen_skill)
@@ -612,6 +612,9 @@ leishen_skill.getTurnUseCard=function(self)
 end
 
 -- xueshen
+sgs.ai_use_priority.XueshenCard = 2
+sgs.dynamic_value.damage_card["XueshenCard"] = true
+
 local xueshen_skill={}
 xueshen_skill.name="xueshen"
 table.insert(sgs.ai_skills,xueshen_skill)
@@ -654,6 +657,8 @@ sgs.ai_skill_use_func["XueshenCard"]=function(card,use,self)
 end
 
 --anita
+sgs.ai_use_priority.AnitaCard = 1
+
 local anita_skill={}
 anita_skill.name="anita"
 table.insert(sgs.ai_skills,anita_skill)
@@ -686,6 +691,7 @@ sgs.ai_skill_use_func["AnitaCard"]=function(card,use,self)
     use.card = card
 end
 
+-- anita_anwei
 sgs.ai_skill_invoke.anita_anwei = function(self, data) 
     if self.player:getMark("@anita")>0 and self.player:getMp()>0 and (self.player:getHp()==1 or self.player:getHandcardNum()<2 or self.player:hasFlag("leishen_on")) then
         return true
@@ -712,10 +718,9 @@ end
 -- jedah ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["jedah"] = 6
 
-sgs.dynamic_value.benefit["JiushuCard"] = true
-sgs.dynamic_value.benefit["ZhipeiCard"] = true
-
 -- jiushu
+sgs.dynamic_value.benefit["JiushuCard"] = true
+
 local jiushu_skill={}
 jiushu_skill.name="jiushu"
 table.insert(sgs.ai_skills,jiushu_skill)
@@ -735,7 +740,7 @@ sgs.ai_skill_use_func["JiushuCard"]=function(card,use,self)
     use.card = card
 end
 
- --qiyue
+--qiyue
 sgs.ai_skill_use["@@qiyue"]=function(self,prompt)
     local target = nil
     self:sort(self.friends_noself, "handcard")
@@ -753,7 +758,9 @@ sgs.ai_skill_use["@@qiyue"]=function(self,prompt)
     return "."
 end
 
- --zhipei
+--zhipei
+sgs.dynamic_value.benefit["ZhipeiCard"] = true 
+
 local zhipei_skill={}
 zhipei_skill.name="zhipei"
 table.insert(sgs.ai_skills,zhipei_skill)
@@ -774,6 +781,8 @@ sgs.ai_skill_use_func["ZhipeiCard"]=function(card,use,self)
 end
 
 --zhipeigive
+sgs.ai_use_priority.ZhipeiGiveCard = 6
+
 sgs.ai_skill_use["@zhipeigive"]=function(self,prompt)
     local card_str
     local cards = self.player:getHandcards()
@@ -795,8 +804,6 @@ end
 
 -- anakaris ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["anakaris"] = 2
-
-sgs.dynamic_value.control_card["ZhicaiCard"] = true
 
 -- guanwu
 local guanwu_skill={}
@@ -829,6 +836,9 @@ sgs.ai_skill_use_func["GuanwuCard"]=function(card,use,self)
 end
 
 -- zhicai
+sgs.ai_use_priority.ZhicaiCard = 6
+sgs.dynamic_value.control_card["ZhicaiCard"] = true
+
 local zhicai_skill={}
 zhicai_skill.name="zhicai"
 table.insert(sgs.ai_skills,zhicai_skill)
@@ -861,8 +871,6 @@ end
 -- bulleta ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["bulleta"] = 4
 
-sgs.dynamic_value.damage_card["YoubuCard"] = true
-
 -- baijin
 sgs.ai_skill_invoke.baijin = function(self, data) 
     return self.player:getMp()>0
@@ -883,6 +891,9 @@ sgs.ai_skill_invoke.shoulie = function(self, data)
 end
 
 -- youbu
+sgs.ai_use_priority.YoubuCard = 6
+sgs.dynamic_value.damage_card["YoubuCard"] = true
+
 local youbu_skill={}
 youbu_skill.name="youbu"
 table.insert(sgs.ai_skills,youbu_skill)
@@ -914,10 +925,10 @@ end
 -- bishamon ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["bishamon"] = 5
 
-sgs.dynamic_value.control_card["GuiyanCard"] = true
-sgs.dynamic_value.benefit["YuanhunCard"] = true
-
 -- guiyan
+sgs.ai_use_priority.GuiyanCard = 5
+sgs.dynamic_value.control_card["GuiyanCard"] = true
+
 local guiyan_skill={}
 guiyan_skill.name="guiyan"
 table.insert(sgs.ai_skills,guiyan_skill)
@@ -971,6 +982,8 @@ sgs.ai_skill_use_func["GuiyanCard"]=function(card,use,self)
 end
 
 -- yuanhun
+sgs.dynamic_value.benefit["YuanhunCard"] = true
+
 local yuanhun_skill={}
 yuanhun_skill.name="yuanhun"
 table.insert(sgs.ai_skills,yuanhun_skill)
@@ -991,10 +1004,10 @@ end
 -- felicia ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["felicia"] = 6
 
-sgs.dynamic_value.benefit["LeyuanCard"] = true
-sgs.ai_use_priority["LeyuanCard"] = 10
-
 -- leyuan
+sgs.ai_use_priority["LeyuanCard"] = 10
+sgs.dynamic_value.benefit["LeyuanCard"] = true
+
 local leyuan_skill={}
 leyuan_skill.name="leyuan"
 table.insert(sgs.ai_skills,leyuan_skill)

@@ -84,6 +84,12 @@ sgs.ai_skill_invoke["boar"] = function(self, data)
     return damage and damage.damage>0 and not self:isFriend(damage.from)
 end
 
+sgs.ai_skill_invoke["chaoxiu"]=function(self, data)
+    local effect = data:toSlashEffect() 
+    return effect and not self:isFriend(effect.to)
+end
+
+-- snake_spear
 local snake_spear_skill={}
 snake_spear_skill.name="snake_spear"
 table.insert(sgs.ai_skills,snake_spear_skill)

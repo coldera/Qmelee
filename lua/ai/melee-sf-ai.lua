@@ -2,12 +2,12 @@
 
 sgs.ai_chaofeng["gouki"] = 1
 
-sgs.dynamic_value.damage_card["ShunyuCard"] = true
-
 -- shankong
 sgs.ai_skill_invoke.shankong = true
 
 -- shunyu
+sgs.dynamic_value.damage_card["ShunyuCard"] = true
+
 sgs.ai_skill_use["@@shunyu"]=function(self,prompt)
     local cards = self.player:getCards("he")
     if cards:length()<4 or self.player:getMp()<18 then return "." end
@@ -41,13 +41,11 @@ sgs.ai_skill_use["@@shunyu"]=function(self,prompt)
 end
 
 -- ryu ---------------------------------------------------------------------------------
-
 sgs.ai_chaofeng["ryu"] = 2
 
-sgs.dynamic_value.damage_card["LongjuanCard"] = true
-sgs.dynamic_value.damage_card["BodongCard"] = true
-
 -- longjuan
+sgs.dynamic_value.damage_card["LongjuanCard"] = true
+
 sgs.ai_skill_use["@@longjuan"]=function(self,prompt)
     if self:getCardsNum("Slash")<=0 then return "." end
     
@@ -74,6 +72,8 @@ sgs.ai_skill_use["@@longjuan"]=function(self,prompt)
 end
 
 -- bodong
+sgs.dynamic_value.damage_card["BodongCard"] = true
+
 sgs.ai_skill_use["@@bodong"]=function(self,prompt)
     if self:getCardsNum("Slash")<=0 or self.player:getMp()<3 then return "." end
     
@@ -90,13 +90,11 @@ sgs.ai_skill_use["@@bodong"]=function(self,prompt)
 end
 
 -- ken ---------------------------------------------------------------------------------
-
 sgs.ai_chaofeng["ryu"] = 4
 
-sgs.dynamic_value.damage_card["JifengCard"] = true
-sgs.dynamic_value.damage_card["ShenlongCard"] = true
-
 -- jifeng
+sgs.dynamic_value.damage_card["JifengCard"] = true
+
 sgs.ai_skill_choice.jifeng = function(self, choices)
     local slash_num = self:getCardsNum("Slash")
     
@@ -141,6 +139,8 @@ sgs.ai_skill_use["@@jifeng"]=function(self,prompt)
 end
 
 -- shenglong
+sgs.dynamic_value.damage_card["ShenlongCard"] = true
+
 sgs.ai_skill_use["@@shenglong"]=function(self,prompt)
     if self:getCardsNum("Slash")<=0 or self.player:getMp()<2 then return "." end
     
@@ -157,12 +157,11 @@ sgs.ai_skill_use["@@shenglong"]=function(self,prompt)
 end
 
 -- chunli ---------------------------------------------------------------------------------
-sgs.ai_chaofeng["gouki"] = 4
-
-sgs.dynamic_value.damage_card["BailieCard"] = true
-sgs.dynamic_value.control_card["QigongCard"] = true
+sgs.ai_chaofeng["chunli"] = 4
 
 -- qigong
+sgs.dynamic_value.control_card["QigongCard"] = true
+
 sgs.ai_skill_use["@@qigong"]=function(self,prompt)
     if self:getCardsNum("Slash")<=0 or self.player:getMp()<1 then return "." end
 
@@ -193,6 +192,8 @@ sgs.ai_skill_use["@@jiqi"]=function(self,prompt)
 end
 
 -- bailie
+sgs.dynamic_value.damage_card["BailieCard"] = true
+
 sgs.ai_skill_use["@@bailie"]=function(self,prompt)
     if self:getCardsNum("Slash")<2 then return "." end
     
@@ -233,9 +234,10 @@ sgs.blanka_keep_value = {
 	ThunderBang = 4,
 }
 
+-- dianji
+sgs.ai_use_priority.DianjiCard = 3
 sgs.dynamic_value.damage_card["DianjiCard"] = true
 
--- dianji
 local dianji_skill={}
 dianji_skill.name="dianji"
 table.insert(sgs.ai_skills,dianji_skill)
@@ -289,9 +291,10 @@ sgs.dhalsim_keep_value = {
     FireBang = 2,
 }
 
+-- huoyan
+sgs.ai_use_priority.HuoyanCard = 3
 sgs.dynamic_value.damage_card["HuoyanCard"] = true
 
--- huoyan
 local huoyan_skill={}
 huoyan_skill.name="huoyan"
 table.insert(sgs.ai_skills,huoyan_skill)
@@ -394,10 +397,9 @@ sgs.zangief_keep_value = {
 	PK = 4,
 }
 
-sgs.dynamic_value.control_card["XuanfengCard"] = true
-sgs.dynamic_value.control_card["DazhuangCard"] = true
-
 -- xuanfeng
+sgs.dynamic_value.control_card["XuanfengCard"] = true
+
 sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     if self.player:getCards("he"):length() <2 then return "." end
     
@@ -429,6 +431,8 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
 end
 
 -- dazhuang
+sgs.dynamic_value.control_card["DazhuangCard"] = true
+
 sgs.ai_skill_use["@@dazhuang"]=function(self, prompt)
     if self.player:getMp()<3 then return "." end
     
@@ -461,8 +465,6 @@ sgs.zangief_keep_value = {
 	Dodge = 3,
 }
 
-sgs.dynamic_value.damage_card["JiaodaoCard"] = true
-
 --shoudao
 shoudao_skill={}
 shoudao_skill.name="shoudao"
@@ -494,6 +496,8 @@ shoudao_skill.getTurnUseCard=function(self)
 end
 
 -- jiaodao
+sgs.dynamic_value.damage_card["JiaodaoCard"] = true
+
 sgs.ai_skill_use["@@jiaodao"]=function(self, prompt)
     
     local cards = self.player:getCards("h")
@@ -527,12 +531,12 @@ end
 
 
 -- sakura ---------------------------------------------------------------------------------
-
 sgs.ai_chaofeng["sakura"] = 4
 
+-- chongbai
+sgs.ai_use_priority.ChongbaiCard = 6
 sgs.dynamic_value.benefit["ChongbaiCard"] = true
 
--- chongbai
 local chongbai_skill={}
 chongbai_skill.name="chongbai"
 table.insert(sgs.ai_skills,chongbai_skill)
@@ -577,6 +581,8 @@ sgs.ai_skill_use_func["ChongbaiCard"]=function(card,use,self)
 end
 
 -- mofang
+sgs.ai_use_priority.MofangCard = 6
+
 local mofang_skill={}
 mofang_skill.name="mofang"
 table.insert(sgs.ai_skills,mofang_skill)
@@ -683,7 +689,6 @@ end
 
 
 -- cammy ---------------------------------------------------------------------------------
-
 sgs.ai_chaofeng["cammy"] = 2
 
 -- jingzhun
@@ -776,6 +781,8 @@ sgs.ai_skill_playerchosen.caozong = function (self, targets)
 end
 
 -- xinling
+sgs.ai_use_priority.XinlingCard = 6
+
 local xinling_skill={}
 xinling_skill.name="xinling"
 table.insert(sgs.ai_skills,xinling_skill)
@@ -792,10 +799,9 @@ end
 -- gen ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["gen"] = 6
 
-sgs.dynamic_value.damage_card["JiliuCard"] = true
-sgs.dynamic_value.control_card["SangliuCard"] = true
-
 -- jiliu
+sgs.dynamic_value.damage_card["JiliuCard"] = true
+
 local jiliu_skill={}
 jiliu_skill.name="jiliu"
 table.insert(sgs.ai_skills,jiliu_skill)
@@ -827,6 +833,8 @@ sgs.ai_skill_invoke["#jiliu-on"] = function(self, data)
 end
 
 -- sangliu
+sgs.dynamic_value.control_card["SangliuCard"] = true
+
 local sangliu_skill={}
 sangliu_skill.name="sangliu"
 table.insert(sgs.ai_skills,sangliu_skill)
@@ -918,8 +926,6 @@ end
 -- sagat ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["sagat"] = 4
 
-sgs.dynamic_value.damage_card["HuqieCard"] = true
-
 -- zengnu
 local zengnu_skill={}
 zengnu_skill.name="zengnu"
@@ -939,6 +945,8 @@ end
 
 
 -- huqie
+sgs.dynamic_value.damage_card["HuqieCard"] = true
+
 sgs.ai_skill_use["@@huqie"]=function(self,prompt)
     if self.player:getMp()<4 and self.player:getHp()>1 then return "." end
     
