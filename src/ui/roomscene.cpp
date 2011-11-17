@@ -2170,30 +2170,24 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 
     if(delta < 0){
         QString damage_effect;
+        ClientPlayer *player = ClientInstance->getPlayer(who);
+        
+        //modify by ce
         switch(delta){
-        case -1: {
-                ClientPlayer *player = ClientInstance->getPlayer(who);
+            case -1:
+            case -2:{
                 int r = qrand() % 3 + 1;
-                if(player->getGeneral()->isMale())
-                    damage_effect = QString("injure1-male%1").arg(r);
-                else
-                    damage_effect = QString("injure1-female%1").arg(r);
+                damage_effect = QString("%1%2").arg(player->getGeneralName()).arg(r);
+                Sanguosha->playEffect(QString("audio/injure/%1.ogg").arg(damage_effect));
                 break;
             }
 
-        case -2:{
-                damage_effect = "injure2";
-                break;
-            }
-
-        case -3:
-        default:{
-                damage_effect = "injure3";
+            case -3:
+            default:{
+                Sanguosha->playAudio("injure3");
                 break;
             }
         }
-
-        Sanguosha->playAudio(damage_effect);
 
         if(photo){
             photo->setEmotion("damage");

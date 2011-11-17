@@ -1894,6 +1894,11 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     }
 }
 
+//modify by ce
+void Room::playEffect(const QString &path){
+    broadcastInvoke("playEffect", path);
+}
+
 void Room::playCardEffect(const QString &card_name, bool is_male){
     QString gender = is_male ? "M" : "F";
     broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));

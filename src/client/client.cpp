@@ -72,6 +72,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["playAudio"] = &Client::playAudio;
+    callbacks["playEffect"] = &Client::playEffect; //modify by ce
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -800,6 +801,11 @@ void Client::askForCardChosen(const QString &ask_str){
 
     ask_dialog = dialog;
     setStatus(ExecDialog);
+}
+
+//modify by ce
+void Client::playEffect(const QString &path){
+    Sanguosha->playEffect(path);
 }
 
 void Client::playCardEffect(const QString &play_str){

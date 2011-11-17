@@ -2274,6 +2274,8 @@ public:
         && damage.from->getWeapon() 
         && !jubei->getWeapon()) {
         
+            jubei->getRoom()->playSkillEffect(objectName());
+        
             LogMessage log;
             log.type = "$XinyanEffect";
             log.from = jubei;

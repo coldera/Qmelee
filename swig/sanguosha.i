@@ -337,7 +337,10 @@ struct DamageStruct{
     enum Nature{
         Normal, // normal slash, duel and most damage caused by skill
         Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+        Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
+        Air,
+        Poison,
+        Ice
     };
 
     ServerPlayer *from;
@@ -785,6 +788,7 @@ public:
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
+    void playEffect(const char *path);
     void playCardEffect(const char *card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);

@@ -87,6 +87,7 @@ public:
     void startGame(const QString &);
     void hpChange(const QString &change_str);
     void playSkillEffect(const QString &play_str);
+    void playEffect(const QString &path);
     void playCardEffect(const QString &play_str);
     void playAudio(const QString &name);
     void clearPile(const QString &);

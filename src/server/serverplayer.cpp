@@ -29,6 +29,14 @@ void ServerPlayer::playCardEffect(const Card *card){
             index = skill->getEffectIndex(this, card);
 
         room->playSkillEffect(skill_name, index);
+        
+    }else if(card->inherits("Slash") && hasFlag("drank")) {
+        //modify by ce
+        room->playEffect(QString("audio/bang/drank_%1.ogg").arg(getGeneralName()));
+    }else if(card->inherits("Bang")) { 
+        //modify by ce
+        int r = qrand() % 3 + 1;
+        room->playEffect(QString("audio/bang/bang%1_%2.ogg").arg(r).arg(getGeneralName()));
     }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
         
