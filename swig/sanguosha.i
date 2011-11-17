@@ -499,7 +499,7 @@ public:
     };
 
     // constructor
-    Card(Suit suit, int number, bool target_fixed = false);
+    Card(Suit suit, int number, bool target_fixed = false, bool exclusive = false);
 
     // property getters/setters
     QString getSuitString() const;
@@ -838,7 +838,8 @@ public:
     void removeTag(const char *key);
 
     void setEmotion(ServerPlayer *target, const char *emotion);
-
+    
+    const Card *getOffCourtCard(const QString &name);
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);

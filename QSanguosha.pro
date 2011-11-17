@@ -40,6 +40,7 @@ SOURCES += src/main.cpp \
 	src/dialog/halldialog.cpp \
 	src/package/standard.cpp \
 	src/package/meleecard.cpp \
+	src/package/exclusivecard.cpp \
 	src/package/melee-ss.cpp \
 	src/package/melee-ds.cpp \
 	src/package/melee-sf.cpp \
@@ -101,6 +102,7 @@ HEADERS += src/client/aux-skills.h \
 	src/package/package.h \
 	src/package/standard.h \
 	src/package/meleecard.h \
+	src/package/exclusivecard.h \
 	src/package/melee-ss.h \
 	src/package/melee-ds.h \
 	src/package/melee-sf.h \

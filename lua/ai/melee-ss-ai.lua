@@ -901,13 +901,12 @@ sgs.ai_skill_use["@@wuyu"]=function(self,prompt)
     return "."
 end
 
-
 -- meiyu
 local meiyu_skill={}
 meiyu_skill.name="meiyu"
 table.insert(sgs.ai_skills,meiyu_skill)
 meiyu_skill.getTurnUseCard=function(self)
-    if self.player:getMp()>0 and (self.player:getHandcardNum()<3 or self.player:getHp()==1) then return end
+    if self.player:getMp()<=5 and not self.player:isWounded() then return end
     
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards) 
@@ -950,4 +949,72 @@ sgs.ai_skill_use["@@baoyu"]=function(self,prompt)
     end
 
     return "."
+end
+
+-- genan ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["genan"] = 2
+
+sgs.dynamic_value.damage_card["DuchuiCard"] = true
+
+sgs.ai_use_value.chaoxiu = 8
+
+-- chaoxiu_get
+local chaoxiu_get_skill={}
+chaoxiu_get_skill.name="chaoxiu_get"
+table.insert(sgs.ai_skills,chaoxiu_get_skill)
+chaoxiu_get_skill.getTurnUseCard=function(self)
+    if self:isEquip("chaoxiu") then return end
+    
+    local weapon = nil
+    
+    local cards = self.player:getCards("he")
+    cards=sgs.QList2Table(cards) 
+    
+    for _,card in ipairs(cards) do
+        if card:inherits("Weapon") and card:objectName() ~= "chaoxiu" then 
+            weapon = card
+        elseif card:objectName() == "chaoxiu" then
+            return
+        end
+    end
+    
+    if weapon then
+        return sgs.Card_Parse("@ChaoxiuCard="..weapon:getEffectiveId())
+    end
+    
+end
+
+sgs.ai_skill_use_func["ChaoxiuCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- duchui
+local duchui_skill={}
+duchui_skill.name="duchui"
+table.insert(sgs.ai_skills,duchui_skill)
+duchui_skill.getTurnUseCard=function(self)
+    if self.player:getMp()<4 then return end
+    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:canSlash(enemy, true) and damageIsEffective("poison", enemy) then
+            return sgs.Card_Parse("@DuchuiCard=.")
+        end
+    end
+    
+end
+
+sgs.ai_skill_use_func["DuchuiCard"]=function(card,use,self)
+
+    self:sort(self.enemies, "defense")
+    
+    for _,enemy in ipairs(self.enemies) do
+        if self.player:canSlash(enemy, true) and damageIsEffective("poison", enemy) then
+            use.card = card
+            if use.to then
+                use.to:append(enemy)
+            end
+            break            
+        end
+    end
+
 end
