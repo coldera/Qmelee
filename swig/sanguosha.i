@@ -519,6 +519,9 @@ public:
 
     Suit getSuit() const;
     void setSuit(Suit suit);
+    
+    bool isExclusive() const;
+    void setExclusive(bool exclusive);
 
     bool sameColorWith(const Card *other) const;
 	bool isEquipped() const;
