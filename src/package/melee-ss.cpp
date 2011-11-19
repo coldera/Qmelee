@@ -2264,13 +2264,13 @@ public:
     }
     
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->getMark("erdao");
+        return TriggerSkill::triggerable(target) && !target->getWeapon();
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *jubei, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         
-        if(damage.card && damage.card->inherits("Slash") 
+        if(damage.card && damage.card->inherits("Slash")
         && damage.from->getWeapon() 
         && !jubei->getWeapon()) {
         
@@ -2745,6 +2745,7 @@ public:
 
 DuchuiCard::DuchuiCard(){
     once = true;
+    setObjectName("poison_bang");
 }
 
 bool DuchuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

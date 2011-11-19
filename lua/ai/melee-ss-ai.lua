@@ -824,7 +824,8 @@ local erdao_skill={}
 erdao_skill.name="erdao"
 table.insert(sgs.ai_skills,erdao_skill)
 erdao_skill.getTurnUseCard=function(self)
-    if not self.player:getWeapon() or self.player:hasUsed("ErdaoCard") or self.player:getMp()<2 or self.player:getMark("erdao") then return end
+    
+    if not self.player:getWeapon() or self.player:hasUsed("ErdaoCard") or self.player:getMp()<2 or self.player:hasSkill("shuangyue") then return end
     
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
@@ -845,14 +846,15 @@ sgs.ai_skill_use_func["ErdaoCard"]=function(card,use,self)
 end
 
 -- shuangyue
-sgs.dynamic_value.benefit["ShuangyueCard"] = true
+-- sgs.dynamic_value.benefit["ShuangyueCard"] = true
+sgs.ai_use_priority.ShuangyueCard = 0
 
 local shuangyue_skill={}
 shuangyue_skill.name="shuangyue"
 table.insert(sgs.ai_skills,shuangyue_skill)
 shuangyue_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("ShuangyueCard") or self:getCardsNum("Slash")==0 then return end
-    if self:getCardsNum("Slash")>0 and not self.player:canSlashWithoutCrossbow() then
+    if self:getCardsNum("Slash")>0 then
         return sgs.Card_Parse("@ShuangyueCard=.")
     end
 end

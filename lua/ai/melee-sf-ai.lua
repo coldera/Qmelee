@@ -717,6 +717,12 @@ sgs.ai_skill_invoke.luoxuan = function(self, data)
     return false
 end
 
+sgs.ai_skill_cardchosen.luoxuan = function(self, who)
+    if who:getArmor() then return who:getArmor() end
+    if who:getRelic() then return who:getRelic() end
+    if who:getWeapon() then return who:getWeapon() end
+    if who:getHorse() then return who:getHorse() end
+end
 
 -- dan ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["dan"] = 5

@@ -1824,10 +1824,10 @@ function SmartAI:useEquipCard(card, use)
         if self.player:getMark("@weapon_forbid")>0 then return end
         if self.player:getWeapon() and self.player:hasSkill("bingren_on") then return end
         
-		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
+		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) or card:isExclusive() then
             if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
             if self.player:getHandcardNum() <= self.player:getHp() then return end
-            use.card = card	
+            use.card = card
 		end
 	elseif card:inherits("Armor") then
 	    if self.player:hasSkill("deer") or self.player:getMark("@armor_forbid")>0 then return end
@@ -3139,12 +3139,13 @@ function SmartAI:needHelp(data)
         
         self.room:writeToConsole("needHelp : "..parse)
         
-        for _,p in ipairs(self.enemies) do
-            if parse=="@huhuan-card" and p:hasSkill("huhuan") then
-                return false
+        if self.enemies then
+            for _,p in ipairs(self.enemies) do
+                if parse=="@huhuan-card" and p:hasSkill("huhuan") then
+                    return false
+                end
             end
         end
-        
     end
     
     return true

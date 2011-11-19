@@ -2071,7 +2071,7 @@ void JiushuCard::use(Room *room, ServerPlayer *jedah, const QList<ServerPlayer *
     }
     
     if(dead) {
-        room->playSkillEffect(objectName());
+        room->playSkillEffect("jiushu");
         
         dead->gainMark("@jiushu");
         room->setPlayerMark(dead, "jiushu_on", 3);
