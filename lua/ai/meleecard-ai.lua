@@ -81,7 +81,7 @@ end
 
 sgs.ai_skill_invoke["boar"] = function(self, data)
     local damage = data:toDamage()
-    return damage and damage.damage>0 and not self:isFriend(damage.from)
+    return damage and damage.damage>0 and not self:isFriend(damage.from) and self:damageIsEffective(damage.nature, damage.from)
 end
 
 sgs.ai_skill_invoke["chaoxiu"]=function(self, data)

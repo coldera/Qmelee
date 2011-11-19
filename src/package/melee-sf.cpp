@@ -78,6 +78,7 @@ public:
 
 ShunyuCard::ShunyuCard(){
     will_throw = true;
+    mute = true;
 }
 
 bool ShunyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -119,6 +120,8 @@ void ShunyuCard::onEffect(const CardEffectStruct &effect) const{
     }
     
     if(success) {
+    
+        room->playSkillEffect("shunyu");
         room->broadcastInvoke("animate", "shunyu:2500");
         
         DamageStruct damageMaker;
@@ -412,6 +415,7 @@ public:
 };
 
 JifengCard::JifengCard(){
+    mute = true;
     will_throw = true;
 }
 
@@ -556,6 +560,8 @@ void ShenglongCard::onEffect(const CardEffectStruct &effect) const {
 
     ken->updateMp(-2);
     
+    room->broadcastInvoke("animate", "shenglong");
+    
     if(room->askForCard(effect.to, "jink", "shenglong-jink:" + ken->objectName()))
         return;
     
@@ -578,8 +584,6 @@ void ShenglongCard::onEffect(const CardEffectStruct &effect) const {
             break;
         }   
     }
-    
-    room->broadcastInvoke("animate", "shenglong");
     
     DamageStruct damageMaker;
     damageMaker.card = this;
@@ -909,6 +913,8 @@ public:
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *p, players){
                     if(p->hasSkill("shidian")){
+                    
+                        room->playSkillEffect("shidian");
                         
                         LogMessage log;
                         log.type = "#ShidianGet";
@@ -942,6 +948,8 @@ public:
         
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature == DamageStruct::Thunder) {
+        
+            room->playSkillEffect("shidian");
             
             LogMessage log;
             log.type = "#DamageNullify";
@@ -1040,7 +1048,7 @@ void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
     log.card_str = card->toString();
     room->sendLog(log); 
     
-    room->playSkillEffect("huoyan");
+    // room->playSkillEffect("huoyan");
     
     dhalsim->updateMp(-2);
     
@@ -1210,6 +1218,7 @@ public:
 //----------------------------------------------------------------------------- Xuanfeng
 
 XuanfengCard::XuanfengCard(){
+    mute = true;
     target_fixed = true;
 }
 
@@ -1278,6 +1287,8 @@ public:
         QString prompt = QString("@xuanfeng:%1:%2").arg(use.card->getEffectiveId()).arg(use.from->objectName());
         
         if(use.card->isNDTrick() && room->askForUseCard(zangief, "@@xuanfeng", prompt)) {
+        
+            room->playSkillEffect("xuanfeng");
             
             if(use.card->willThrow())
                 room->throwCard(use.card);
@@ -1307,7 +1318,9 @@ public:
 
 //----------------------------------------------------------------------------- Dazhuang
 
-DazhuangCard::DazhuangCard(){}
+DazhuangCard::DazhuangCard(){
+    mute = true;
+}
 
 bool DazhuangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
@@ -1344,6 +1357,7 @@ void DazhuangCard::onEffect(const CardEffectStruct &effect) const {
     
     if(judge.isGood()) {
     
+        room->playSkillEffect("dazhuang");
         room->broadcastInvoke("animate", "dazhuang");
         
         DamageStruct damageMaker;
@@ -1561,6 +1575,8 @@ public:
             return false;
 
         if(guile->askForSkillInvoke(objectName(), reason)) {
+        
+            guile->getRoom()->playSkillEffect(objectName());
             
             guile->updateMp(-2);
             
@@ -1686,6 +1702,7 @@ public:
 MofangCard::MofangCard(){
     once = true;
     target_fixed = true;
+    mute = true;
 }
 
 void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer *> &) const {
@@ -1731,6 +1748,9 @@ void MofangCard::use(Room *room, ServerPlayer *sakura, const QList<ServerPlayer 
         
             room->setPlayerMark(sakura, "mofang", card_id);                            
             if(room->askForUseCard(sakura, "@mofangvas", "@mofang")){
+                
+                room->playSkillEffect("mofang");
+            
                 LogMessage log;
                 log.type = "#MofangUnused";
                 log.from = sakura;
@@ -2243,7 +2263,7 @@ public:
             log.from = gen;
             room->sendLog(log);
             
-            room->playSkillEffect("jiliu");
+            room->playSkillEffect("jiliu", 2);
             
             foreach(ServerPlayer *p, room->getOtherPlayers(gen)) {
                 int num = p->getMark("jiliu");
@@ -2270,6 +2290,9 @@ void JiliuCard::use(Room *room, ServerPlayer *gen, const QList<ServerPlayer *> &
     ServerPlayer *target = room->askForPlayerChosen(gen, room->getOtherPlayers(gen), objectName());
     
     if(target) {
+        
+        room->playSkillEffect("jiliu", 1);
+        
         gen->updateMp(-15);
         
         LogMessage log;
@@ -2352,7 +2375,7 @@ public:
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 int times = p->getMark("sangliu_start");
                 if(times==1) {
-                    
+                
                     LogMessage log;
                     log.type = "#SangliuOn";
                     log.from = p;
@@ -2398,6 +2421,7 @@ public:
 
 SangliuCard::SangliuCard(){
     once = true;
+    mute = true;
 }
 
 bool SangliuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -2416,6 +2440,8 @@ bool SangliuCard::targetFilter(const QList<const Player *> &targets, const Playe
 void SangliuCard::onEffect(const CardEffectStruct &effect) const {
     ServerPlayer *gen = effect.from;
     Room *room = gen->getRoom();
+    
+    room->playSkillEffect("sangliu");
     
     int num = room->getAllPlayers().length()*2;
     

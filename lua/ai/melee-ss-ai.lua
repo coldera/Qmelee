@@ -119,16 +119,20 @@ sgs.ai_skill_use_func["GoutongCard"]=function(card,use,self)
 end
 
 -- yingxuan
-sgs.dynamic_value.benefit["YingxuanCard"] = true
+-- sgs.dynamic_value.benefit["YingxuanCard"] = true
 sgs.ai_use_priority.YingxuanCard = function(self)
-    return self.player:isWounded() ? 2 : 6
+    if self.player:isWounded() then
+        return 2
+    else
+        return 6
+    end
 end
 
 local yingxuan_skill={}
 yingxuan_skill.name="yingxuan"
 table.insert(sgs.ai_skills,yingxuan_skill)
 yingxuan_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("YingxuanCard") or self.player:getMark("@yingxuan")>0 then return end    
+    if self.player:hasUsed("YingxuanCard") or self.player:getMark("@xuankong")>0 then return end    
     
     local card_str
     local cards = self.player:getHandcards()
@@ -409,7 +413,7 @@ sgs.ai_skill_use_func["SiyueCard"]=function(card,use,self)
 	self:sort(self.enemies,"defense")
     
     for _, enemy in ipairs(self.enemies) do
-        if  self:damageIsEffective("ice", enemy) then 
+        if  self:damageIsEffective(sgs.DamageStruct_Ice, enemy) then 
             use.card = card
             if use.to then 
                 use.to:append(enemy)
@@ -498,7 +502,7 @@ baosha_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if self.player:inMyAttackRange(friend) and friend:getHandcardNum()<2 and self:damageIsEffective("fire", friend) then 
+        if self.player:inMyAttackRange(friend) and friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Fire, friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -507,7 +511,7 @@ baosha_skill.getTurnUseCard=function(self)
     end
 
     for _, enemy in ipairs(self.enemies) do
-        if who:distanceTo(enemy)<=who:getAttackRange() and enemy:getHandcardNum()<2 and  self:damageIsEffective("fire", enemy) then 
+        if who:distanceTo(enemy)<=who:getAttackRange() and enemy:getHandcardNum()<2 and  self:damageIsEffective(sgs.DamageStruct_Fire, enemy) then 
             if enemy:getHp() == 1 then 
                 good = good + 5
             end
@@ -683,7 +687,7 @@ chuixue_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if friend:getHandcardNum()<2 and self:damageIsEffective("ice", friend) then 
+        if friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Ice, friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -692,7 +696,7 @@ chuixue_skill.getTurnUseCard=function(self)
     end
 
     for _, enemy in ipairs(self.enemies) do
-        if enemy:getHandcardNum()<2 and self:damageIsEffective("ice", enemy) then 
+        if enemy:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Ice, enemy) then 
             if enemy:getHp() == 1 then 
                 good = good + 5
             end
@@ -960,7 +964,7 @@ sgs.ai_skill_use["@@baoyu"]=function(self,prompt)
     self:sort(self.enemies, "defense")
 
     for _,enemy in ipairs(self.enemies) do
-        if self:inMyAttackRange(enemy) and self:damageIsEffective("normal", enemy) then 
+        if self:inMyAttackRange(enemy) and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then 
             return "@BaoyuCard=.->"..enemy:objectName()
         end
     end
@@ -1016,7 +1020,7 @@ duchui_skill.getTurnUseCard=function(self)
     if self.player:getMp()<4 then return end
     
     for _,enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy, true) and damageIsEffective("poison", enemy) then
+        if self.player:canSlash(enemy, true) and damageIsEffective(sgs.DamageStruct_Poison, enemy) then
             return sgs.Card_Parse("@DuchuiCard=.")
         end
     end
@@ -1028,7 +1032,7 @@ sgs.ai_skill_use_func["DuchuiCard"]=function(card,use,self)
     self:sort(self.enemies, "defense")
     
     for _,enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy, true) and damageIsEffective("poison", enemy) then
+        if self.player:canSlash(enemy, true) and damageIsEffective(sgs.DamageStruct_Poison, enemy) then
             use.card = card
             if use.to then
                 use.to:append(enemy)

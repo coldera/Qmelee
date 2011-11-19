@@ -312,10 +312,13 @@ function SmartAI:getWeakenTarget()
     
 end
 
-function SmartAI:printCards(cards)
+function SmartAI:printCards(cards, priority)
     local string=""
     for _,card in ipairs(cards) do
         string=string.." "..card:className()
+        if priority then
+            string = string.."="..self:getDynamicUsePriority(card)
+        end
     end
     self.room:output(string)
 end

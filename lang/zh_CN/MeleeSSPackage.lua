@@ -3,7 +3,7 @@
 return {
     ["meleess"] = "经典侍魂",
     
-    -- 2011-09-08 +AI 豪放不拘
+    -- 2011-09-08 +AI+SE 豪放不拘
     ["haohmaru"] = "霸王丸",
     ["~haohmaru"] = "呃... 真想再喝一口酒...",
     ["jiuqi"] = "酒气",
@@ -18,7 +18,7 @@ return {
     ["TianbaEffect1"] = "弃2张手牌抵销【天霸】的1点伤害",
     ["TianbaEffect2"] = "弃1张装备抵销【天霸】的1点伤害",
     
-    -- 2011-09-10 +AI 大自然守护者
+    -- 2011-09-10 +AI+SE 大自然守护者
     ["nakoruru"] = "娜可露露",
     ["~nakoruru"] = "玛玛哈哈... 大自然只能靠大家守护了... 父亲... ",
     ["goutong"] = "沟通",
@@ -35,7 +35,7 @@ return {
     [":xuankong"] = "其他角色计算与你的距离+2",
     ["#Chongci"] = "%from <b style='color:yellow;'>【冲刺】</b>技能触发",
     
-    -- 2011-09-10 +AI 居合剑客
+    -- 2011-09-10 +AI+SE 居合剑客
     ["ukyo"] = "桔右京",
     ["~ukyo"] = "圭... 我等你... 咳咳...",
     ["xuruo"] = "虚弱",
@@ -50,7 +50,7 @@ return {
     ["#Xuruo"] = "%from <b style='color:#CCCCCC;'>【虚弱】</b>技能触发",
     ["@liulian"] = "是否发动必杀技——飞燕六连",
     
-    -- 2011-09-11 +AI 追求极致的舞者
+    -- 2011-09-11 +AI+SE 追求极致的舞者
     ["kyoshiro"] = "千两狂死郎",
     ["~kyoshiro"] = "艺术... 就是用生命换取的美感",
     ["quwu"] = "曲舞",
@@ -64,7 +64,7 @@ return {
     ["@yanwu"] = "是否发动必杀技——血肉宴舞",
     ["@yanwu-card-discard"] = "%src的【宴舞】效果发动，你是否弃置花色为 %arg的1张手牌",
     
-    -- 2011-09-12 +AI 怨之花牌
+    -- 2011-09-12 +AI+SE 怨之花牌
     ["genjuro"] = "牙神幻十郎",
     ["~genjuro"] = "可恶... 我还要更强大的力量",
     ["yinghua"] = "樱华",
@@ -83,7 +83,7 @@ return {
     ["@sudi"] = "是否发动【宿敌】，选择一名和你当前体力相等角色为目标",
     ["@sudimark"] = "宿敌",
     
-    -- 2011-09-14 +AI 风间一族最强忍者 水之化身
+    -- 2011-09-14 +AI+SE 风间一族最强忍者 水之化身
     ["sogetsu"] = "风间苍月",
     ["~sogetsu"] = "任务完成不了了...",
     ["fuyue"] = "浮月",
@@ -110,7 +110,7 @@ return {
     ["$fengyin"] = "暂时休息一下",
     ["$SiyueEffect"] = "<b style='color:yellow'>【死月】</b>效果发动，视为 %from 对 %to 使用<b>【冰杀】</b>",
     
-    -- 2011-09-16 +AI 爆炎忍者 炎之化身
+    -- 2011-09-16 +AI+SE 爆炎忍者 炎之化身
     ["kazuki"] = "风间火月",
     ["~kazuki"] = "叶月... 哥哥不能再照顾你了...",
     ["rexue"] = "热血",
@@ -145,7 +145,7 @@ return {
     ["#Baosha"] = "%from 对攻击范围内的所有人发动<b style='color:yellow'>【爆杀】</b>",
     ["yanmie_bao"] = "炎灭--爆",
     
-    -- 2011-09-16 +AI 碧眼忍者
+    -- 2011-09-16 +AI+SE 碧眼忍者
     ["galford"] = "加尔福特",
     ["~galford"] = "就这么倒下了... 对不起爱慕我的姑娘们啊...",
     ["renquan"] = "忍犬",
@@ -160,7 +160,7 @@ return {
     ["$RenquanDiscard"] = "%to 的 %card 被<b style='color:yellow'>【忍犬】</b>破坏",
     ["$DianguangEffect"] = "%from 的 %card 被<b style='color:yellow'>【电光】</b>的效果破坏",
 
-    -- 2011-09-17 +AI 冰之精灵
+    -- 2011-09-17 +AI+SE 冰之精灵
     ["rimururu"] = "莉姆露露",
     ["~rimururu"] = "果然我还是不够成熟...",
     ["bingren"] = "冰刃",
@@ -180,7 +180,7 @@ return {
     ["$Shenjing"] = "%from 发动<b style='color:yellow'>【神镜】</b>效果",
     ["chuixuebang"] = "吹雪",
     
-    -- 2011-09-19 +AI 名门贵族
+    -- 2011-09-19 +AI+SE 名门贵族
     ["charlotte"] = "夏洛特",
     ["~charlotte"] = "流下第一滴血时，我就已经失败了...",
     ["pokong"] = "破空",
@@ -193,7 +193,7 @@ return {
     ["$XunguangThrow"] = "%from 无法使用 %card，弃置之",
     ["@xunguang"] = "必须使用【迅光】效果翻出来的牌",
     
-    -- 2011-09-21 +AI 伊贺的统帅
+    -- 2011-09-21 +AI+SE 伊贺的统帅
     ["hanzo"] = "服部半藏",
     ["~hanzo"] = "主公，部下告退了...",
     ["kongchan"] = "空蝉",
@@ -209,13 +209,11 @@ return {
     ["@kongchan-bang"] = "是否发动【空蝉--地听】对伤害来源 %src 使用【杀】",
     ["#KongchanBang"] = "%from 发动技能<b style='color:yellow'>【空蝉--地听】</b>",
     ["@yingwu"] = "影舞",
-    -- ["yingwu_on"] = "影舞状态",
-    -- [":yingwu_on"] = "锁定技，被指定为效果的目标时，若效果可以被无效，有50%机率无效",
     ["$Yingwu"] = "%from <b style='color:yellow'>【影舞】</b>效果发动，%card 效果因没有正确的目标而失效",
     ["#YingwuOff"] = "%from 解除了<b style='color:yellow'>【影舞】</b>状态",
     ["@chenyin"] = "是否发动必杀技——爆炎微尘隐，选择1张用于拼点的手牌",
     
-    -- 2011-09-21 +AI 新阴流宗师
+    -- 2011-09-21 +AI+SE 新阴流宗师
     ["jubei"] = "柳生十兵卫",
     ["~jubei"] = "柳生新阴流已经到尽头了吗...",
     ["xinyan"] = "心眼",
@@ -234,7 +232,7 @@ return {
     ["erdao_weapon"] = "双月武器",
     ["#ShuangyueOff"] = "%from <b style='color:#CCCCCC'>失去技能【双月】</b>",
     
-    -- 2011-11-15 +AI 复仇与追忆
+    -- 2011-11-15 +AI+SE 复仇与追忆
     ["shizumaru"] = "绯雨闲丸",
     ["~shizumaru"] = "这种孤独的感觉还要持续多久....",
     ["wuyu"] = "雾雨",
@@ -250,7 +248,7 @@ return {
     ["@baoyu"] = "是否弃置所有黑色牌发动必杀技：【暴雨狂风斩】",
     ["@baoyu-jink"] = "%src 对你使用【暴雨】，请打出1张【闪】来防止伤害",
     
-    -- 2011-11-16 +AI 人魔混血
+    -- 2011-11-16 +AI+SE 人魔混血
     ["genan"] = "不知火幻庵",
     ["~genan"] = "夫人... 孩子们... 无能为力了~",
     ["chaoxiu_get"] = "朝秀",

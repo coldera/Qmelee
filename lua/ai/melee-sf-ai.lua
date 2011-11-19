@@ -248,7 +248,7 @@ dianji_skill.getTurnUseCard=function(self)
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if friend:getHandcardNum()<2 and self:damageIsEffective("thunder", friend) then 
+        if friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Thunder, friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
@@ -257,7 +257,7 @@ dianji_skill.getTurnUseCard=function(self)
     end
 
     for _, enemy in ipairs(self.enemies) do
-        if enemy:getHandcardNum()<2 and self:damageIsEffective("thunder", enemy) then 
+        if enemy:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Thunder, enemy) then 
             if enemy:getHp() == 1 then 
                 good = good + 5
             end
@@ -316,7 +316,7 @@ sgs.ai_skill_use_func["HuoyanCard"]=function(card,use,self)
         
         self:sort(self.enemies,"defense")
         for _,enemy in ipairs(self.enemies) do
-            if self:damageIsEffective("fire", enemy) then
+            if self:damageIsEffective(sgs.DamageStruct_Fire, enemy) then
                 use.card = card
                 if use.to then 
                     use.to:append(enemy) 
@@ -422,7 +422,7 @@ sgs.ai_skill_use["@@xuanfeng"]=function(self, prompt)
     end
     if self:isFriend(target) then return "." end
     
-    if (self.player:inMyAttackRange(target) and self:damageIsEffective("normal", target)) 
+    if (self.player:inMyAttackRange(target) and self:damageIsEffective(sgs.DamageStruct_Normal, target)) 
     or card:inherits("Cure") or card:inherits("Grab") or card:inherits("WoodElf") then
         return ("@XuanfengCard=%d+%d->."):format(cards[1]:getEffectiveId(), cards[2]:getEffectiveId())
     end
@@ -449,7 +449,7 @@ sgs.ai_skill_use["@@dazhuang"]=function(self, prompt)
     
 	self:sort(self.enemies,"defense")    
     for _,enemy in ipairs(self.enemies) do
-        if self.player:distanceTo(enemy) <= 1 and self:damageIsEffective("normal", enemy) then
+        if self.player:distanceTo(enemy) <= 1 and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
             return card_str..enemy:objectName()
         end
     end
@@ -614,6 +614,8 @@ sgs.ai_skill_askforag.mofang = function(self, card_ids)
             return card:getEffectiveId()
         end
     end
+    
+    return nil
     
 end
 

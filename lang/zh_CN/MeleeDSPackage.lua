@@ -3,7 +3,7 @@
 return {
     ["meleeds"] = "恶魔战士",
     
-    -- 2011-09-22 +AI 黑暗贵公子
+    -- 2011-09-22 +AI+SE 黑暗贵公子
     ["demitri"] = "迪米特利",
     ["~demitri"] = "记住，沉睡100年后，我会再来复仇的",
     ["zizun"] = "自尊",
@@ -22,7 +22,7 @@ return {
     ["#WuyeOn"] = "<b style='color:yellow'>【午夜】</b> 发动成功，<b style='color:yellow'>【吸血】</b>技能增强",
     ["#XixieEffect"] = "%from 对 %to 发动 <b style='color:yellow'>【吸血】</b>",
     
-    -- 2011-09-23 +AI 夜之女王
+    -- 2011-09-23 +AI+SE 夜之女王
     ["morrigan"] = "莫莉卡",
     ["~morrigan"] = "真可惜~还有很多留恋的东西呢",
     ["haosheng"] = "好胜",
@@ -36,15 +36,16 @@ return {
     ["#Haosheng"] = "%from <b style='color:yellow'>【好胜】</b> 效果发动",
     ["$HuanyingEffect"] = "<b style='color:yellow'>【幻影】</b> 效果发动，%card 被使用多1次",
     
-    -- 2011-09-25 +AI 怪力机体
+    -- 2011-09-25 +AI+SE 怪力机体
     ["victor"] = "维克多",
     ["~victor"] = "埃米莉...",
     ["guzhi"] = "固执",
     [":guzhi"] = "回合开始阶段，你可以消耗1点怒，回合内，你使用的战术牌不会被【无懈可击】响应",
+    ["$guzhi"] = "（怒吼）",
     ["hecheng"] = "合成",
     [":hecheng"] = "锁定技，你造成的属性伤害视为雷属性；受到的属性伤害视为无属性",
     
-    -- 2011-09-27 +AI 雪之豪杰
+    -- 2011-09-27 +AI+SE 雪之豪杰
     ["sasquatch"] = "萨斯卡茨",
     ["~sasquatch"] = "真是太不好玩了",
     ["xueqiu"] = "雪球",
@@ -55,7 +56,7 @@ return {
     ["$bingzhu"] = "你逃不掉了",
     ["$BingzhuEffect"] = "%from 发动<b style='color:yellow'>【冰柱】</b>，视为对 %to 使用<b>【冰杀】</b>",
 
-    -- 2011-09-29 +AI 水之英雄
+    -- 2011-09-29 +AI+SE 水之英雄
     ["aulbath"] = "奥尔巴斯",
     ["~aulbath"] = "不能再保护我的王国了",
     ["chaoxi"] = "潮汐",
@@ -70,7 +71,7 @@ return {
     ["@zhangchao"] = "涨潮",
     ["@luochao"] = "落潮",
     
-    -- 2011-09-30 +AI 狩猎灵魂的妖虫
+    -- 2011-09-30 +AI+SE 狩猎灵魂的妖虫
     ["qbee"] = "女王蜂",
     ["~qbee"] = "嗡嗯~",
     ["shihun"] = "食魂",
@@ -80,13 +81,14 @@ return {
     ["$rongjie"] = "帮你减轻点负担吧",
     ["fanyan"] = "繁衍",
     [":fanyan"] = "回合开始阶段，你可以消耗6点狂，获得1枚【工蜂】标记，每有1枚【工蜂】标记，你手牌上限+1。受到伤害时，可以弃掉1枚【工蜂】标记来减少1点伤害",
-    ["$fanyan"] = "孩子们要勤奋点哦",
+    ["$fanyan1"] = "孩子们要勤奋点哦",
+    ["$fanyan2"] = "守护我",
     ["#Shihun"] = "%from 发动了<b style='color:yellow'>【食魂】</b>",
     ["@bee"] = "工蜂",
     ["$RongjieDiscard"] = "%to 的 %card 被 <b style='color:yellow'>【溶解】</b>的效果破坏了",
     ["#fanyan-protect"] = "【工蜂--守护】",
     
-    -- 2011-10-02 +AI 宇宙霸主
+    -- 2011-10-02 +AI+SE 宇宙霸主
     ["pyron"] = "派隆",
     ["~pyron"] = "我怎么可能被打败~",
     ["zhengfu"] = "征服",
@@ -107,7 +109,7 @@ return {
     [":yanzhilingyu"] = "场上所有伤害有20%机率转为火属性",
     ["@shenyu-card"] = "可以使用1张手牌发动【神语】来修改 %src 的判定",
     
-    -- 2011-10-04 +AI 摇滚屠夫
+    -- 2011-10-04 +AI+SE 摇滚屠夫
     ["zabel"] = "萨贝鲁",
     ["~zabel"] = "（琴弦声~~）",
     ["yaogun"] = "摇滚",
@@ -120,17 +122,18 @@ return {
     ["#TushaEffect"] = "%from <b style='color:yellow'>【屠杀】</b>效果发动",
     ["#YaogunFail"] = "<b style='color:#CCCCCC'>%from 怨念不足，发动<b style='color:yellow'>【摇滚】</b>失败</b>",
     
-    -- 2011-10-04 +AI 迷失的灵魂
+    -- 2011-10-04 +AI+SE 迷失的灵魂
     ["lilith"] = "莉莉丝",
     ["~lilith"] = "还是很迷茫呢",
     ["lieqi"] = "猎奇",
     [":lieqi"] = "出牌阶段，你可以消耗1点灵，猜其他任一角色的1张手牌的花色，若猜中，你得到这张牌",
-    ["$lieqi"] = "好像很好玩呢",
+    ["$lieqi1"] = "猜一猜？",
+    ["$lieqi2"] = "好像很好玩呢",
     ["guisu"] = "归宿",
     [":guisu"] = "当你死亡时，可以指定其他任一角色，该角色摸5张牌",
     ["$guisu"] = "我的灵魂归宿是你吗？",
     
-    -- 2011-10-13 +AI 灵幻姐妹
+    -- 2011-10-13 +AI+SE 灵幻姐妹
     ["leilei"] = "泪泪&玲玲",
     ["~leilei"] = "母亲，还是没能找到你吗",
     ["anqi"] = "暗器",
@@ -145,7 +148,7 @@ return {
     ["@fanxiang"] = "可以指定你距离1以内的角色，发动技能【返响】",
     ["$FanxiangChange"] = "<b style='color:yellow'>【返响】</b>的效果使 %card 的目标变成 %to",
     
-    -- 2011-10-13 +AI 暗黑界守卫
+    -- 2011-10-13 +AI+SE 暗黑界守卫
     ["phobos"] = "福布斯",
     ["~phobos"] = "系统崩溃，指令错误",
     ["huwei"] = "护卫",
@@ -156,7 +159,7 @@ return {
     ["#Huwei"] = "<b style='color:yellow'>【护卫】</b>技能发动，伤害目标由 %to 转变为 %from",
     ["huwei:yes"] = "%src 受到伤害，是否发动【护卫】为其承受伤害",
     
-    -- 2011-10-17 +AI 吸血鬼猎人 多诺万的跟班
+    -- 2011-10-17 +AI+SE 吸血鬼猎人 多诺万的跟班
     ["donovan"] = "多诺万",
     ["~donovan"] = "这该死的血统终于完结了",
     ["huoshen"] = "火神",
@@ -197,7 +200,7 @@ return {
     ["#AnitaInjured"] = "<b style='color:yellow'>安妮塔</b> 受到 %from 的攻击",
     ["#AnitaDead"] = "<b style='color:yellow'>安妮塔</b> 被杀死了 凶手是 %from",
     
-    -- 2011-10-18 +AI 暗黑界救世主
+    -- 2011-10-18 +AI+SE 暗黑界救世主
     ["jedah"] = "杰达",
     ["~jedah"] = "救赎还未完成，怎么可以~",
     ["jiushu"] = "救赎",
@@ -206,11 +209,12 @@ return {
     ["$jiushu"] = "和死神缔结契约，给你永生",
     ["qiyue"] = "契约",
     [":qiyue"] = "回合开始阶段，你可以指定任一被救赎角色为契约角色，若你没有【支配】技能，则减少1点体力上限获得【支配】(出牌阶段，可以获取并任意分配契约角色的手牌)",
+    ["$qiyue"] = "这是我们的约定",
     ["zhipei"] = "支配",
     ["zhipeigive"] = "支配",
     [":zhipeigive"] = "可以给回任意手牌到契约角色，可多次使用",
     [":zhipei"] = "出牌阶段，可以获取并任意分配契约角色的手牌",
-    ["$qiyue"] = "这是我们的约定",
+    ["$zhipei"] = "我来给你指引前方的道路吧",
     ["sizhilingyu"] = "死之领域",
     [":sizhilingyu"] = "杀死别人的角色，80%机率回复体力至上限",
     ["#JiushuEffect"] = "%to 由于 %from 发动了<b style='color:yellow'>【救赎】</b>，复活了",
@@ -221,7 +225,7 @@ return {
     ["#Sizhilingyu"] = "<b style='color:yellow'>【死之领域】</b> 效果发动 %from 回复全部体力",
     ["jiushu-player"] = "选择要救赎的角色",
     
-    -- 2011-10-19 +AI 复活的法老
+    -- 2011-10-19 +AI+SE 复活的法老
     ["anakaris"] = "阿纳卡利斯",
     ["~anakaris"] = "不要再唤醒我了！",
     ["guanwu"] = "棺舞",
@@ -246,7 +250,7 @@ return {
     ["$youbu1"] = "上当了哦",
     ["$youbu2"] = "被你跑掉了呢",
     
-    -- 2011-10-20 +AI 被诅咒的武者
+    -- 2011-10-20 +AI+SE 被诅咒的武者
     ["bishamon"] = "毘沙门",
     ["~bishamon"] = "下一个宿主在哪呢",
     ["banruo"] = "般若", 
@@ -260,7 +264,7 @@ return {
     ["@banruo"] = "般若",
     ["#GuiyanFail"] = "%from <b style='color:yellow'>【鬼炎】</b>发动失败",
     
-    -- 2011-10-20 +AI 有梦想的猫娘
+    -- 2011-10-20 +AI+SE 有梦想的猫娘
     ["felicia"] = "菲莉希娅",
     ["~felicia"] = "梦想中的乐园，找不到了~",
     ["leyuan"] = "乐园",
@@ -268,10 +272,11 @@ return {
     ["$leyuan"] = "大家要一起开开心心的",
     ["huhuan"] = "呼唤",
     [":huhuan"] = "你的回合外，当你需要打出【杀】或【闪】时，可以让其他角色替你打出，每替你打出1张牌，该角色摸1张牌，你消耗1点气",
-    ["$huhuan"] = "谁来帮帮我",
+    ["$huhuan1"] = "谁来帮帮我",
+    ["$huhuan2"] = "你对我太好了 喵~",
     ["@huhuan-card"] = "是否帮 %src 出牌",
     
-    -- 2011-10-21 -AI 疾风之人狼
+    -- 2011-10-21 +AI+SE 疾风之人狼
     ["gallon"] = "加伦",
     ["~gallon"] = "等不到月圆之时了吗",
     ["manyue"] = "满月",

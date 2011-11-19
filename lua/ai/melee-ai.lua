@@ -1870,7 +1870,7 @@ function SmartAI:getTurnUse()
         local dummy_use={}
         dummy_use.isDummy=true
         
-        if not self:hasSkills(sgs.need_kongcheng) then
+        if not self:hasSkills(sgs.need_kongcheng) and not (card:inherits("Slash") and self.player:hasFlag("drank")) then
             if (i >= (self.player:getHandcardNum()-self.player:getHp()+self.retain)) and (self:getUseValue(card)<self.retain_thresh) then
                 return turnUse
             end
@@ -1926,14 +1926,15 @@ function SmartAI:activate(use)
 
 	self:updatePlayers()
 	self:assignKeep(self.player:getHp(),true)
-    -- self.room:writeToConsole("======"..self.player:getGeneralName().."=====")
-    -- self.room:writeToConsole("======kept=====")
-	-- self:printCards(self.kept)
 	self.toUse =self:getTurnUse()
-    -- self.room:writeToConsole("======toUse=====")
-	-- self:printCards(self.toUse)
-    -- self.room:writeToConsole("===============================")
     self:sortByDynamicUsePriority(self.toUse)
+    
+    self.room:writeToConsole("======"..self.player:getGeneralName().."=====")
+    self.room:writeToConsole("======toKeep=====")
+	self:printCards(self.kept, true)
+    self.room:writeToConsole("=======toUse=====")
+	self:printCards(self.toUse, true)
+    self.room:writeToConsole("===============================")
     
 	for _, card in ipairs(self.toUse) do
         
@@ -2066,6 +2067,7 @@ function SmartAI:getUsePriority(card)
 	end
     
 	if card:inherits("Slash") and (card:getSuit()==sgs.Card_NoSuit) then v=v-0.1 end
+    
 	return v
 end
 
@@ -2244,14 +2246,7 @@ function SmartAI:sortByDynamicUsePriority(cards)
             return a and a:getTypeId() ~= sgs.Card_Skill and not (b and b:getTypeId() ~= sgs.Card_Skill)
 		end
 	end
-    
-    -- self.room:writeToConsole("------------------------------- 2224 start")
-    -- self.room:writeToConsole(self.room:getCurrent():objectName())
-    -- for _, card in ipairs(cards) do
-        -- self.room:writeToConsole(card:objectName())
-    -- end
-    -- self.room:writeToConsole("------------------------------- 2224 end")
-   
+      
 	table.sort(cards, compare_func)
 end
 
@@ -3119,20 +3114,20 @@ sgs.masochism_skill = "noskill"
 sgs.wizard_skill = "shenyu"
 sgs.wizard_harm_skill = "shenyu"
 
-function SmartAI:damageIsEffective(dtype, player)
+function SmartAI:damageIsEffective(nature, player)
 	player = player or self.player
     
     if player:getMark("@invincible") > 0 then return false end
     
-    if self:isEquip("HolyWing", player) and dtype ~= "normal" then return false end
+    if self:isEquip("HolyWing", player) and nature ~= sgs.DamageStruct_Normal then return false end
     
-    if player:getMark("@zhangchao") > 0 and dtype ~= "ice" then return false end
+    if player:getMark("@zhangchao") > 0 and nature ~= sgs.DamageStruct_Ice then return false end
     
-    if dtype == "normal" then
+    if nature == sgs.DamageStruct_Normal then
         return not (self:isEquip("VineArmor", player) or player:hasSkill("jijia"))
-    elseif dtype == "poison" then
+    elseif nature == sgs.DamageStruct_Poison then
         return not (player:hasSkill("jijia"))
-    elseif dtype == "thunder" then
+    elseif nature == sgs.DamageStruct_Thunder then
         return not (player:getMark("@diangguang")>0 or player:hasSkill("shidian"))
     end
 end

@@ -929,9 +929,9 @@ QString SoulChain::getSubtype() const{
     return "damage_spread";
 }
 
-QString SoulChain::getEffectPath(bool is_male) const{
-    return QString();
-}
+// QString SoulChain::getEffectPath(bool is_male) const{
+    // return QString();
+// }
 
 bool SoulChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() >= 2)
@@ -947,7 +947,7 @@ bool SoulChain::targetsFeasible(const QList<const Player *> &targets, const Play
 void SoulChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
+    // room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
     TrickCard::use(room, source, targets);
 }
 

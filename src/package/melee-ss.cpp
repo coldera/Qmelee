@@ -2582,7 +2582,9 @@ public:
 
 //----------------------------------------------------------------------------- Baoyu
 
-BaoyuCard::BaoyuCard(){}
+BaoyuCard::BaoyuCard(){
+    mute = true;
+}
 
 bool BaoyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
@@ -2601,6 +2603,8 @@ void BaoyuCard::onEffect(const CardEffectStruct &effect) const{
 
     ServerPlayer *shizumaru = effect.from;
     Room *room = shizumaru->getRoom();   	
+    
+    room->playSkillEffect("baoyu");
     
     shizumaru->updateMp(-5);    
     room->broadcastInvoke("animate", "baoyu");    
@@ -2692,15 +2696,19 @@ void ChaoxiuCard::use(Room *room, ServerPlayer *genan, const QList<ServerPlayer 
     
     room->setPlayerMark(genan, "chaoxiu", 1);
     
-    room->playSkillEffect("chaoxiu_get");
-    
-    LogMessage log;
-    log.type = "#ChaoxiuGet";
-    log.from = genan;
-    room->sendLog(log);
-    
     const Card *chaoxiu = room->getOffCourtCard("chaoxiu");
-    genan->obtainCard(chaoxiu);
+    
+    if(chaoxiu) {
+        room->playSkillEffect("chaoxiu_get");
+    
+        LogMessage log;
+        log.type = "#ChaoxiuGet";
+        log.from = genan;
+        room->sendLog(log);
+        
+        genan->obtainCard(chaoxiu);
+    }
+    
 }
 
 class ChaoxiuGet: public OneCardViewAsSkill{
