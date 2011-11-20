@@ -249,13 +249,20 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class DuchuiBang: public PoisonBang{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DuchuiBang(Card::Suit suit, int number);
+};
+
 class DuchuiCard: public SkillCard{
     Q_OBJECT
 
 public:
     Q_INVOKABLE DuchuiCard();
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 #endif // MELEESS_H

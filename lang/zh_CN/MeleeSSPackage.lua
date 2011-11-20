@@ -59,10 +59,10 @@ return {
     ["yanwu"] = "宴舞",
     [":yanwu"] = "必杀技，消耗8点狂，弃1张手牌，其他角色须依次弃与之同花色的手牌，每弃1张手牌，你+1体力。若不弃，该角色-1体力",
     ["$yanwu"] = "来吧，一起狂欢吧，啊哈哈",
-    ["@quwu-card-show"] = "%src的【曲舞】效果发动，你是否展示花色为 %arg的1张手牌",
+    ["@quwu-card-show"] = "%src的【曲舞】效果发动，你是否展示花色为 %arg 的1张手牌",
     ["$QuwuCardShow"] = "%from 显示了 %card",
     ["@yanwu"] = "是否发动必杀技——血肉宴舞",
-    ["@yanwu-card-discard"] = "%src的【宴舞】效果发动，你是否弃置花色为 %arg的1张手牌",
+    ["@yanwu-card-discard"] = "%src的【宴舞】效果发动，你是否弃置花色为 %arg 的1张手牌",
     
     -- 2011-09-12 +AI+SE 怨之花牌
     ["genjuro"] = "牙神幻十郎",
@@ -258,6 +258,6 @@ return {
     [":duchui"] = "出牌阶段，你可以消耗4点狂，指定你攻击范围内的任一角色，视为对其使用【毒杀】，不受【杀】使用次数限制，每回合限用一次",
     ["$duchui"] = "咦~嘻 嘻 嘻~",
     ["#ChaoxiuGet"] = "%from 发动专属技能，召唤了<b style='color:yellow'>【朝秀】</b>",
-    ["#DuchuiEffect"] = "视为 %from 对 %to 使用 <b>【毒杀】</b>",
+    ["#DuchuiEffect"] = "%from 发动<b style='color:yellow'>【毒吹】</b>技能，视为对 %to 使用 <b>【毒杀】</b>",
     
 }

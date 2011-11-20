@@ -355,7 +355,9 @@ sgs.ai_skill_invoke.yueyin = function(self, data)
     or card:inherits("Burn")
     or card:inherits("HolyWater")
     or card:inherits("SoulChain") 
-    or (card:inherits("AOE") and self:isEquip("VineArmor")) then return false end
+    or (card:inherits("AOE") and self:isEquip("VineArmor")) 
+    or ((card:inherits("Slash") or card:inherits("ThousandsArrowsShot")) and self:getCardsNum("Dodge")>0) 
+    then return false end
     
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards)

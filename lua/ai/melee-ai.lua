@@ -877,43 +877,46 @@ end
 function SmartAI:slashIsEffective(slash, to)
     if to:getMark("@invincible")>0 then return false end
     
+    local with_skill = true
+    local with_armor = true
+    
     --diangguang skill on
     if to:getMark("@dianguang")>0 then
-        return not slash:inherits("ThunderBang")
+        with_skill = not slash:inherits("ThunderBang")
     end
     
     --xinyan skill on
     if to:hasSkill("xinyan") and not to:getWeapon() then
-        return false
+        with_skill = false
     end
     
     --chaoxi skill on and status is zhangchao
     if to:getMark("@zhangchao")>0 then
-        return slash:inherits("IceBang")
+        with_skill = slash:inherits("IceBang")
     end
     
     --has jijia skill
     if to:hasSkill("jijia") then
-        return not slash:inherits("Bang") and not slash:inherits("PoisonBang")
+        with_skill = not slash:inherits("Bang") and not slash:inherits("PoisonBang")
     end
     
     -- shidian skill
     if to:hasSkill("shidian") then
-        return not slash:inherits("ThunderBang") and not self:isFriend(to)
+        with_skill = not slash:inherits("ThunderBang") and not self:isFriend(to)
     end
 
 	local armor = to:getArmor()
 	if armor and not self.player:hasWeapon("greensteel_sword") then
 		if armor:objectName() == "king_shield" then
-			return not slash:isBlack()
+			with_armor = not slash:isBlack()
 		elseif armor:objectName() == "vine_armor" then
-			return slash:inherits("NatureSlash")
+			with_armor = slash:inherits("NatureSlash")
 		elseif armor:objectName() == "holy_wing" then
-			return slash:inherits("Bang")
+			with_armor = slash:inherits("Bang")
 		end
 	end
 
-	return true
+	return with_skill and with_armor
 end
 
 function SmartAI:slashIsAvailable(player)

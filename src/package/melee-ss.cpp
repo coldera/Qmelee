@@ -2743,9 +2743,12 @@ public:
 
 //----------------------------------------------------------------------------- Duchui
 
+DuchuiBang::DuchuiBang(Card::Suit suit, int number):PoisonBang(suit, number) {
+    setObjectName("duchui");
+}
+
 DuchuiCard::DuchuiCard(){
     once = true;
-    setObjectName("poison_bang");
 }
 
 bool DuchuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -2761,22 +2764,25 @@ bool DuchuiCard::targetFilter(const QList<const Player *> &targets, const Player
     return true;
 }
 
-void DuchuiCard::use(Room *room, ServerPlayer *genan, const QList<ServerPlayer *> &targets) const{
-    genan->updateMp(-4);
+
+void DuchuiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *genan = card_use.from;
     
-    PoisonBang *poison_bang = new PoisonBang(Card::NoSuit, 0);
+    genan->updateMp(-4);
+    room->playSkillEffect("duchui");
 
     LogMessage log;
     log.type = "#DuchuiEffect";
     log.from = genan;
-    log.to << targets;
-    log.card_str = poison_bang->toString();
-    room->sendLog(log);    
+    log.to << card_use.to;
+    room->sendLog(log);  
     
-    room->throwCard(this);
-    
-    poison_bang->use(room, genan, targets);
+    CardUseStruct use;
+    use.card = new DuchuiBang(Card::NoSuit, 0);
+    use.from = genan;
+    use.to << card_use.to;
 
+    room->useCard(use);
 }
 
 class Duchui: public ZeroCardViewAsSkill{
