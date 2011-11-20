@@ -847,7 +847,7 @@ end
 
 -- shuangyue
 -- sgs.dynamic_value.benefit["ShuangyueCard"] = true
-sgs.ai_use_priority.ShuangyueCard = 0
+sgs.ai_use_priority.ShuangyueCard = 2
 
 local shuangyue_skill={}
 shuangyue_skill.name="shuangyue"

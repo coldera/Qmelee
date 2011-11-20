@@ -2469,10 +2469,11 @@ void SpiderQueenSkillCard::use(Room *room, ServerPlayer *source, const QList<Ser
         ThousandsArrowsShot *card = new ThousandsArrowsShot(Card::NoSuit, 0);
         card->setSkillName(objectName());
         
+        room->playCardEffect("thousands_arrows_shot", source->getGeneral()->isMale());
+        
         CardUseStruct use;
         use.card = card;        
         use.from = source;
-        // use.to << room->getOtherPlayers(source);
         room->useCard(use);
     }
 }
@@ -2683,6 +2684,9 @@ void BlunderbussSkillCard::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(this);
     
     int card_id = room->askForCardChosen(effect.from, effect.to, "e", objectName());
+    
+    room->playCardEffect("destroy_all", effect.from->getGeneral()->isMale());
+    
     room->throwCard(card_id);
     
 }

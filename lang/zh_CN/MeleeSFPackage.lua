@@ -272,6 +272,6 @@ return {
     ["cuimain-discard"] = "你没有使用【杀】，在【催眠】的效果下，必须选择弃置X张手牌，X为%src已损失的体力值",
     ["#Mozhilingyu"] = "<b style='color:yellow'>【魔之领域】</b>的效果对 %from 产生作用",
     ["#DianliuEffect"] = "<b style='color:yellow'>【电流】</b>效果发动，%from 吸收了灵力",
-    ["#CuimainDiscard"] = "%from 在<b style='color:yellow'>【催眠】</b>的效果影响下，开始弃牌",
+    ["#CuimainDiscard"] = "%to 在<b style='color:yellow'>【催眠】</b>的效果影响下，开始弃牌",
     ["#CuimainSlash"] = "%from 在<b style='color:yellow'>【催眠】</b>的效果影响下，开始攻击身边的人",
 }

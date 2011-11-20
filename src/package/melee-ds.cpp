@@ -1836,7 +1836,7 @@ public:
                 
                 if(injured) {
                     
-                    room->playSkillEffect("anita_injured");
+                    room->playEffect("audio/skill/anita_injured.ogg");
                     
                     LogMessage log;
                     log.type = "#AnitaInjured";
@@ -1923,7 +1923,7 @@ public:
         if(donovan->getPhase() == Player::Start) {
             if(donovan->getMp()>0 && !donovan->getPile("anita_card").isEmpty()) {
                 if(room->askForSkillInvoke(donovan, objectName())) {
-                    room->playSkillEffect(objectName(), 2);
+                    room->playEffect("audio/skill/anita_anwei2.ogg");
                 
                     donovan->updateMp(-1);
                 
@@ -1936,6 +1936,8 @@ public:
         }else if(donovan->getPhase() == Player::Discard && donovan->getHandcardNum()) {
             const Card *first_card = room->askForCard(donovan, ".touse", "@card_to_anita", data);
             if(first_card) {
+                room->playEffect("audio/skill/anita_anwei1.ogg");
+                
                 donovan->addToPile("anita_card", first_card->getEffectiveId(), false);
                 
                 if(donovan->getHandcardNum()) {
@@ -1971,8 +1973,7 @@ public:
 
         Room *room = donovan->getRoom();
         if(donovan->askForSkillInvoke(objectName(), data)){
-            room->playSkillEffect(objectName());
-            
+            room->playEffect("audio/skill/anita_xisheng.ogg");
             room->broadcastInvoke("animate", "anita:3000");
             
             room->setPlayerProperty(donovan, "hp", 2);
@@ -2686,7 +2687,7 @@ void GuiyanCard::use(Room *room, ServerPlayer *bishamon, const QList<ServerPlaye
     
     if(judge.isBad()) {    
         
-        room->playSkillEffect(objectName());
+        room->playSkillEffect("guiyan");
     
         target->gainMark("@card_forbid");
         room->setPlayerMark(target, "guiyan_on", 1);
@@ -2824,6 +2825,7 @@ public:
             return false;
 
         room->playSkillEffect(objectName(), 1);
+        room->getThread()->delay();
         
         QVariant tohelp = QVariant::fromValue((PlayerStar)felicia);
         

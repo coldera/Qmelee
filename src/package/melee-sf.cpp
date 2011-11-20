@@ -297,6 +297,7 @@ public:
 
 BodongCard::BodongCard(){
     will_throw = true;
+    mute = true;
 }
 
 bool BodongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -315,6 +316,9 @@ bool BodongCard::targetFilter(const QList<const Player *> &targets, const Player
 void BodongCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();   
 	
+    effect.from->updateMp(-3);
+    
+    room->playSkillEffect("bodong");
     room->broadcastInvoke("animate", "bodong");
     
     int dp = 3;
@@ -377,7 +381,6 @@ public:
         Room *room = ryu->getRoom();
         
         if(room->askForUseCard(ryu, "@@bodong", "@bodong")){
-            ryu->updateMp(-3);
             ryu->skip(Player::Play);
         }
         
@@ -2209,6 +2212,10 @@ public:
         frequency = Compulsory;
     }
     
+    virtual int getPriority() const{
+        return 3;
+    }
+    
     virtual bool triggerable(const ServerPlayer *target) const{
         return TriggerSkill::triggerable(target);
     }
@@ -2488,7 +2495,7 @@ public:
         const Card *card = card_item->getCard();
         Bang *bang = new Bang(card->getSuit(), card->getNumber());
         bang->addSubcard(card->getId());
-        bang->setSkillName(objectName());
+        // bang->setSkillName(objectName());
 
         return bang;
     }

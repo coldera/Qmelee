@@ -960,7 +960,7 @@ sgs.ai_skill_use["@@huqie"]=function(self,prompt)
     
 	self:sort(self.enemies,"defense")
     for _,enemy in ipairs(self.enemies) do
-        if self.player:inMyAttackRange(enemy) then
+        if self.player:inMyAttackRange(enemy) and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
             return "@HuqieCard=.->"..enemy:objectName()
         end
     end
@@ -975,8 +975,11 @@ sgs.ai_chaofeng["vega"] = -4
 sgs.ai_skill_invoke.cuimian = function(self, data)
     local who = data:toPlayer()
     
+    self.room:writeToConsole("---------cuimian-----------");
+    self.room:writeToConsole(self.player:getGeneralName().." attack "..who:getGeneralName());
+    
     if not self.player:isWounded() or self:isFriend(who) then return false end
-    if who:getHandcardNum()<2 then return true end
+    if who:getHandcardNum()<2 and who:getHandcardNum()>0 then return true end
     
     for _,friends in ipairs(self.friends) do
         if who:distanceTo(friends)<=1 then
