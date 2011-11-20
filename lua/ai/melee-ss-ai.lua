@@ -966,7 +966,7 @@ sgs.ai_skill_use["@@baoyu"]=function(self,prompt)
     self:sort(self.enemies, "defense")
 
     for _,enemy in ipairs(self.enemies) do
-        if self:inMyAttackRange(enemy) and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then 
+        if self.player:inMyAttackRange(enemy) and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then 
             return "@BaoyuCard=.->"..enemy:objectName()
         end
     end

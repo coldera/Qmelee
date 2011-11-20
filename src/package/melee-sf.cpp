@@ -2128,6 +2128,8 @@ public:
                 use.to.insert(0,new_target);
                 
                 rose->updateMp(-2);
+                
+                room->playSkillEffect(objectName());
 
                 LogMessage log;
                 log.type = "$CaozongEffect";
