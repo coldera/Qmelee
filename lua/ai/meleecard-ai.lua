@@ -35,6 +35,43 @@ sgs.dynamic_value = {
 	},
 }
 
+-- card choices ---------------------------------------------------------------------------------
+
+sgs.ai_skill_choice.roar = function(self, choices)
+    if not self:isEquip("HolyWing") and self.player:isWounded() or self.player:isChained() then 
+        return "RoarEffect1"
+    else
+        return "RoarEffect2"
+    end
+end
+    
+sgs.ai_skill_choice.icebound = function(self, choices)
+    if self:isEquip("HolyWing") or self.player:getHandcardNum()>2 and self.player:getHp()>2 then 
+        return "IceboundEffect2"
+    else
+        return "IceboundEffect1"
+    end
+end
+    
+sgs.ai_skill_choice.shtm = function(self, choices)
+
+    local all = self.room:getServerPlayers()
+    for _, p in sgs.qlist(all) do
+        sgs.showFriendDebug = true;
+        if p:isDead() and self:isFriend(p) then
+            return p:getGeneralName()
+        end
+    end
+end
+      
+sgs.ai_skill_choice.air_bang = function(self, choices)
+    if self.player:getHp()<3 then 
+        return "AirEffectArmor"
+    else
+        return "AirEffectHp"
+    end
+end
+
 -- card skill --------------------------------------------------------------------------------------
 
 sgs.ai_skill_invoke["ghost_fan"]=function(self, data)

@@ -1714,12 +1714,11 @@ public:
                     Dodge *jink = new Dodge(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
-                    // room->setEmotion(player, "good");
+                    
+                    room->playCardEffect("dodge", player->getGeneral()->isMale());
 
                     return true;
                 }
-                // else
-                    // room->setEmotion(player, "bad");
             }
         }
         return false;

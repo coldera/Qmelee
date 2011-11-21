@@ -1139,20 +1139,17 @@ public:
 YanmieBang::YanmieBang(Card::Suit suit, int number):FireBang(suit, number) {
     mute = true;
 }
-
-void YanmieBang::use(Room *room, ServerPlayer *kazuki, const QList<ServerPlayer *> &targets) const{
-    room->playSkillEffect("yanmie", 1);
-    FireBang::use(room, kazuki, targets);
-}
     
 class Yanmie: public FilterSkill{
 public:
-    Yanmie():FilterSkill("yanmie"){
-
-    }
+    Yanmie():FilterSkill("yanmie"){}
 
     virtual bool viewFilter(const CardItem *to_select) const{
         return to_select->getFilteredCard()->inherits("Bang") && !to_select->isEquipped();
+    }
+    
+    virtual int getEffectIndex(ServerPlayer *, const Card *) const{
+        return 1;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -1160,7 +1157,7 @@ public:
         YanmieBang *bang = new YanmieBang(card->getSuit(), card->getNumber());
         bang->addSubcard(card_item->getCard()->getId());
         bang->setSkillName(objectName());
-
+        
         return bang;
     }
 };
@@ -1360,12 +1357,7 @@ void BaoshaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     
     enja->updateMp(-2);
     room->playSkillEffect("baosha");
-    
-    LogMessage log;
-    log.type = "#Baosha";
-    log.from = enja;
-    room->sendLog(log);    
-    
+   
     QList<ServerPlayer *> use_to, targets = room->getOtherPlayers(enja);
     
     foreach(ServerPlayer *p, targets) {
@@ -1378,15 +1370,19 @@ void BaoshaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     use.card = Sanguosha->getCard(getSubcards().first());
     use.from = enja;
     use.to << use_to;
+    
+    LogMessage log;
+    log.type = "#Baosha";
+    log.from = enja;
+    log.to << use_to;
+    room->sendLog(log);    
 
     room->useCard(use);
 }
 
 class Baosha: public OneCardViewAsSkill{
 public:
-    Baosha():OneCardViewAsSkill("baosha"){
-
-    }
+    Baosha():OneCardViewAsSkill("baosha"){}
 
     virtual bool isEnabledAtPlay(const Player *player) const{    
         return !player->hasUsed("BaoshaCard") && player->getMp()>=2 && Slash::IsAvailable(player);
@@ -1706,6 +1702,9 @@ void ChuixueBang::onEffect(const CardEffectStruct &effect) const{
         damage.nature = DamageStruct::Ice;
 
         room->damage(damage);
+    }else {
+        room->playCardEffect("dodge", effect.to->getGeneral()->isMale());
+        room->broadcastInvoke("animate", "dodge:"+effect.to->objectName());
     }
 }
 
@@ -2800,12 +2799,164 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------earthquake
+
+//----------------------------------------------------------------------------- Dashi
+
+DashiCard::DashiCard(){
+    target_fixed = true;
+}
+
+void DashiCard::use(Room *room, ServerPlayer *earthquake, const QList<ServerPlayer *> &targets) const {
+    room->throwCard(this);
+    
+    RecoverStruct recover;
+    room->recover(earthquake, recover);
+}
+
+class Dashi: public ViewAsSkill{
+public:
+    Dashi():ViewAsSkill("dashi"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp() && !player->isNude() && player->isWounded();
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.length()>=2)
+            return false;
+
+        if(selected.length() && to_select->getFilteredCard()->getTypeId() != selected.first()->getFilteredCard()->getTypeId())
+            return false;
+
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length()!=2)
+            return NULL;
+
+        DashiCard *card = new DashiCard;
+        card->addSubcards(cards);
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Roudan
+
+RoudanBang::RoudanBang(Card::Suit suit, int number):Bang(suit, number) {
+    setObjectName("roudan");
+}
+
+class RoudanDamage: public TriggerSkill{
+public:
+    RoudanDamage():TriggerSkill("#roudan-damage"){
+        frequency = Compulsory;
+        events << CardFinished << Damage;
+    }
+    
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->hasFlag("roudaning");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *earthquake, QVariant &data) const{
+        Room *room = earthquake->getRoom();
+        
+        if(event == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.damage) {
+                room->setPlayerMark(earthquake, "roudan", earthquake->getMark("roudan")+damage.damage);
+            }            
+        }else if(event == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->objectName() == "roudan") {
+
+                if(earthquake->getMark("roudan")<2) {
+                    
+                    LogMessage log;
+                    log.type = "#RoudanMpUp";
+                    log.from = earthquake;
+                    room->sendLog(log);
+                    
+                    room->playSkillEffect("roudan", 2);
+                    
+                    earthquake->updateMp(1);
+                }
+                
+                room->setPlayerFlag(earthquake, "-roudaning");
+                room->setPlayerMark(earthquake, "roudan", 0);
+                
+            }            
+        }
+
+        return false;
+
+    }
+};
+
+RoudanCard::RoudanCard(){
+    once = true;
+    target_fixed = true;
+    mute = true;
+}
+
+void RoudanCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *earthquake = card_use.from;
+    
+    room->loseHp(earthquake, 1);
+    
+    QList<ServerPlayer *> use_to, targets = room->getOtherPlayers(earthquake);
+    
+    foreach(ServerPlayer *p, targets) {
+        if(earthquake->distanceTo(p)<=2) {           
+            use_to << p;
+        }
+    }
+    
+    CardUseStruct use;
+    use.card = new RoudanBang(Card::NoSuit, 0);
+    use.from = earthquake;
+    use.to << use_to;
+    
+    LogMessage log;
+    log.type = "#Roudan";
+    log.from = earthquake;
+    log.to << use_to;
+    room->sendLog(log);
+
+    room->playSkillEffect("roudan", 1);
+    
+    room->setPlayerFlag(earthquake, "roudaning");
+    room->useCard(use);
+}
+
+class Roudan: public ZeroCardViewAsSkill{
+public:
+    Roudan():ZeroCardViewAsSkill("roudan"){}
+    
+    virtual bool isEnabledAtPlay(const Player *earthquake) const{
+        return !earthquake->hasUsed("RoudanCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        RoudanCard *card = new RoudanCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
-    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan;
+    General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan,
+                *earthquake;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -2945,6 +3096,15 @@ MeleeSSPackage::MeleeSSPackage()
     
     addMetaObject<ChaoxiuCard>();
     addMetaObject<DuchuiCard>();
+    
+    earthquake = new General(this, "earthquake", "nu", 4);
+    earthquake->addSkill(new Dashi);
+    earthquake->addSkill(new Roudan);
+    earthquake->addSkill(new RoudanDamage);
+    related_skills.insertMulti("roudan", "#roudan-damage");
+    
+    addMetaObject<DashiCard>();
+    addMetaObject<RoudanCard>();
 }
 
 ADD_PACKAGE(MeleeSS);

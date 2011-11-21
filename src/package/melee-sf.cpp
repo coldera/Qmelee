@@ -3105,7 +3105,7 @@ MeleeSFPackage::MeleeSFPackage()
     addMetaObject<HuoyanCard>();
     addMetaObject<ChuansongCard>();
     
-    honda = new General(this, "honda", "nu");
+    honda = new General(this, "honda", "nu", 5);
     honda->addSkill(new Xushi);
     honda->addSkill(new XushiOff);
     related_skills.insertMulti("xushi", "#xushi-off");

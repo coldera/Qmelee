@@ -142,7 +142,7 @@ return {
     ["FanshiEffect1"] = "减少1点怒气",
     ["FanshiEffect2"] = "失去1点体力",
     ["#Fanshi"] = "%from 受到<b style='color:#CCCCCC'>【反蚀】</b>效果影响",
-    ["#Baosha"] = "%from 对攻击范围内的所有人发动<b style='color:yellow'>【爆杀】</b>",
+    ["#Baosha"] = "%from 对 %to 发动<b style='color:yellow'>【爆杀】</b>",
     ["yanmie_bao"] = "炎灭--爆",
     
     -- 2011-09-16 +AI+SE 碧眼忍者
@@ -259,5 +259,18 @@ return {
     ["$duchui"] = "咦~嘻 嘻 嘻~",
     ["#ChaoxiuGet"] = "%from 发动专属技能，召唤了<b style='color:yellow'>【朝秀】</b>",
     ["#DuchuiEffect"] = "%from 发动<b style='color:yellow'>【毒吹】</b>技能，视为对 %to 使用 <b>【毒杀】</b>",
+    
+    -- 2011-11-21 +AI-SE 天崩地裂
+    ["earthquake"] = "地震",
+    ["~earthquake"] = "没有好吃的东西了吗？",
+    ["dashi"] = "大食",
+    [":dashi"] = "出牌阶段，你可以消耗1点怒，弃置2张相同类别的牌，回复1点体力",
+    ["$dashi"] = "太好吃了~",
+    ["roudan"] = "肉弹",
+    [":roudan"] = "出牌阶段，你可以减少1点体力，视为对距离2以内的所有角色使用【杀】。若造成的总伤害小于2点，你+1点怒，每回合限用一次",
+    ["$roudan1"] = "呀~~地震来啦~",
+    ["$roudan2"] = "算了，算了",
+    ["#Roudan"] = "%from 对 %to 发动了技能<b style='color:yellow'>【肉弹】</b>",
+    ["#RoudanMpUp"] = "%from 的<b style='color:yellow'>【肉弹】</b>技能造成的总伤害小于2，+1怒气",
     
 }

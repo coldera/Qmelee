@@ -51,8 +51,7 @@ sgs.ai_skill_use["@@tianba"]=function(self,prompt)
     for _,card in ipairs(cards) do
         if card:inherits("Slash") then
             for _,enemy in ipairs(self.enemies) do
-                if self.player:canSlash(enemy, true) then
-                    -- self.player:invoke("animate", "tianba:")
+                if self.player:canSlash(enemy, true) and self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
                     return "@TianbaCard="..card:getEffectiveId().."->"..enemy:objectName()
                 end
             end
@@ -477,9 +476,9 @@ end
 -- enja ---------------------------------------------------------------------------------
 sgs.ai_chaofeng["enja"] = 8
 
+-- baosha
 sgs.dynamic_value.damage_card["BaoshaCard"] = true
 
--- baosha
 local baosha_skill={}
 baosha_skill.name="baosha"
 table.insert(sgs.ai_skills,baosha_skill)
@@ -1045,4 +1044,116 @@ sgs.ai_skill_use_func["DuchuiCard"]=function(card,use,self)
         end
     end
 
+end
+
+-- earthquake ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["earthquake"] = 4
+
+-- dashi
+function getDashiCards(self, cards)
+    if not cards or #cards<1 then return nil end
+    
+    local dashi = {}
+    local first, second
+    
+    self:sortByUseValue(cards,true)
+    
+    for _,card in ipairs(cards) do
+        if not (card:inherits("Cure") 
+        or card:inherits("HolyWater") 
+        or card:inherits("Grab") 
+        or card:inherits("NothingIsSomething") 
+        or (card:inherits("Armor") and not self.player:getArmor())) then
+            self.room:writeToConsole(card:objectName())
+            if not first then
+                self.room:writeToConsole("first:"..card:objectName())
+                first = card
+            else
+                self.room:writeToConsole("second:"..card:objectName())
+                second = card
+                table.insert(dashi, first:getEffectiveId())
+                table.insert(dashi, second:getEffectiveId())
+                return dashi
+            end
+        end
+    end
+    
+    return nil
+end
+-- sgs.dynamic_value.benefit["DashiCard"] = true
+sgs.ai_use_priority.dashi = 4
+
+local dashi_skill={}
+dashi_skill.name="dashi"
+table.insert(sgs.ai_skills,dashi_skill)
+dashi_skill.getTurnUseCard=function(self)
+    if self.player:getMp()<1 or not self.player:isWounded() or self.player:getCards("he"):length()<2 then return end
+    if self.player:getHp()>1 and self.player:getCards("he"):length()<=3 then return end
+    
+    local dashi
+
+    if self:getCardsNum("TrickCard")>1 then
+        self.room:writeToConsole("--------------dashi1")
+        dashi = getDashiCards(self, self:getCards("TrickCard"))
+    end
+    
+    if not dashi and self:getCardsNum("EquipCard")>1 then
+        self.room:writeToConsole("--------------dashi2")
+        dashi = getDashiCards(self, self:getCards("EquipCard", self.player, "he"))
+    end
+    
+    if not dashi and self:getCardsNum("BasicCard")>1 then
+        self.room:writeToConsole("--------------dashi3")
+        dashi = getDashiCards(self, self:getCards("BasicCard"))
+    end
+    
+    if dashi and #dashi==2 then
+        return sgs.Card_Parse(("@DashiCard=%d+%d"):format(dashi[1], dashi[2]))
+    end
+    
+end
+
+sgs.ai_skill_use_func["DashiCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- roudan
+sgs.ai_use_priority.roudan = 6
+sgs.dynamic_value.damage_card["RoudanCard"] = true
+
+local roudan_skill={}
+roudan_skill.name="roudan"
+table.insert(sgs.ai_skills,roudan_skill)
+roudan_skill.getTurnUseCard=function(self)
+    if self.player:hasUsed("RoudanCard") or (self.player:getHp()<2 and self:getCardsNum("HolyWater")<1 or self:getCardsNum("Schnapps")<1) then return end    
+    
+    local good, bad = 0, 0
+    local who = self.player   
+    
+    for _, friend in ipairs(self.friends_noself) do
+        if self.player:distanceTo(fiend)<=2 and friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Normal, friend) then 
+            if friend:getHp() == 1 then 
+                bad = bad + 5
+            end
+            bad = bad + 3
+        end
+    end
+
+    for _, enemy in ipairs(self.enemies) do
+        if who:distanceTo(enemy)<=2 and enemy:getHandcardNum()<2 and  self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then 
+            if enemy:getHp() == 1 then 
+                good = good + 5
+            end
+            good = good + 3
+        end
+    end
+    
+    if good < bad then return end
+    
+    return sgs.Card_Parse("@RoudanCard=.")
+    
+end
+
+sgs.ai_skill_use_func["RoudanCard"]=function(card,use,self)
+    use.card = card
 end

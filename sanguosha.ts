@@ -495,12 +495,12 @@
         <location filename="src/client/client.cpp" line="1238"/>
         <source>You are dying, please provide %1 peach(es)(or analeptic) to save yourself</source>
         <oldsource>You are dying, please provide %2 peach(es)(or analeptic) to save yourself</oldsource>
-        <translation>您正在死亡线上挣扎，请提供 %1 个桃子（或酒）来救您自己</translation>
+        <translation>您正在死亡线上挣扎，请提供 %1 瓶圣水（或酒）来救您自己</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1242"/>
         <source>%1 is dying, please provide %2 peach(es) to save him</source>
-        <translation>%1 正在死亡线上挣扎，请提供 %2 个桃子来拯救他</translation>
+        <translation>%1 正在死亡线上挣扎，请提供 %2 瓶圣水来拯救他</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1253"/>
@@ -1556,7 +1556,7 @@
         <location filename="src/dialog/mainwindow.ui" line="14"/>
         <location filename="src/dialog/mainwindow.cpp" line="137"/>
         <source>Sanguosha</source>
-        <translation>大乱斗</translation>
+        <translation>太阳神大乱斗</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="28"/>
@@ -2524,7 +2524,7 @@
     <message>
         <location filename="src/ui/roomscene.cpp" line="305"/>
         <source>Sanguosha</source>
-        <translation>大乱斗</translation>
+        <translation>太阳神大乱斗</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="1025"/>

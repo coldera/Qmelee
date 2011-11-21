@@ -1,12 +1,8 @@
-*{
+QWidget#skill_bar_container{
 	background-image: url(image/skin/sc/skill_dock/skill-dock.png);
 }
 
-QDockWidget{
-    padding:0 5px 2px 5px;
-}
-
-QPushButton{
+#skill_bar_container QPushButton{
 	background: url(image/skin/sc/skill_dock/back.png) center center;
 	border: 1px solid #55baf3;
     border-radius: 3px;
@@ -14,61 +10,58 @@ QPushButton{
 	font-size: 12px;
     font-weight: 700;
     padding: 0 15px;
-    margin-bottom: 4px;
+    margin-top: 3px;
 }
 
-QPushButton:hover{
+#skill_bar_container QPushButton:hover{
     color: white;
     background: url(image/skin/sc/skill_dock/back_hover.png) center center;
 }
 
-QPushButton:disabled{
+#skill_bar_container QPushButton:disabled{
 	background: url(image/skin/sc/skill_dock/back_shade.png) left center;
     border: 1px solid #b0b0b0;
 	color: gray;
 }
 
-QCheckBox{
+#skill_bar_container QCheckBox{
     border-radius: 3px;
 	color: rgba(204,255,255,80%);
 	font-size: 12px;
     font-weight: 700;
     padding: 0 10px 0 20px;
-    margin-bottom: 4px;
+    margin-top: 3px;
 }
 
-QCheckBox::indicator{
+#skill_bar_container QCheckBox::indicator{
 	height: 0px;
 	width: 0px;
 }
-QCheckBox:unchecked{
+#skill_bar_container QCheckBox:unchecked{
     border: 1px solid gray;
 	background: url(image/skin/sc/skill_dock/unchecked.png) left center;
 }
-QCheckBox:checked{
+#skill_bar_container QCheckBox:checked{
     border: 1px solid #55baf3;
 	background: url(image/skin/sc/skill_dock/checked.png) left center;
 }
 
-QComboBox{
+#skill_bar_container QComboBox{
 	background-image: url(image/skin/sc/skill_dock/back.png);
 	border: 1px solid #55baf3;
     border-radius: 3px;
 	color: white;
 	padding: 1px 0 1px 8px;
+    margin-top: 1px;
 }
 
-QComboBox:on{
+#skill_bar_container QComboBox:on{
 	padding-left: 10px;
 }
-QComboBox::drop-down{
+#skill_bar_container QComboBox::drop-down{
 	border-bottom-right-radius: 3px;
 	border-top-right-radius: 3px;
 	subcontrol-origin: padding;
 	subcontrol-position: top right;
 	width: 15px;
-}
-
-QComboBox * {
-    background: none;
 }

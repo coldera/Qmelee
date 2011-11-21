@@ -112,7 +112,6 @@ class YanmieBang: public FireBang{
 
 public:
     Q_INVOKABLE YanmieBang(Card::Suit suit, int number);
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 
@@ -265,4 +264,26 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
+class DashiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DashiCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class RoudanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE RoudanCard();
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
+class RoudanBang: public Bang{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE RoudanBang(Card::Suit suit, int number);
+};
 #endif // MELEESS_H

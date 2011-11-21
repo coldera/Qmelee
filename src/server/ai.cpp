@@ -182,7 +182,8 @@ bool TrustAI::useCard(const Card *card){
         if(equip->objectName() == "shtm") {
             
             foreach(ServerPlayer *target, room -> getServerPlayers()){
-                if(target->isDead() && isFriend(target)) {
+                if(target->isDead()
+                && (self->getRole() == target->getRole() or (self->getRole() == "lord" && target->getRole() == "loyalist"))) {
                     shtmCanBeUse = true;
                     break;
                 }

@@ -746,20 +746,22 @@ sgs.ai_skill_invoke.caozong = function(self, data)
     
     if self:isFriend(use.from) then return false end
        
-    if use.card:inherits("Slash") then
+    if use.card:inherits("Slash") and self:isFriend(use.to:first()) then
         for _,p in ipairs(self.enemies) do
             if use.from:canSlash(p) then
                 return true
             end
         end
-    elseif use.card:inherits("Cure") then
+    elseif use.card:inherits("PK") and self:isFriend(use.to:first()) then
+        return true
+    elseif use.card:inherits("Cure") and not self:isFriend(use.to:first()) then
         for _,p in ipairs(self.friends) do
             if use.from:distanceTo(p)<=1 and p:isWounded() then
                 sgs.caozong_target_is_friend = true
                 return true
             end
         end
-    elseif use.card:inherits("Grab") and self.player:getMp()>2 then
+    elseif use.card:inherits("Grab") and self:isFriend(use.to:first()) and self.player:getMp()>2 then
         for _,p in ipairs(self.enemies) do
             if use.from:distanceTo(p)<=1 and not p:isNude() then
                 return true

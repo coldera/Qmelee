@@ -28,6 +28,7 @@ class QGroupBox;
 #include <QGraphicsWidget>
 #include <QGraphicsProxyWidget>
 #include <QThread>
+#include <QHBoxLayout>
 
 class DeathNoteDialog: public QDialog{
     Q_OBJECT
@@ -195,7 +196,6 @@ private:
     Window *prompt_box;
     QGraphicsItem *control_panel;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;
-    QDockWidget *skill_dock;
     QComboBox *sort_combobox;
 
 

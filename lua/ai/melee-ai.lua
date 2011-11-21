@@ -1912,7 +1912,7 @@ function SmartAI:getTurnUse()
                 end
                 if card:inherits("OffensiveHorse") then self.predictNewHorse=true end
                 if card:inherits("Grab") then i=i-1 end
-                if card:inherits("Peach") then i=i+2 end
+                if card:inherits("HolyWater") then i=i+2 end
                 if card:inherits("BorrowWeapon") then i=i-1 end
                 if card:inherits("ReadyToGo") then i=i-1 end
                 if card:inherits("NothingIsSomething") then i=i-2 end
@@ -2357,42 +2357,7 @@ function SmartAI:askForPlayerChosen(targets, reason)
 end
 
 -- used for SmartAI:askForChoice
-sgs.ai_skill_choice = {
-    roar = function(self, choices)
-        if not self:isEquip("HolyWing") and self.player:isWounded() or self.player:isChained() then 
-            return "RoarEffect1"
-        else
-            return "RoarEffect2"
-        end
-    end,
-    
-    icebound = function(self, choices)
-        if self:isEquip("HolyWing") or self.player:getHandcardNum()>2 and self.player:getHp()>2 then 
-            return "IceboundEffect2"
-        else
-            return "IceboundEffect1"
-        end
-    end,
-    
-    shtm = function(self, choices)
-        local dead
-        local all = self.room:getServerPlayers()
-		for _, p in sgs.qlist(all) do
-            sgs.showFriendDebug = true;
-			if p:isDead() and self:isFriend(p) then
-                return p:getGeneralName()
-            end
-		end
-    end,
-      
-    air_bang = function(self, choices)
-        if self.player:getHp()<3 then 
-            return "AirEffectArmor"
-        else
-            return "AirEffectHp"
-        end
-    end,
-}
+sgs.ai_skill_choice = {}
 
 function SmartAI:askForChoice(skill_name, choices)
     self.room:writeToConsole("-------------- askForChoice start");
