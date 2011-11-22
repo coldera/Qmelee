@@ -286,4 +286,21 @@ class RoudanBang: public Bang{
 public:
     Q_INVOKABLE RoudanBang(Card::Suit suit, int number);
 };
+
+class MianjuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MianjuCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class TutengCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TutengCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // MELEESS_H

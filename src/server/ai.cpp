@@ -178,19 +178,16 @@ bool TrustAI::useCard(const Card *card){
         const EquipCard *equip = qobject_cast<const EquipCard *>(card);
         
         // modify by ce add for shtm
-        bool shtmCanBeUse = false;
         if(equip->objectName() == "shtm") {
             
             foreach(ServerPlayer *target, room -> getServerPlayers()){
                 if(target->isDead()
                 && (self->getRole() == target->getRole() or (self->getRole() == "lord" && target->getRole() == "loyalist"))) {
-                    shtmCanBeUse = true;
-                    break;
+                    return true;
                 }
             }
             
-            if(!shtmCanBeUse)
-                return false;
+            return false;
         }
         
         switch(equip->location()){

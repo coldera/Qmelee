@@ -1,7 +1,7 @@
 #ifndef EXCLUSIVECARD_H
 #define EXCLUSIVECARD_H
 
-#include "standard.h"
+#include "meleecard.h"
 
 class ExclusiveCardPackage: public Package{
     Q_OBJECT
@@ -15,6 +15,24 @@ class Chaoxiu: public Weapon{
 
 public:
     Q_INVOKABLE Chaoxiu(Card::Suit suit, int number);
+    
+    virtual QString getSubtype() const;
+};
+
+class ViolentMask: public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ViolentMask(Card::Suit suit, int number);
+    
+    virtual QString getSubtype() const;
+};
+
+class ShamanTotem: public Relic{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShamanTotem(Card::Suit suit, int number);
     
     virtual QString getSubtype() const;
 };

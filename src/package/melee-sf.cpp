@@ -1035,7 +1035,9 @@ public:
 
 //----------------------------------------------------------------------------- Huoyan
 
-HuoyanCard::HuoyanCard(){}
+HuoyanCard::HuoyanCard(){
+    mute = true;
+}
 
 void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
@@ -1043,7 +1045,11 @@ void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     const Card *card = Sanguosha->getCard(getSubcards().first());
     FireBang *fire_bang = new FireBang(card->getSuit(), card->getNumber());
-
+    
+    dhalsim->updateMp(-2);
+    room->throwCard(this);
+    room->playSkillEffect("huoyan");    
+    
     LogMessage log;
     log.type = "$Huoyan";
     log.from = dhalsim;
@@ -1051,14 +1057,7 @@ void HuoyanCard::onUse(Room *room, const CardUseStruct &card_use) const{
     log.card_str = card->toString();
     room->sendLog(log); 
     
-    // room->playSkillEffect("huoyan");
-    
-    dhalsim->updateMp(-2);
-    
     fire_bang->use(room, dhalsim, card_use.to);
-    
-    room->throwCard(this);
-    
 }
 
 class Huoyan: public OneCardViewAsSkill{

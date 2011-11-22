@@ -414,7 +414,7 @@ sgs.ai_skill_use_func["SiyueCard"]=function(card,use,self)
 	self:sort(self.enemies,"defense")
     
     for _, enemy in ipairs(self.enemies) do
-        if  self:damageIsEffective(sgs.DamageStruct_Ice, enemy) then 
+        if self:damageIsEffective(sgs.DamageStruct_Ice, enemy) then 
             use.card = card
             if use.to then 
                 use.to:append(enemy)
@@ -987,7 +987,7 @@ local chaoxiu_get_skill={}
 chaoxiu_get_skill.name="chaoxiu_get"
 table.insert(sgs.ai_skills,chaoxiu_get_skill)
 chaoxiu_get_skill.getTurnUseCard=function(self)
-    if self:isEquip("chaoxiu") then return end
+    if self:isEquip("Chaoxiu") then return end
     
     local weapon = nil
     
@@ -995,7 +995,7 @@ chaoxiu_get_skill.getTurnUseCard=function(self)
     cards=sgs.QList2Table(cards) 
     
     for _,card in ipairs(cards) do
-        if card:inherits("Weapon") and card:objectName() ~= "chaoxiu" then 
+        if card:inherits("Weapon") and not card:isExclusive() then 
             weapon = card
         elseif card:objectName() == "chaoxiu" then
             return
@@ -1093,17 +1093,14 @@ dashi_skill.getTurnUseCard=function(self)
     local dashi
 
     if self:getCardsNum("TrickCard")>1 then
-        self.room:writeToConsole("--------------dashi1")
         dashi = getDashiCards(self, self:getCards("TrickCard"))
     end
     
     if not dashi and self:getCardsNum("EquipCard")>1 then
-        self.room:writeToConsole("--------------dashi2")
         dashi = getDashiCards(self, self:getCards("EquipCard", self.player, "he"))
     end
     
     if not dashi and self:getCardsNum("BasicCard")>1 then
-        self.room:writeToConsole("--------------dashi3")
         dashi = getDashiCards(self, self:getCards("BasicCard"))
     end
     
@@ -1156,4 +1153,80 @@ end
 
 sgs.ai_skill_use_func["RoudanCard"]=function(card,use,self)
     use.card = card
+end
+
+-- tamtam ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["tamtam"] = 5
+
+sgs.ai_use_value.shaman_totem = 8
+sgs.ai_use_value.violent_mask = 8
+
+-- mianju
+sgs.ai_use_priority.MianjuCard = 3
+
+local mianju_skill={}
+mianju_skill.name="mianju"
+table.insert(sgs.ai_skills,mianju_skill)
+mianju_skill.getTurnUseCard=function(self)
+    if self:isEquip("ViolentMask")
+    or self:getCardsNum("Slash")<1 
+    or not self.player:canSlashWithoutCrossbow() 
+    or self.player:getHp()<3 then return end
+    local equip = nil
+    
+    local cards = self.player:getCards("he")
+    cards=sgs.QList2Table(cards) 
+    
+    for _,card in ipairs(cards) do
+        if card:inherits("EquipCard") and not card:isExclusive() then 
+            equip = card
+        elseif card:objectName() == "violent_mask" then
+            return
+        end
+    end
+    if equip then
+        return sgs.Card_Parse("@MianjuCard="..equip:getEffectiveId())
+    end
+    
+end
+
+sgs.ai_skill_use_func["MianjuCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- tuteng
+sgs.ai_use_priority.TutengCard = 2
+
+local tuteng_skill={}
+tuteng_skill.name="tuteng"
+table.insert(sgs.ai_skills,tuteng_skill)
+tuteng_skill.getTurnUseCard=function(self)
+    
+    if self:isEquip("ShamanTotem") or not self:isEquip("ViolentMask") or self.player:getMp()<1 then return end
+    
+    local equip = nil
+    
+    local cards = self.player:getCards("he")
+    cards=sgs.QList2Table(cards) 
+    
+    for _,card in ipairs(cards) do
+        if card:inherits("EquipCard") and not card:inherits("Horse") and not card:isExclusive() then 
+            equip = card
+        elseif card:objectName() == "shaman_totem" then
+            return
+        end
+    end
+    if equip then
+        return sgs.Card_Parse("@TutengCard="..equip:getEffectiveId())
+    end
+    
+end
+
+sgs.ai_skill_use_func["TutengCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- tuteng_cost
+sgs.ai_skill_invoke.tuteng_cost = function(self, data)
+    return self.player:getMp()>0 and self:isEquip("ViolentMask")
 end

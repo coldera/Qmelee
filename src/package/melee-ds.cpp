@@ -2573,6 +2573,7 @@ public:
 
 YoubuCard::YoubuCard(){
     once = true;
+    mute = true;
 }
 
 void YoubuCard::use(Room *room, ServerPlayer *bulleta, const QList<ServerPlayer *> &targets) const{
@@ -2592,10 +2593,10 @@ void YoubuCard::use(Room *room, ServerPlayer *bulleta, const QList<ServerPlayer 
     room->showCard(target, card_id);
 
     if(card->getSuit() != suit){
-        room->playSkillEffect(objectName(), 1);
+        room->playSkillEffect("youbu", 1);
         room->loseHp(target, 1);
     }else {
-        room->playSkillEffect(objectName(), 2);
+        room->playSkillEffect("youbu", 2);
     }
     
 }

@@ -940,6 +940,8 @@ local function prohibitUseDirectly(card, player)
         return card:inherits("Dodge") and card:isRed() 
     elseif player:hasSkill("kuangniu") then
         return card:inherits("TrickCard") and card:isRed()
+    elseif player:hasSkill("yanmie") then
+        return card:inherits("Bang")
     end
 end
 
@@ -957,6 +959,9 @@ local function isCompulsoryView(card, class_name, player, card_place)
 	local card_id = card:getEffectiveId()
     
 	if class_name == "Slash" and card_place ~= sgs.Player_Equip then
+        if player:hasSkill("yanmie") and card:inherits("Bang") then 
+            return ("fire_bang:yanmie[%s:%s]=%d"):format(suit, number, card_id)
+        end
         if player:hasSkill("shoudao") and card:isRed() and card:inherits("Dodge") then 
             return ("bang:shoudao[%s:%s]=%d"):format(suit, number, card_id)
         end
@@ -1413,7 +1418,8 @@ function SmartAI:useCardPK(duel, use)
 		if enemy:getMark("@invincible")<=0 and 
         not enemy:hasSkill("jijia") and 
         self:objectiveLevel(enemy)>3 and 
-        not self:isEquip("VineArmor", enemy) then
+        not self:isEquip("VineArmor", enemy) and 
+        not self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
         
 			local n1 = self:getCardsNum("Slash")
 			local n2 = enemy:getHandcardNum()
@@ -1833,7 +1839,14 @@ function SmartAI:useEquipCard(card, use)
             use.card = card
 		end
 	elseif card:inherits("Armor") then
+
 	    if self.player:hasSkill("deer") or self.player:getMark("@armor_forbid")>0 then return end
+        
+        if card:isExclusive() then 
+            use.card = card 
+            return
+        end
+        
         if card:inherits("HolyWing") and self.player:isWounded() then return end
         
         if card:objectName()=="vine_armor" and self.player:hasSkill("jijia") then return end
@@ -3098,6 +3111,8 @@ function SmartAI:damageIsEffective(nature, player)
     elseif nature == sgs.DamageStruct_Thunder then
         return not (player:getMark("@diangguang")>0 or player:hasSkill("shidian"))
     end
+    
+    return true
 end
 
 function SmartAI:needHelp(data)

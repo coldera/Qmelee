@@ -2230,8 +2230,9 @@ void Room::throwCard(const Card *card){
         QList<int> subcards = card->getSubcards();
         foreach(int subcard, subcards)
             throwCard(subcard);
-    }else
+    }else {       
         throwCard(card->getId());
+    }
 }
 
 void Room::throwCard(int card_id){

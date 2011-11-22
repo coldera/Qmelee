@@ -1593,12 +1593,10 @@ BingrenBang::BingrenBang(Card::Suit suit, int number)
 
 class BingrenOn: public FilterSkill{
 public:
-    BingrenOn():FilterSkill("bingren_on"){
-
-    }
+    BingrenOn():FilterSkill("bingren_on"){}
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->objectName() == "bang";
+        return to_select->getCard()->inherits("Bang");
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -2693,11 +2691,12 @@ ChaoxiuCard::ChaoxiuCard(){
 void ChaoxiuCard::use(Room *room, ServerPlayer *genan, const QList<ServerPlayer *> &) const {
     room->throwCard(this);    
     
-    room->setPlayerMark(genan, "chaoxiu", 1);
-    
     const Card *chaoxiu = room->getOffCourtCard("chaoxiu");
     
     if(chaoxiu) {
+        //a mark for exclucive card same as objectName
+        room->setPlayerMark(genan, "chaoxiu", 1);
+    
         room->playSkillEffect("chaoxiu_get");
     
         LogMessage log;
@@ -2728,7 +2727,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->inherits("Weapon");
+        return to_select->getFilteredCard()->inherits("Weapon") && !to_select->getFilteredCard()->isExclusive();
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -2809,6 +2808,8 @@ DashiCard::DashiCard(){
 
 void DashiCard::use(Room *room, ServerPlayer *earthquake, const QList<ServerPlayer *> &targets) const {
     room->throwCard(this);
+    
+    earthquake->updateMp(-1);
     
     RecoverStruct recover;
     room->recover(earthquake, recover);
@@ -2950,13 +2951,207 @@ public:
     }
 };
 
+//--------------------------------------------------------------------------------------------------------------tamtam
+
+//----------------------------------------------------------------------------- Mianju
+
+MianjuCard::MianjuCard(){
+    target_fixed = true;
+    mute = true;
+}
+
+void MianjuCard::use(Room *room, ServerPlayer *tamtam, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);    
+    
+    const Card *mask = room->getOffCourtCard("violent_mask");
+    
+    if(mask) {
+        //a mark for exclucive card same as objectName
+        room->setPlayerMark(tamtam, "violent_mask", 1);
+        room->playSkillEffect("mianju", 1);
+    
+        LogMessage log;
+        log.type = "#Mianju";
+        log.from = tamtam;
+        room->sendLog(log);
+        
+        room->loseHp(tamtam, 1);        
+        tamtam->obtainCard(mask);
+    }
+    
+}
+
+class Mianju: public OneCardViewAsSkill{
+public:
+    Mianju():OneCardViewAsSkill("mianju"){}
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+    
+        if(player->hasArmorEffect("violent_mask"))
+            return false;
+            
+        foreach(const Card *card, Self->getCards()) {
+            if(card->inherits("ViolentMask"))
+                return false;
+        }
+        
+        return true;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->inherits("EquipCard");
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        MianjuCard *card = new MianjuCard;
+        card->addSubcard(card_item->getCard()->getId());
+        card->setSkillName(objectName());
+
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Tuteng
+
+class TutengCost: public PhaseChangeSkill{
+public:
+    TutengCost():PhaseChangeSkill("#tuteng-cost"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Finish
+                && target->hasRelic("shaman_totem");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *tamtam) const{
+        Room *room = tamtam->getRoom();
+        LogMessage log;
+        
+        if(tamtam->getMp() && room->askForSkillInvoke(tamtam, "tuteng_cost")){
+            tamtam->updateMp(-1);
+            
+            log.type = "#TutengCost";
+            log.from = tamtam;
+            room->sendLog(log);
+            
+        }else {
+            log.type = "#TutengDiscard";
+            log.from = tamtam;
+            room->sendLog(log);
+            
+            room->throwCard(tamtam->getRelic());
+        }
+        
+        return false;
+    }
+};
+
+TutengCard::TutengCard(){
+    target_fixed = true;
+    mute = true;
+}
+
+void TutengCard::use(Room *room, ServerPlayer *tamtam, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);    
+    
+    const Card *totem = room->getOffCourtCard("shaman_totem");
+    
+    if(totem) {
+        //a mark for exclucive card same as objectName
+        room->setPlayerMark(tamtam, "shaman_totem", 1);
+        room->playSkillEffect("tuteng");
+    
+        LogMessage log;
+        log.type = "#Tuteng";
+        log.from = tamtam;
+        room->sendLog(log);
+        
+        tamtam->obtainCard(totem);
+    }
+    
+}
+
+class Tuteng: public OneCardViewAsSkill{
+public:
+    Tuteng():OneCardViewAsSkill("tuteng"){}
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+    
+        if(player->hasRelic("shaman_totem"))
+            return false;
+            
+        foreach(const Card *card, Self->getCards()) {
+            if(card->inherits("ShamanTotem"))
+                return false;
+        }
+        
+        return true;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        const Card *card = to_select->getFilteredCard();
+        return card->inherits("EquipCard") && !card->isExclusive() && !card->inherits("Horse");
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        TutengCard *card = new TutengCard;
+        card->addSubcard(card_item->getCard()->getId());
+        card->setSkillName(objectName());
+
+        return card;
+    }
+};
+
+//--------------------------------------------------------------------------------------------------------------basara
+
+//----------------------------------------------------------------------------- Yuannian
+
+class Yuannian: public TriggerSkill{
+public:
+    Yuannian():TriggerSkill("yuannian"){
+        frequency = Compulsory;
+        events << AskForPeachesDone;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *basara, QVariant &data) const{
+        Room *room = basara->getRoom();
+        
+        if(basara->getMp()>=10) {
+            
+            room->playSkillEffect(objectName());
+            
+            LogMessage log;
+            log.type = "#Yuannian";
+            log.from = basara;
+            room->sendLog(log);
+            
+            basara->updateMp(-10);
+            
+            RecoverStruct recover;
+            room->recover(basara, recover);
+            
+            if(basara->getHandcardNum()>0) {
+                basara->throwAllHandCards();
+            }
+            
+        }
+        
+        return false;
+
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
     General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan,
-                *earthquake;
+                *earthquake, *tamtam;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -3105,6 +3300,21 @@ MeleeSSPackage::MeleeSSPackage()
     
     addMetaObject<DashiCard>();
     addMetaObject<RoudanCard>();
+    
+    tamtam = new General(this, "tamtam", "kuang");
+    tamtam->addSkill(new Mianju);
+    tamtam->addSkill(new Tuteng);
+    tamtam->addSkill(new TutengCost);
+    related_skills.insertMulti("tuteng", "#tuteng-cost");
+    
+    addMetaObject<MianjuCard>();
+    addMetaObject<TutengCard>();
+    
+    // basara = new General(this, "basara", "yuan", 3);
+    // basara->addSkill(new Yuannian);
+    // basara->addSkill(new Sinian);
+    // basara->addSkill(new Yingxi);
+    // basara->addSkill(new Yingchu);
 }
 
 ADD_PACKAGE(MeleeSS);

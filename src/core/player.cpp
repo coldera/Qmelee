@@ -574,13 +574,14 @@ int Player::getMaxCards() const{
     int bee = getMark("@bee");
     
     int deer = hasSkill("deer")?1:0;
+    int mask = this->hasArmorEffect("violent_mask")?1:0;
     
     int xushi = 0;
     if(getMark("@xuli") && getKingdom() == "nu") {
         xushi = getMp();
     }
     
-    return qMax(hp,0) + bee - deer + xushi + reward;
+    return qMax(hp,0) + bee - deer - mask + xushi + reward;
 }
 
 QString Player::getKingdom() const{

@@ -104,7 +104,7 @@ void Card::setNumber(int number){
 }
 
 QString Card::Number2String(int number){
-        static const char *number_string = "-A23456789XJQK";
+        static const char *number_string = "0A23456789XJQK";
         return QString(number_string[number]);
 
 }

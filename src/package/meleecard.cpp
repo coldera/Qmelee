@@ -1511,7 +1511,7 @@ public:
         if(damage.card && damage.card->inherits("Bang") &&
         damage.nature == DamageStruct::Normal) {
         
-            if(damage.from->askForSkillInvoke(objectName(), data)) {
+            if(damage.to->isAlive() && damage.from->askForSkillInvoke(objectName(), data)) {
                 Room *room = player->getRoom();
 
                 JudgeStruct judge;
