@@ -242,6 +242,8 @@ end
 
 -- shenyu
 sgs.ai_skill_invoke["@shenyu"]=function(self,prompt)
+    if self.player:getPhase() ~= sgs.Player_NotActive then return "." end
+    
     local judge = self.player:getTag("Judge"):toJudge()
 	
 	if self:needRetrial(judge) then

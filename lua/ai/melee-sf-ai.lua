@@ -827,7 +827,7 @@ end
 
 sgs.ai_skill_playerchosen.jiliu = function (self, targets)
     self:sort(self.enemies,"hp")
-    self.room:writeToConsole("jiliu target is "..self.enemies[1]:getGeneralName())
+    self.room:writeToConsole("jiliu target is ----------------------------------------------------------------------------------"..self.enemies[1]:getGeneralName())
     return self.enemies[1]
 end
 

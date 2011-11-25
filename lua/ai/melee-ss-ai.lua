@@ -1239,7 +1239,7 @@ sgs.ai_skill_invoke.sinian = function(self, data)
     local players = self.room:getAllPlayers()
     players=sgs.QList2Table(players)
     
-    for _, p in ipairs(players) do        
+    for _, p in ipairs(players) do
         if p:getGeneral():isFemale() and self:isFriend(p) then
             return true
         end
@@ -1249,7 +1249,7 @@ sgs.ai_skill_invoke.sinian = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.sinian = function (self, targets)
-    for _, p in ipairs(targets) do        
+    for _, p in sgs.qlist(targets) do    
         if self:isFriend(p) then
             return p
         end
@@ -1265,7 +1265,7 @@ table.insert(sgs.ai_skills,yingxi_skill)
 yingxi_skill.getTurnUseCard=function(self)
     if self.player:getMp()>=6 
     and (self.player:getHp()<=2 or not self.player:faceUp())
-    and self.player:hasUsed("YingxiCard") then
+    and not self.player:hasUsed("YingxiCard") then
         return sgs.Card_Parse("@YingxiCard=.")
     end
 end
