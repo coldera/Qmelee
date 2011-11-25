@@ -1082,10 +1082,17 @@ function SmartAI:useBasicCard(card, use,no_distance)
         
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
+            if self.player:hasFlag("drank") then
+                self.room:writeToConsole("----------- drank and slash ? who: "..enemy:getGeneralName())
+            end
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,enemy)
 			if not slash_prohibit then
 				self.predictedRange = self.player:getAttackRange()
+                if self.player:hasFlag("drank") then
+                    self.room:writeToConsole("----------- drank and slash ? not slash_prohibit ")
+                    self.room:writeToConsole("----------- drank and slash ? objectiveLevel: "..self:objectiveLevel(enemy))
+                end
                 
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
@@ -1855,6 +1862,17 @@ function SmartAI:useEquipCard(card, use)
 	 	elseif (self.player:getArmor():objectName())=="blood_guard" then use.card=card
 	 	elseif self.player:isChained()  and (self.player:getArmor():inherits("vine_armor")) and not (card:objectName()=="blood_guard") then use.card=card
 	 	end
+    elseif card:inherits("Horse") then
+        if self:isEquip("Deer") then return end        
+        
+        if card:isExclusive() or (self.player:getHp() < 2 and card:inherits("DefensiveHorse")) then 
+            use.card = card
+        end
+        
+        if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getHorse())) then
+            if self.player:getHandcardNum() <= self.player:getHp() then return end
+            use.card = card
+        end
 	elseif self.lua_ai:useCard(card) then
 		use.card = card
 	end

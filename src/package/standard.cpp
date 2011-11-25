@@ -470,6 +470,7 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    
     int slash_targets = 1;
     if(Self->hasWeapon("wushuang_halberd") && Self->isLastHandCard(this)){
         slash_targets = 3;

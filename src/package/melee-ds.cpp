@@ -19,7 +19,7 @@ class Zizun: public TriggerSkill{
 public:
     Zizun():TriggerSkill("zizun"){
         frequency = Compulsory;
-        events << Damaged << Damage << PhaseChange;
+        events << Damaged << HpLost << Damage << PhaseChange;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -47,10 +47,17 @@ public:
         if(!demitri->hasSkill(objectName()))
             return false;
 
-        if(event == Damaged && !demitri->hasFlag("zizun_drawed")) {
-            DamageStruct damage = data.value<DamageStruct>();
+        if((event == Damaged || event == HpLost) && !demitri->hasFlag("zizun_drawed")) {
+            int lose;
             
-            if(demitri->hasFlag("zizun_draw") || (!demitri->hasFlag("zizun_draw") && damage.damage>1)) {
+            if(event == Damaged) {
+                DamageStruct damage = data.value<DamageStruct>();
+                lose = damage.damage;
+            }else {
+                lose = data.toInt();
+            }
+            
+            if(demitri->hasFlag("zizun_draw") || (!demitri->hasFlag("zizun_draw") && lose>1)) {
                 LogMessage log;
                 log.type = "#ZizunEffect1";
                 log.from = demitri;
@@ -63,7 +70,7 @@ public:
                 
                 room->playSkillEffect(objectName(), 1);
                 
-            }else if(damage.damage == 1) {
+            }else if(lose == 1) {
                 room->setPlayerFlag(demitri, "zizun_draw");
             }            
         }else if(event == Damage) {

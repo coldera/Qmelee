@@ -303,4 +303,11 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class YingxiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YingxiCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
 #endif // MELEESS_H

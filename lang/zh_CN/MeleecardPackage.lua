@@ -49,6 +49,8 @@ local t = {
     ["skill_forbid"] = "【封技】",
     ["@card_forbid"] = "封牌",
     ["card_forbid"] = "【封牌】",
+    ["@hidden"] = "【隐匿】",
+    ["hidden"] = "隐匿",
     
     ["#Invincible"] = "%from 处于 <b style='color:yellow'>无损状态</b> 任何伤害和战术牌对其无效",
     ["#CountDown"] = "%from 还有 %arg 回合才能解除 %arg2 状态",

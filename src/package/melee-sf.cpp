@@ -1506,7 +1506,8 @@ public:
         
         const Card *card = to_select->getFilteredCard();
         
-        if(!(card->isRed() && (card->inherits("Slash") || card->inherits("Dodge"))))
+        // if(!(card->isRed() && (card->inherits("Slash") || card->inherits("Dodge"))))
+        if(!(card->isRed() && (card->inherits("Slash"))))
             return false;
             
         return true;

@@ -1023,7 +1023,7 @@ duchui_skill.getTurnUseCard=function(self)
     if self.player:getMp()<4 then return end
     
     for _,enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy, true) and damageIsEffective(sgs.DamageStruct_Poison, enemy) then
+        if self.player:canSlash(enemy, true) and self:damageIsEffective(sgs.DamageStruct_Poison, enemy) then
             return sgs.Card_Parse("@DuchuiCard=.")
         end
     end
@@ -1229,4 +1229,63 @@ end
 -- tuteng_cost
 sgs.ai_skill_invoke.tuteng_cost = function(self, data)
     return self.player:getMp()>0 and self:isEquip("ViolentMask")
+end
+
+-- basara ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["basara"] = -2
+
+-- sinian
+sgs.ai_skill_invoke.sinian = function(self, data)
+    local players = self.room:getAllPlayers()
+    players=sgs.QList2Table(players)
+    
+    for _, p in ipairs(players) do        
+        if p:getGeneral():isFemale() and self:isFriend(p) then
+            return true
+        end
+    end
+    
+    return false
+end
+
+sgs.ai_skill_playerchosen.sinian = function (self, targets)
+    for _, p in ipairs(targets) do        
+        if self:isFriend(p) then
+            return p
+        end
+    end
+end
+
+-- yingxi
+sgs.ai_use_priority.YingxiCard = 2
+
+local yingxi_skill={}
+yingxi_skill.name="yingxi"
+table.insert(sgs.ai_skills,yingxi_skill)
+yingxi_skill.getTurnUseCard=function(self)
+    if self.player:getMp()>=6 
+    and (self.player:getHp()<=2 or not self.player:faceUp())
+    and self.player:hasUsed("YingxiCard") then
+        return sgs.Card_Parse("@YingxiCard=.")
+    end
+end
+
+sgs.ai_skill_use_func["YingxiCard"]=function(card,use,self)
+    use.card = card
+end
+
+-- yingchu
+sgs.ai_skill_playerchosen.yingchu = function (self, targets)
+    local target = nil
+
+    self:sort(self.enemies, "defense")
+    for _, p in ipairs(self.enemies) do        
+        if self:damageIsEffective(sgs.DamageStruct_Normal, p) then
+            target = p
+        end
+    end
+    
+    if not target then target=self.enemies[1] end
+    
+    return target
 end

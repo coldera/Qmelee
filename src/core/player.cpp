@@ -504,7 +504,6 @@ bool Player::hasRelic(const QString &relic_name) const{
     return relic && relic->objectName() == relic_name;
 }
 
-
 bool Player::hasArmorEffect(const QString &armor_name) const{
     return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
 }
@@ -687,8 +686,9 @@ int Player::getMark(const QString &mark) const{
 
 bool Player::canSlash(const Player *other, bool distance_limit) const{
     //modify by ce
-    // if(other->hasSkill("kongcheng") && other->isKongcheng())
-        // return false;
+    if(other->getMark("@hidden"))
+        return false;
+        
     if(hasSkill("haosheng")) {
         QList<const Player *> targets;
 

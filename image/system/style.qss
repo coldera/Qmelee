@@ -2,6 +2,10 @@ QWidget#skill_bar_container{
 	background-image: url(image/system/skill_dock/skill-dock.png);
 }
 
+QStatusBar::item {
+    border: 0;
+}
+
 #skill_bar_container QPushButton{
 	background: url(image/system/skill_dock/back.png) left center;
 	border: 1px solid gray;

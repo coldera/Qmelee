@@ -3121,8 +3121,10 @@ public:
         Room *room = basara->getRoom();
         
         if(basara->getMp()>=10) {
+            DyingStruct dying = data.value<DyingStruct>();
             
             room->playSkillEffect(objectName());
+            // room->broadcastInvoke("animate", "yuannian");
             
             LogMessage log;
             log.type = "#Yuannian";
@@ -3132,6 +3134,7 @@ public:
             basara->updateMp(-10);
             
             RecoverStruct recover;
+            recover.recover = dying.damage->damage - basara->getHp() + 1;
             room->recover(basara, recover);
             
             if(basara->getHandcardNum()>0) {
@@ -3145,13 +3148,205 @@ public:
     }
 };
 
+//----------------------------------------------------------------------------- Sinian
+
+class SinianEffect: public TriggerSkill{
+public:
+    SinianEffect():TriggerSkill("#sinian-effect"){
+        frequency = Compulsory;
+        events << Damaged << HpRecover;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) || target->getMark("@gouhuo");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        
+        if(event == Damaged && player->getMark("@gouhuo")) {
+            
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if(p->hasSkill("sinian")) {
+                    room->playSkillEffect("sinian", 3);
+                    
+                    LogMessage log;
+                    log.type = "#SinianDamage";
+                    log.from = player;
+                    log.to << p;
+                    room->sendLog(log);
+                    
+                    p->updateMp(5);
+                    break;
+                }                    
+            }
+            
+        }else if(event == HpRecover && player->hasSkill("sinian")) {
+            
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if(p->getMark("@gouhuo")) {
+                    room->playSkillEffect("sinian", 2);
+                    
+                    LogMessage log;
+                    log.type = "#SinianRecover";
+                    log.from = player;
+                    log.to << p;
+                    room->sendLog(log);
+                    
+                    p->drawCards(2);
+                    break;
+                }
+            }
+            
+        }
+        
+        return false;
+
+    }
+};
+
+class Sinian: public PhaseChangeSkill{
+public:
+    Sinian():PhaseChangeSkill("sinian"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *basara) const{
+        Room *room = basara->getRoom();
+        
+        QList<ServerPlayer *> female;
+        foreach(ServerPlayer *p, room->getOtherPlayers(basara)) {
+            if(p->getGeneral()->isFemale())
+                female << p;
+        }
+        
+        if(female.length() && room->askForSkillInvoke(basara, objectName())) {
+            ServerPlayer *gouhuo = room->askForPlayerChosen(basara, female, objectName());
+            if(gouhuo) {
+                room->playSkillEffect("sinian", 1);
+                
+                if(gouhuo->getMark("@gouhuo")) {
+                    return false;
+                }else {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(basara)) {
+                        if(p->getMark("@gouhuo")) {
+                            p->loseMark("@gouhuo");
+                            break;
+                        }
+                    }
+                
+                    gouhuo->gainMark("@gouhuo");
+                }
+            }
+        }
+        
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Yingxi
+
+YingxiCard::YingxiCard(){
+    target_fixed = true;
+}
+
+void YingxiCard::use(Room *room, ServerPlayer *basara, const QList<ServerPlayer *> &) const {
+    basara->updateMp(-6);
+    basara->turnOver();
+    
+    basara->gainMark("@hidden");
+    room->setPlayerMark(basara, "yingxi_on", room->getAllPlayers().length());
+}
+
+class Yingxi: public ZeroCardViewAsSkill{
+public:
+    Yingxi():ZeroCardViewAsSkill("yingxi"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMp()>=6 && !player->hasUsed("YingxiCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        YingxiCard *card = new YingxiCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Yingchu
+
+class Yingchu: public PhaseChangeSkill{
+public:
+    Yingchu():PhaseChangeSkill("yingchu"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom(); 
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            int times = p->getMark("yingxi_on");
+            if(times==1) {
+                p->loseMark("@hidden");
+                room->setPlayerMark(p, "yingxi_on", 0);
+                
+                if(p->hasSkill("yingchu")) {
+                    
+                    LogMessage log;
+                    log.type = "#yingchu";
+                    log.from = p;
+                    room->sendLog(log);
+                
+                    RecoverStruct recover;
+                    room->recover(p, recover);
+                    
+                    ServerPlayer *target = room->askForPlayerChosen(p, room->getAllPlayers(), "yingchu");
+                    
+                    if(target) {
+                        Bang *bang = new Bang(Card::NoSuit, 0);
+                        bang->setSkillName("yingchu");
+                        CardUseStruct use;
+                        use.card = bang;
+                        use.from = p;
+                        use.to << target;
+
+                        room->useCard(use);
+                    }
+                    
+                }
+            }
+            
+            if(times>0) {
+                int rest = times-1;
+                
+                room->setPlayerMark(p, "yingxi_on", rest);
+                
+                if(rest>0) {
+                    LogMessage log;
+                    log.type = "#CountDown";
+                    log.from = p;
+                    log.arg = QString::number(rest);
+                    log.arg2 = "hidden";
+                    room->sendLog(log);
+                }
+            }
+        }
+       
+        return false;
+    }
+};
+
 //--------------------------------------------------------------------------------------------------------------End
 
 MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
     General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan,
-                *earthquake, *tamtam;
+                *earthquake, *tamtam, *basara;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -3310,11 +3505,15 @@ MeleeSSPackage::MeleeSSPackage()
     addMetaObject<MianjuCard>();
     addMetaObject<TutengCard>();
     
-    // basara = new General(this, "basara", "yuan", 3);
-    // basara->addSkill(new Yuannian);
-    // basara->addSkill(new Sinian);
-    // basara->addSkill(new Yingxi);
-    // basara->addSkill(new Yingchu);
+    basara = new General(this, "basara", "yuan", 3);
+    basara->addSkill(new Yuannian);
+    basara->addSkill(new Sinian);
+    basara->addSkill(new SinianEffect);
+    related_skills.insertMulti("sinian", "#sinian-effect");
+    basara->addSkill(new Yingxi);
+    basara->addSkill(new Yingchu);
+    
+    addMetaObject<YingxiCard>();
 }
 
 ADD_PACKAGE(MeleeSS);
