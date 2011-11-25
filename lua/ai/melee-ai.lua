@@ -387,7 +387,7 @@ function SmartAI:objectiveLevel(player)
 				end
 			end
 		end
-		
+
         if sgs.ai_explicit[player:objectName()]=="rebel" then return 5-modifier
         elseif sgs.ai_explicit[player:objectName()]=="rebelish" then return 5-modifier
         elseif sgs.ai_explicit[player:objectName()]=="loyalist" then return -2
@@ -424,6 +424,7 @@ function SmartAI:objectiveLevel(player)
         else return 0 end
     elseif self.role=="rebel" then
         if player:isLord() then return 5 end
+        if player:getRole() == "rebel" then return -2 end
 		if not hasRebel then 
 			if player:getRole() == "renegade" and #players>2 then return -1 
 			elseif player:getRole() == "renegade" and #players == 2 then
@@ -678,7 +679,7 @@ function SmartAI:isFriend(other, another)
         self.room:writeToConsole("========is friend ?=======")
         if useDefaultStrategy() then self.room:writeToConsole("useDefaultStrategy") end
         if (self.player:objectName())==(other:objectName()) then self.room:writeToConsole("same objectName") end 
-        if self:objectiveLevel(other)<0 then self.room:writeToConsole("objectiveLevel") end
+        self.room:writeToConsole("objectiveLevel: "..self:objectiveLevel(other))
         self.room:writeToConsole("=====================")
         sgs.showFriendDebug = false
     end
