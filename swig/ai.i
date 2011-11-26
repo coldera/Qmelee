@@ -61,11 +61,11 @@ public:
     LuaAI(ServerPlayer *player);
 
     virtual const Card *askForCardShow(ServerPlayer *requestor, const char *reason);
+    virtual Card::Suit askForSuit(const char *reason);
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
 	virtual QString askForChoice(const char *skill_name, const char *choices);
-	//virtual QString askForSuit(const char *reason);
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason);
 	virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason) ;
 	virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);
@@ -88,8 +88,8 @@ public:
 */
 
 %{
-/*
-Card::Suit LuaAI::askForSuit(const QString *reason) {
+
+Card::Suit LuaAI::askForSuit(const QString &reason) {
     if(callback == 0)
         return TrustAI::askForSuit(reason);
         
@@ -106,16 +106,16 @@ Card::Suit LuaAI::askForSuit(const QString *reason) {
 
         return TrustAI::askForSuit(reason);
     }
-
-	void *suit_ptr;
-	int result = SWIG_ConvertPtr(L, -1, &suit_ptr, SWIGTYPE_p_Card__Suit, 0);
-	lua_pop(L, 1);
-	if(SWIG_IsOK(result))
-		return static_cast<Card::Suit>(suit_ptr);
-	else
+    
+    if(lua_isnumber(L, -1)){
+        int result = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        return static_cast<Card::Suit>(result);
+    }else
 		return TrustAI::askForSuit(reason);
+
 }
-*/
+
 bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
     if(callback == 0)
         return TrustAI::askForSkillInvoke(skill_name, data);

@@ -853,7 +853,6 @@ end
 sgs.ai_suit_choice = {}
 
 function SmartAI:askForSuit(reason)
-self.room:writeToConsole("ai suit choice::"..reason)
 	local use_func = sgs.ai_suit_choice[reason]
 	if use_func then
 		return use_func(self) or "."

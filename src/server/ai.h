@@ -95,6 +95,7 @@ public:
     LuaAI(ServerPlayer *player);
 
     virtual const Card *askForCardShow(ServerPlayer *requestor, const QString &reason);
+    virtual Card::Suit askForSuit(const QString &reason);//modify by ce
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QString askForUseCard(const QString &pattern, const QString &prompt);

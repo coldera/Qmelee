@@ -135,6 +135,11 @@ void ServerPlayer::drawCards(int n, bool set_emotion){
         room->setEmotion(this, "draw-card");
 }
 
+//modify by ce
+Card::Suit ServerPlayer::askForSuit(const QString &reason){
+    return room->askForSuit(this, reason);
+}
+
 // a convenient way to ask player
 bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data){
     return room->askForSkillInvoke(this, skill_name, data);

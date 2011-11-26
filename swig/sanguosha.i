@@ -251,6 +251,7 @@ public:
     void throwAllMarks();
     void clearPrivatePiles();
     void drawCards(int n, bool set_emotion = true);
+    Card::Suit askForSuit(const char *reason);
     bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;

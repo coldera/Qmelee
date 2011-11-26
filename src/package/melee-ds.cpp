@@ -1181,7 +1181,7 @@ void LieqiCard::onEffect(const CardEffectStruct &effect) const {
     
     room->playSkillEffect("lieqi", 1);
     
-    Card::Suit suit1 = room->askForSuit(lilith, objectName());
+    Card::Suit suit1 = room->askForSuit(lilith, "lieqi");
 
     LogMessage log;
     log.type = "#ChoiceSuit";

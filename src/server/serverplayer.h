@@ -38,6 +38,7 @@ public:
     void throwAllMarks();
     void clearPrivatePiles();
     void drawCards(int n, bool set_emotion = true);
+    Card::Suit askForSuit(const QString &reason); //modify by ce
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
