@@ -1547,8 +1547,6 @@ public:
             galford = damage.to;
             
             galford->loseMark("@dianguang");
-            // room->detachSkillFromPlayer(galford, "dianguang_on");
-            // room->acquireSkill(galford, "dianguang");
         }
         
         return false;
@@ -2144,8 +2142,8 @@ public:
                     LogMessage log;
                     log.type = "#CountDown";
                     log.from = p;
-                    log.arg = QString::number(rest);
-                    log.arg2 = "skill_forbid";
+                    log.arg = "@skill_forbid";
+                    log.arg2 = QString::number(rest);
                     room->sendLog(log);
                 }
             }
@@ -2552,7 +2550,7 @@ MeiyuCard::MeiyuCard(){
 void MeiyuCard::use(Room *room, ServerPlayer *shizumaru, const QList<ServerPlayer *> &) const {
     room->throwCard(this);    
     
-    shizumaru->updateMp(-1);
+    shizumaru->updateMp(-2);
     shizumaru->drawCards(2);
 }
 
@@ -2561,7 +2559,7 @@ public:
     Meiyu():OneCardViewAsSkill("meiyu"){}
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMp() && player->getHandcardNum();
+        return player->getMp()>1 && player->getHandcardNum();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -3124,7 +3122,7 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             
             room->playSkillEffect(objectName());
-            // room->broadcastInvoke("animate", "yuannian");
+            room->broadcastInvoke("animate", "yuannian");
             
             LogMessage log;
             log.type = "#Yuannian";
@@ -3168,7 +3166,7 @@ public:
             
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if(p->hasSkill("sinian")) {
-                    room->playSkillEffect("sinian", 3);
+                    room->playSkillEffect("sinian", 2);
                     
                     LogMessage log;
                     log.type = "#SinianDamage";
@@ -3185,7 +3183,7 @@ public:
             
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if(p->getMark("@gouhuo")) {
-                    room->playSkillEffect("sinian", 2);
+                    room->playSkillEffect("sinian", 3);
                     
                     LogMessage log;
                     log.type = "#SinianRecover";
@@ -3329,13 +3327,274 @@ public:
                     LogMessage log;
                     log.type = "#CountDown";
                     log.from = p;
-                    log.arg = QString::number(rest);
-                    log.arg2 = "hidden";
+                    log.arg = "@hidden";
+                    log.arg2 = QString::number(rest);
                     room->sendLog(log);
                 }
             }
         }
        
+        return false;
+    }
+};
+
+//--------------------------------------------------------------------------------------------------------------amakusa
+
+//----------------------------------------------------------------------------- Xieyou
+
+XieyouCard::XieyouCard(){
+    once = true;
+    mute = true;
+}
+
+bool XieyouCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return true;
+}
+
+void XieyouCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *amakusa = effect.from;
+    Room *room = amakusa->getRoom();
+    
+    room->playSkillEffect("xieyou", 1);
+    
+    Card::Suit suit1 = room->askForSuit(effect.to, "xieyou");
+    
+    if(suit1) {
+        QString suit_str = Card::Suit2String(suit1);
+        QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+        QString prompt = QString("@xieyou-card:::%1").arg(suit_str);
+        
+        const Card *card = room->askForCard(amakusa, pattern, prompt);
+        
+        if(card) {
+        
+            room->playSkillEffect("xieyou", 2);
+            
+            room->loseHp(effect.to, 1);
+            amakusa->updateMp(2);
+        }else {
+            room->playSkillEffect("xieyou", 3);
+            
+            if(!amakusa->getMp()) {
+                room->loseHp(amakusa, 1);
+                return;
+            }
+            
+            QStringList choices;
+            choices << "XieyouLoseHp" << "XieyouLoseMp";
+        
+            if(choices.length()) {
+                QString choice = room->askForChoice(amakusa, "xieyou", choices.join("+"));
+                
+                if(choice == "XieyouLoseHp") {
+                    room->loseHp(amakusa, 1);
+                }else {
+                    amakusa->updateMp(-2);
+                }
+            }
+        }
+    }
+}
+
+class Xieyou: public ZeroCardViewAsSkill{
+public:
+    Xieyou():ZeroCardViewAsSkill("xieyou"){}
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("XieyouCard");
+    }
+    
+    virtual const Card *viewAs() const{
+        XieyouCard *card = new XieyouCard;
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+//----------------------------------------------------------------------------- Mozhang
+
+class MozhangEffect: public ProhibitSkill{
+public:
+    MozhangEffect():ProhibitSkill("mozhang_effect"){}
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        return card->inherits("SingleTargetTrick") && from!=to;
+    }
+};
+
+class MozhangOff: public PhaseChangeSkill{
+public:
+    MozhangOff():PhaseChangeSkill("#mozhang-off"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom(); 
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            int times = p->getMark("mozhang_on");
+            if(times==1) {
+                p->loseMark("@mozhang");
+                room->detachSkillFromPlayer(p, "mozhang_effect");
+            }
+            
+            if(times>0) {
+                int rest = times-1;
+                
+                room->setPlayerMark(p, "mozhang_on", rest);
+                
+                if(rest>0) {
+                    LogMessage log;
+                    log.type = "#CountDown";
+                    log.from = p;
+                    log.arg = "@mozhang";
+                    log.arg2 = QString::number(rest);                    
+                    room->sendLog(log);
+                }
+            }
+        }
+       
+        return false;
+    }
+};
+
+MozhangCard::MozhangCard(){
+    target_fixed = true;
+}
+
+void MozhangCard::use(Room *room, ServerPlayer *amakusa, const QList<ServerPlayer *> &) const {
+    room->throwCard(this);
+    
+    amakusa->updateMp(-4);
+    amakusa->gainMark("@mozhang");
+    room->setPlayerMark(amakusa, "mozhang_on", room->getAllPlayers().length());
+    
+    room->acquireSkill(amakusa, "mozhang_effect");
+}
+
+class MozhangViewAsSkill: public OneCardViewAsSkill{
+public:
+    MozhangViewAsSkill():OneCardViewAsSkill("mozhang"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@mozhang";
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        MozhangCard *card = new MozhangCard;
+        card->addSubcard(card_item->getCard());
+        card->setSkillName(objectName());
+        
+        return card;
+    }
+};
+
+class Mozhang: public PhaseChangeSkill{
+public:
+    Mozhang():PhaseChangeSkill("mozhang"){
+        view_as_skill = new MozhangViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Finish
+                && !target->getMark("@mozhang")
+                && target->getMp() >= 4;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *amakusa) const{
+        Room *room = amakusa->getRoom();        
+        room->askForUseCard(amakusa, "@@mozhang", "@askformozhang");
+        return false;
+    }
+};
+
+//----------------------------------------------------------------------------- Xiezhilingyu
+
+class XiezhilingyuOff: public PhaseChangeSkill{
+public:
+    XiezhilingyuOff():PhaseChangeSkill("#xiezhilingyu-off"){}
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom(); 
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            int times = p->getMark("xiezhilingyu_on");
+            if(times==1) {
+                p->loseMark("@card_forbid");
+            }
+            
+            if(times>0) {
+                int rest = times-1;
+                
+                room->setPlayerMark(p, "xiezhilingyu_on", rest);
+                
+                if(rest>0) {
+                    LogMessage log;
+                    log.type = "#CountDown";
+                    log.from = p;
+                    log.arg = "@card_forbid";
+                    log.arg2 = QString::number(rest);                    
+                    room->sendLog(log);
+                }
+            }
+        }
+       
+        return false;
+    }
+};
+
+class Xiezhilingyu: public TriggerSkill{
+public:
+    Xiezhilingyu():TriggerSkill("xiezhilingyu$"){
+        can_forbid = false;
+        events << CardDiscarded;
+    }
+    
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getRoom()->getLord()->hasSkill(objectName()) && target->getPhase() == Player::Discard;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    
+        Room *room = player->getRoom();
+        
+        CardStar card = data.value<CardStar>();
+        foreach(int card_id, card->getSubcards()){
+            if(Sanguosha->getCard(card_id)->inherits("TrickCard")) {
+                
+                if(room->testRandomEvent(player, objectName(), 50)) {
+                    player->gainMark("@card_forbid");
+                    room->setPlayerMark(player, "xiezhilingyu_on", 2);
+                }
+                
+                break;
+            }
+        }
+
         return false;
     }
 };
@@ -3346,7 +3605,7 @@ MeleeSSPackage::MeleeSSPackage()
     :Package("meleess")
 {
     General *haohmaru, *nakoruru, *ukyo, *kyoshiro, *genjuro, *sogetsu, *suija, *kazuki, *enja, *galford, *rimururu, *charlotte, *hanzo, *jubei, *shizumaru, *genan,
-                *earthquake, *tamtam, *basara;
+                *earthquake, *tamtam, *basara, *amakusa;
 
     haohmaru = new General(this, "haohmaru", "nu");
     haohmaru->addSkill(new Jiuqi);
@@ -3514,6 +3773,20 @@ MeleeSSPackage::MeleeSSPackage()
     basara->addSkill(new Yingchu);
     
     addMetaObject<YingxiCard>();
+    
+    amakusa = new General(this, "amakusa$", "ling");
+    amakusa->addSkill(new Xieyou);
+    amakusa->addSkill(new Mozhang);
+    amakusa->addSkill(new MozhangOff);
+    related_skills.insertMulti("mozhang", "#mozhang-off");
+    amakusa->addSkill(new Xiezhilingyu);
+    amakusa->addSkill(new XiezhilingyuOff);
+    related_skills.insertMulti("xiezhilingyu", "#xiezhilingyu-off");
+    
+    skills << new MozhangEffect;
+    
+    addMetaObject<XieyouCard>();
+    addMetaObject<MozhangCard>();
 }
 
 ADD_PACKAGE(MeleeSS);

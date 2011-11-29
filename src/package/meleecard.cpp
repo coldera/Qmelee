@@ -1876,7 +1876,9 @@ void HolyWing::onInstall(ServerPlayer *player) const{
     player->getRoom()->sendLog(log);
     
     player->getRoom()->loseHp(player,1);
-    EquipCard::onInstall(player);    
+    
+    if(player->isAlive())
+        EquipCard::onInstall(player);    
 }
 
 //----------------------------------------------------------QinglinHorse

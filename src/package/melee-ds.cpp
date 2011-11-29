@@ -1453,8 +1453,8 @@ public:
                     LogMessage log;
                     log.type = "#CountDown";
                     log.from = p;
-                    log.arg = QString::number(rest);
-                    log.arg2 = "skill_forbid";
+                    log.arg = "@skill_forbid";
+                    log.arg2 = QString::number(rest);
                     room->sendLog(log);
                 }
             }
@@ -2368,8 +2368,8 @@ public:
                     LogMessage log;
                     log.type = "#CountDown";
                     log.from = p;
-                    log.arg = QString::number(rest);
-                    log.arg2 = "invincible";
+                    log.arg = "@invincible";
+                    log.arg2 = QString::number(rest);
                     room->sendLog(log);
                 }
             }
@@ -2450,8 +2450,8 @@ public:
                         LogMessage log;
                         log.type = "#CountDown";
                         log.from = p;
-                        log.arg = QString::number(rest);
-                        log.arg2 = "card_forbid";
+                        log.arg = "@card_forbid";
+                        log.arg2 = QString::number(rest);
                         room->sendLog(log);
                     }
                 }

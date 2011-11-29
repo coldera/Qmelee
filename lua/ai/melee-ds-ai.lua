@@ -323,8 +323,8 @@ sgs.ai_skill_use_func["LieqiCard"]=function(card,use,self)
 	self:sort(self.enemies,"defense")
     
    for _,enemy in ipairs(self.enemies) do
-        if (enemy:getHandcardNum()==1 and self.player:getMp()>1)
-        or (enemy:getHandcardNum()==2 and self.player:getMp()>3) then
+        if (enemy:getHandcardNum()==1 and self.player:getMp()>0)
+        or (enemy:getHandcardNum()==2 and self.player:getMp()>2) then
             target = enemy
             break
         end
@@ -341,7 +341,13 @@ end
 
 sgs.ai_suit_choice.lieqi = function(self)
     local last_suit = self.room:getTag("LieqiSuit"):toString()
-    return last_suit or "."
+    suit_table = {
+        spade = sgs.Card_Spade,
+        heart = sgs.Card_Heart,
+        club = sgs.Card_Club,
+        diamond = sgs.Card_Diamond,
+    }
+    return suit_table[last_suit] or "."
 end
 
 -- guisu

@@ -221,7 +221,7 @@ function SmartAI:updatePlayers(inclusive)
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
 	
 	self.role =self.player:getRole()
-	
+    
 	if isRolePredictable() then
 		if (self.role=="lord") or (self.role=="loyalist") then self:refreshRoyalty(self.player,300)
 		elseif (self.role=="rebel") then self:refreshRoyalty(self.player,-300)
@@ -1050,10 +1050,18 @@ function SmartAI:slashProhibit(card,enemy)
         if card:inherits("FireBang") then
             if self:isEquip("VineArmor", enemy) then return true end
         end
-        if enemy:isChained() and card:inherits("NatureSlash") then return true end
+        
+        if enemy:isChained() and card:inherits("NatureSlash") and #(self:getChainedFriends())>1 and
+			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Dodge",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
+		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
+
         if self:isEquip("PeacockTear") and enemy:getHandcardNum()>2 then return true end
     else    
+        if enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies()) and self:slashIsEffective(card,enemy) then 
+			return true
+		end
+    
         if self:isEquip("PeacockTear") and enemy:getHandcardNum()<3 and enemy:getHp()>1 then return true end
     end
 	
@@ -1076,9 +1084,23 @@ function SmartAI:useBasicCard(card, use,no_distance)
 	if card:inherits("Slash") and (self:slashIsAvailable() or (self.player:hasFlag("huolong_on") and card:isRed())) then
 		local target_count=0
 		for _, friend in ipairs(self.friends_noself) do						
-			local slash_prohibit=false
-			slash_prohibit=self:slashProhibit(card,friend)
-		end	
+			local slash_prohibit = false
+			slash_prohibit = self:slashProhibit(card,friend)
+			if card:inherits("ThunderBang") and friend:hasSkill("shidian") then
+				if not slash_prohibit then
+					if ((self.player:canSlash(friend, not no_distance)) or 
+						(use.isDummy and (self.player:distanceTo(friend)<=self.predictedRange))) and 
+						self:slashIsEffective(card, friend) then
+						use.card=card
+						if use.to then 
+							use.to:append(friend) 
+						end
+						target_count=target_count+1
+						if self.slash_targets<=target_count then return end
+					end
+				end	
+			end
+		end
         
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
@@ -1422,12 +1444,8 @@ function SmartAI:useCardPK(duel, use)
 	local enemies = self:exclude(self.enemies, duel)
 	for _, enemy in ipairs(enemies) do
     
-		if enemy:getMark("@invincible")<=0 and 
-        not enemy:hasSkill("jijia") and 
-        self:objectiveLevel(enemy)>3 and 
-        not self:isEquip("VineArmor", enemy) and 
-        not self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
-        
+		if self:objectiveLevel(enemy)>3 and 
+        self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then
 			local n1 = self:getCardsNum("Slash")
 			local n2 = enemy:getHandcardNum()
 			local useduel
@@ -1439,7 +1457,7 @@ function SmartAI:useCardPK(duel, use)
 					local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
 					if math.random() > poss then useduel = true end
 				end
-				if useduel then						
+				if useduel then			
 					use.card = duel
 					if use.to then 
 						use.to:append(enemy) 
@@ -1971,23 +1989,25 @@ function SmartAI:activate(use)
     self.room:writeToConsole("===============================")
     
 	for _, card in ipairs(self.toUse) do
+        if not prohibitUseDirectly(card,self.player) then
+            local type = card:getTypeId()
+
+            if type == sgs.Card_Basic then
+                self:useBasicCard(card, use, self.slash_distance_limit)
+            elseif type == sgs.Card_Trick then
+                self:useTrickCard(card, use)
+            elseif type == sgs.Card_Skill then
+                self:useSkillCard(card, use)
+            else
+                self:useEquipCard(card, use)
+            end
+
+            if use:isValid() then
+                self.toUse=nil
+                return
+            end
         
-		local type = card:getTypeId()
-
-		if type == sgs.Card_Basic then
-			self:useBasicCard(card, use, self.slash_distance_limit)
-		elseif type == sgs.Card_Trick then
-			self:useTrickCard(card, use)
-		elseif type == sgs.Card_Skill then
-			self:useSkillCard(card, use)
-		else
-			self:useEquipCard(card, use)
-		end
-
-		if use:isValid() then
-			self.toUse=nil
-			return
-		end
+        end
 	end
 	
 	self.toUse=nil        
@@ -2703,13 +2723,15 @@ function SmartAI:askForCard(pattern, prompt, data)
 	
 	if pattern == "slash" and self:getCardsNum("Slash") > 0 then
 		if parsedPrompt[1] == "borrow-weapon-slash" then 
-			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Dodge", target2) > 0) and not self:hasSkills(sgs.lose_equip_skill) then 
-				return self:getCardId("Slash")
+			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Dodge", targets2) > 0)and not self:hasSkills(sgs.lose_equip_skill) then 
+				local slash = self:getCardId("Slash")
+				if not self:slashProhibit(sgs.Card_Parse(slash), target2) then return slash end
 			end
-			self:speak("collateral", self.player:getGeneral():isFemale())
+			-- self:speak("collateral", self.player:getGeneral():isFemale())
 			return "."
 		elseif (parsedPrompt[1] == "duel-slash") then
-			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0 )) then 
+			if (not self:isFriend(target) and self:getCardsNum("Slash")*2 >= target:getHandcardNum())
+            or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("HolyWater") == 0) then 
 				return self:getCardId("Slash")
 			else return "." end
         --kongchan
@@ -2988,13 +3010,11 @@ function SmartAI:hasSkill(skill)
 end
 
 function SmartAI:fillSkillCards(cards)
+	for index, card in ipairs(cards) do
+		if prohibitUseDirectly(card, self.player) then table.remove(cards, index) end
+	end
     for _,skill in ipairs(sgs.ai_skills) do
-        if self:hasSkill(skill) then       
-        
-            for index, card in ipairs(cards) do
-                if prohibitUseDirectly(card, self.player) then table.remove(cards, index) end
-            end
-
+        if self:hasSkill(skill) then
             local skill_card = skill.getTurnUseCard(self)
             if #cards == 0 then skill_card = skill.getTurnUseCard(self,true) end
             if skill_card then table.insert(cards, skill_card) end            
@@ -3041,6 +3061,7 @@ function SmartAI:cardNeed(card)
                 if friend:containsTrick("soul_awe") or friend:containsTrick("enegy_drain") or self.player:containsTrick("icebound") then return 7 end
             end
         end
+        return 6
 	end
     return self:getUseValue(card)
 end

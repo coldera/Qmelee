@@ -1952,8 +1952,8 @@ public:
                         LogMessage log;
                         log.type = "#CountDown";
                         log.from = p;
-                        log.arg = QString::number(rest);
-                        log.arg2 = "card_forbid";
+                        log.arg = "@card_forbid";
+                        log.arg2 = QString::number(rest);
                         room->sendLog(log);
                     }
                 }
@@ -2296,7 +2296,7 @@ JiliuCard::JiliuCard(){
 
 void JiliuCard::use(Room *room, ServerPlayer *gen, const QList<ServerPlayer *> &) const{
 
-    ServerPlayer *target = room->askForPlayerChosen(gen, room->getOtherPlayers(gen), objectName());
+    ServerPlayer *target = room->askForPlayerChosen(gen, room->getOtherPlayers(gen), "jiliu");
     
     if(target) {
         
@@ -2355,8 +2355,8 @@ public:
                     LogMessage log;
                     log.type = "#CountDown";
                     log.from = p;
-                    log.arg = QString::number(rest);
-                    log.arg2 = "card_forbid";
+                    log.arg = "@card_forbid";
+                    log.arg2 = QString::number(rest);
                     room->sendLog(log);
                 }
             }

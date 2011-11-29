@@ -53,7 +53,7 @@ local t = {
     ["hidden"] = "隐匿",
     
     ["#Invincible"] = "%from 处于 <b style='color:yellow'>无损状态</b> 任何伤害和战术牌对其无效",
-    ["#CountDown"] = "%from 还有 %arg 回合才能解除 %arg2 状态",
+    ["#CountDown"] = "%from 还有 %arg2 回合才能解除 %arg 状态",
     
     ["#DamageToNormal"] = "%to 受到的 %arg 伤害转变为无属性伤害",
     ["#DamageToIce"] = "%arg 效果发动，%to 受到的伤害转变为冰属性伤害",

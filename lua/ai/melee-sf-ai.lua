@@ -633,14 +633,13 @@ sgs.ai_skill_use["@mofangvas"]=function(self, prompt)
     
     local use_card
     for _, card in ipairs(cards) do
-        if card:getSuitString() == suit and self:getUseValue(card) >= self:getUseValue(ag_card) then
+        if card:getSuitString() == suit and self:getUseValue(card) < self:getUseValue(ag_card) then
             use_card = card
             break
         end
     end
     
     if ag_card and use_card and ag_card:isAvailable(self.player) then
-        
         if ag_card:targetFixed() then
             return (ag_card:objectName()..":mofangvas[%s:%s]=%d->."):format(suit, number, use_card:getEffectiveId())
         else
@@ -827,7 +826,6 @@ end
 
 sgs.ai_skill_playerchosen.jiliu = function (self, targets)
     self:sort(self.enemies,"hp")
-    self.room:writeToConsole("jiliu target is ----------------------------------------------------------------------------------"..self.enemies[1]:getGeneralName())
     return self.enemies[1]
 end
 

@@ -1035,7 +1035,7 @@ sgs.ai_skill_use_func["DuchuiCard"]=function(card,use,self)
     self:sort(self.enemies, "defense")
     
     for _,enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy, true) and damageIsEffective(sgs.DamageStruct_Poison, enemy) then
+        if self.player:canSlash(enemy, true) and self:damageIsEffective(sgs.DamageStruct_Poison, enemy) then
             use.card = card
             if use.to then
                 use.to:append(enemy)
