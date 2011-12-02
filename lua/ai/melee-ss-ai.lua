@@ -928,6 +928,7 @@ local meiyu_skill={}
 meiyu_skill.name="meiyu"
 table.insert(sgs.ai_skills,meiyu_skill)
 meiyu_skill.getTurnUseCard=function(self)
+    if self.player:getMp()<2 then return end
     if self.player:getMp()<=5 and not self.player:isWounded() then return end
     
     local cards = self.player:getHandcards()
@@ -1122,20 +1123,20 @@ local roudan_skill={}
 roudan_skill.name="roudan"
 table.insert(sgs.ai_skills,roudan_skill)
 roudan_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("RoudanCard") or (self.player:getHp()<2 and self:getCardsNum("HolyWater")<1 or self:getCardsNum("Schnapps")<1) then return end    
+    if self.player:hasUsed("RoudanCard") or (self.player:getHp()<2 and self:getCardsNum("HolyWater")<1) then return end    
     
     local good, bad = 0, 0
     local who = self.player   
     
     for _, friend in ipairs(self.friends_noself) do
-        if self.player:distanceTo(fiend)<=2 and friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Normal, friend) then 
+        if who:distanceTo(friend)<=2 and friend:getHandcardNum()<2 and self:damageIsEffective(sgs.DamageStruct_Normal, friend) then 
             if friend:getHp() == 1 then 
                 bad = bad + 5
             end
             bad = bad + 3
         end
     end
-
+    
     for _, enemy in ipairs(self.enemies) do
         if who:distanceTo(enemy)<=2 and enemy:getHandcardNum()<2 and  self:damageIsEffective(sgs.DamageStruct_Normal, enemy) then 
             if enemy:getHp() == 1 then 
@@ -1289,3 +1290,52 @@ sgs.ai_skill_playerchosen.yingchu = function (self, targets)
     
     return target
 end
+
+-- amakusa ---------------------------------------------------------------------------------
+sgs.ai_chaofeng["amakusa"] = 2
+
+-- xieyou
+sgs.ai_use_priority.XieyouCard = 4
+
+local xieyou_skill={}
+xieyou_skill.name="xieyou"
+table.insert(sgs.ai_skills,xieyou_skill)
+xieyou_skill.getTurnUseCard=function(self)
+    if self.player:getHandcardNum() < 3 then return end
+    
+    local spade, heart, club, diamond = 0
+    
+    local cards = self.player:getHandcards()
+    cards=sgs.QList2Table(cards) 
+    
+    for _,card in ipairs(cards) do
+        if self:getUseValue(card) < 4 then
+            if card:getSuit() == sgs.Card_Spade then spade = 1
+            elseif  card:getSuit() == sgs.Card_Heart then heart = 1
+            elseif  card:getSuit() == sgs.Card_Club then club = 1
+            elseif  card:getSuit() == sgs.Card_Diamond then diamond = 1
+            end
+        end
+    end
+    
+    if spade+heart+club+diamond > 2 or self.player:getMp() > 5 then 
+        return sgs.Card_Parse("@XieyouCard=.")
+    end
+    
+end
+
+sgs.ai_skill_use_func["XieyouCard"]=function(card,use,self)
+    self:sort(self.enemies, "defense")
+    
+    use.card = card
+    if use.to then
+        use.to:append(self.enemies[1])
+    end
+end
+
+-- mozhang
+sgs.ai_skill_invoke.mozhang = function(self, data)
+    return #self.friends < 3 and self.player:getMp()>=4
+end
+
+

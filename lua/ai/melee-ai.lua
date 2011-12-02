@@ -854,10 +854,20 @@ sgs.ai_suit_choice = {}
 
 function SmartAI:askForSuit(reason)
 	local use_func = sgs.ai_suit_choice[reason]
+    
+    local suit_table = {
+        sgs.Card_Spade,
+        sgs.Card_Heart,
+        sgs.Card_Club,
+        sgs.Card_Diamond
+    }
+    
+    local suit = math.random(1, 4)
+    
 	if use_func then
-		return use_func(self) or "."
+		return use_func(self) or suit_table[suit]
 	else
-		return "."
+		return suit_table[suit]
 	end
 end
 
@@ -1082,6 +1092,13 @@ function SmartAI:useBasicCard(card, use,no_distance)
 	end
 	
 	if card:inherits("Slash") and (self:slashIsAvailable() or (self.player:hasFlag("huolong_on") and card:isRed())) then
+    
+        if self.player:hasSkill("yujia") 
+        or self.player:hasSkill("yuelun") and card:inherits("IceBang")
+        or self.player:hasSkill("chongji") and card:getSuit() == sgs.Card_Heart then
+            no_distance = true
+        end
+    
 		local target_count=0
 		for _, friend in ipairs(self.friends_noself) do						
 			local slash_prohibit = false

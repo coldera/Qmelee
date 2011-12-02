@@ -341,7 +341,7 @@ end
 
 sgs.ai_suit_choice.lieqi = function(self)
     local last_suit = self.room:getTag("LieqiSuit"):toString()
-    suit_table = {
+    local suit_table = {
         spade = sgs.Card_Spade,
         heart = sgs.Card_Heart,
         club = sgs.Card_Club,
