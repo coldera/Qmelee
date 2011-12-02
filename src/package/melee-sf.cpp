@@ -2944,8 +2944,8 @@ public:
             
             int x = vega->getMp();            
             vega->updateMp(-x);            
-            room->setPlayerProperty(vega, "hp", x/2);
-            
+            room->setPlayerProperty(vega, "hp", qMin(x/2, vega->getMaxHP()));
+
         }
 
         return false;
