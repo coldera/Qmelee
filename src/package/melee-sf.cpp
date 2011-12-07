@@ -660,6 +660,9 @@ bool BailieCard::targetFilter(const QList<const Player *> &targets, const Player
         
     if(!Self->inMyAttackRange(to_select)) 
         return false;
+        
+    if(!Self->canSlash(to_select))
+        return false;
 
     return true;
 }

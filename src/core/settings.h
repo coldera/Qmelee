@@ -34,6 +34,7 @@ public:
     bool DisableChat;
     bool Enable2ndGeneral;
     bool EnableScene;	//changjing
+    bool EnableStat;
     int MaxHpScheme;
     bool AnnounceIP;
     QString Address;

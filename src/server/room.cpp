@@ -7,6 +7,7 @@
 #include "scenario.h"
 #include "gamerule.h"
 #include "scenerule.h"	//changjing
+#include "stat.h"
 #include "contestdb.h"
 #include "banpairdialog.h"
 #include "roomthread3v3.h"
@@ -2150,8 +2151,12 @@ void Room::startGame(){
         game_rule = new BossMode(this);
     else if(mode == "04_1v3")
         game_rule = new HulaoPassMode(this);
-    else if(Config.EnableScene)	//changjing
-        game_rule = new SceneRule(this);	//changjing
+    else if(Config.EnableScene)	
+        game_rule = new SceneRule(this);	
+    //modiby by ce
+    else if(Config.EnableStat) {
+        game_rule = new StatRule(this);
+    }
     else
         game_rule = new GameRule(this);
 
@@ -3321,4 +3326,19 @@ Room* Room::duplicate()
     room->fillRobotsCommand(NULL, 0);
     room->copyFrom(this);
     return room;
+}
+
+void Room::insertStat(const QString &general_name, const QString &item, int value, bool is_total) {
+
+    QString type = is_total ? "total" : "current";
+    broadcastInvoke("insertStat", QString("%1.%2=%3:%4")
+        .arg(general_name)
+        .arg(item)
+        .arg(QString::number(value))
+        .arg(type)
+    );
+}
+
+void Room::updateTotalStat() {
+    broadcastInvoke("updateTotalStat");
 }

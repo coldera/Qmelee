@@ -707,3 +707,13 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
 
     return correct;
 }
+
+QStringList Engine::getStatItems() const{
+    static QStringList stat_items;
+    if(stat_items.isEmpty())
+        stat_items  << "appearance" << "offensive" << "resistance" << "assist" << "obstruct" << "kill" << "death" << "win" << "lose"
+                         << "mp" << "damage" << "damaged" << "cure" << "unassailable" << "drawcards" << "discardcards"
+                         << "slash" << "miss" << "holywater" << "schnapps" << "trick" << "delaytrick" << "weapon" << "armor";
+
+    return stat_items;
+}

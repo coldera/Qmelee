@@ -171,6 +171,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
+    
+    // modify by ce
+    connect(ClientInstance, SIGNAL(insert_stat(QString, QString, int, bool)), this, SLOT(insertStat(QString, QString, int, bool)));
+    connect(ClientInstance, SIGNAL(update_total_stat()), this, SLOT(updateTotalStat()));
 
     {
         guanxing_box = new GuanxingBox;
@@ -2536,14 +2540,21 @@ void RoomScene::makeReviving(){
     }
 }
 
+//modify by ce
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
-    table->setColumnCount(4);
+    
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;
-    if(labels.isEmpty())
+    if(labels.isEmpty()) {
         labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
+        
+        if(Config.EnableStat) {
+            labels << tr("Kill") << tr("Offensive") << tr("Resistance") << tr("Assist") << tr("Obstruct")  << tr("Slash") << tr("Miss") << tr("Cure");
+        }
+    }
+    table->setColumnCount(labels.length());
     table->setHorizontalHeaderLabels(labels);
 
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -2574,6 +2585,43 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         item->setText(Sanguosha->translate(player->getRole()));
         table->setItem(i, 3, item);
+        
+        if(Config.EnableStat) {
+            
+            QHash<QString, int> stat = getStat(player->getGeneralName());
+        
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["kill"]));
+            table->setItem(i, 4, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["offensive"]));
+            table->setItem(i, 5, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["resistance"]));
+            table->setItem(i, 6, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["assist"]));
+            table->setItem(i, 7, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["obstruct"]));
+            table->setItem(i, 8, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["slash"]));
+            table->setItem(i, 9, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["miss"]));
+            table->setItem(i, 10, item);
+            
+            item = new QTableWidgetItem;
+            item->setText(QString::number(stat["cure"]));
+            table->setItem(i, 11, item);
+        }
     }
 }
 
@@ -3654,4 +3702,133 @@ void RoomScene::updateStateItem(char* roles)
             role_items << item;
         }
     }
+}
+
+// modify by ce stat
+QString RoomScene::fixGeneralName(const QString &general_name) {
+    if(general_name == "suija")
+        return "sogetsu";
+    else if(general_name == "enja")
+        return "kazuki";
+        
+    return general_name;
+}
+
+void RoomScene::insertStat(const QString &general_name, const QString &item, int value, bool is_total) {
+
+    QString name = fixGeneralName(general_name);
+    
+    QHash<QString, int> stat = is_total ? 
+        total_stat.value(name):
+        current_stat.value(name);
+
+    if(stat.isEmpty()) {
+        stat.insert(item, value);
+    }else {
+        stat.insert(item, stat.value(item) + value);
+    }
+    
+    is_total ? total_stat.insert(name, stat) : current_stat.insert(name, stat);
+}
+
+void RoomScene::setStat(const QString &general_name, QHash<QString, int> stat, bool is_total) {
+    is_total ?
+    total_stat.insert(fixGeneralName(general_name), stat):
+    current_stat.insert(fixGeneralName(general_name), stat);
+}
+
+QHash<QString, int> RoomScene::getStat(const QString &general_name, bool is_total) {   
+    return is_total ? 
+    total_stat.value(fixGeneralName(general_name)):
+    current_stat.value(fixGeneralName(general_name));
+}
+
+void RoomScene::updateTotalStat() {
+    loadStatFromFile();
+    
+    QHashIterator<QString, QHash<QString, int> > hash(current_stat);
+    QHash<QString, int> tem_stat;
+    QStringList items = Sanguosha->getStatItems();
+    
+    while (hash.hasNext()) {
+        hash.next();
+        
+        tem_stat = total_stat.value(hash.key());
+        if(tem_stat.isEmpty()) {
+            setStat(hash.key(), hash.value(), true);
+        }else {
+            
+            foreach(QString item, items) {
+                int value = tem_stat.value(item, 0);
+                insertStat(hash.key(), item, value, true);
+            }
+            
+        }
+    }
+    
+    QHashIterator<QString, QHash<QString, int> > itor(total_stat);
+    QStringList general_names;
+    
+    while (itor.hasNext()) {
+        itor.next();
+        general_names << itor.key();
+    }
+    
+    exportStatToFile(general_names);
+    
+}
+
+void RoomScene::loadStatFromFile() {
+
+    QFile file("etc/total_stat.txt");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        
+        QHash<QString, int> stat;
+        QStringList items = Sanguosha->getStatItems();
+        
+        while(!stream.atEnd()){
+            QString general_name;
+            stream >> general_name;
+            
+            stat.empty();
+            
+            foreach(QString item, items) {
+                int value;
+                stream >> value;
+                
+                stat.insert(item, value);
+            }
+            
+            total_stat.insert(general_name, stat);
+        }
+    }
+    file.close();
+}
+
+void RoomScene::exportStatToFile(const QStringList &general_names) {
+    
+    QHash<QString, int> hash;
+    QStringList line;
+    
+    QFile file("etc/total_stat.txt");
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        
+        foreach(QString name, general_names) {
+            hash = total_stat.value(name);
+            
+            if(!hash.isEmpty()) {
+                line.clear();
+
+                line << name;
+                foreach(QString item, Sanguosha->getStatItems()) {
+                    line << QString::number(hash[item]);
+                }
+                out << line.join(" ") << endl;
+            }
+        }
+    }
+    
+    file.close();  
 }

@@ -122,6 +122,10 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["revealGeneral"] = &Client::revealGeneral;
 
     callbacks["askForAssign"] = &Client::askForAssign;
+    
+    // modify by ce stat
+    callbacks["insertStat"] = &Client::insertStat;
+    callbacks["updateTotalStat"] = &Client::updateTotalStat;
 
     ask_dialog = NULL;
     use_card = false;
@@ -1792,4 +1796,21 @@ void Client::selectOrder(){
 void Client::updateStateItem(const QString &state_str)
 {
     emit role_state_changed(state_str);
+}
+
+void Client::insertStat(const QString &stat_str) {
+    QRegExp rx("^(\\w+)\\.(\\w+)=(\\d+):(\\w*)$");
+    if(rx.exactMatch(stat_str)){
+        QStringList texts = rx.capturedTexts();
+        QString general_name = texts.at(1);
+        QString item = texts.at(2);
+        int value = texts.at(3).toInt();
+        bool is_total = texts.at(4) == "total";
+        
+        emit insert_stat(general_name, item, value, is_total);
+    }
+}
+
+void Client::updateTotalStat(const QString &) {
+    emit update_total_stat();
 }

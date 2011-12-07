@@ -89,6 +89,7 @@ private slots:
     void on_actionScenario_Overview_triggered();
     //modify by ce
     void on_actionGame_Infomation_triggered();
+    void on_actionStat_Overview_triggered();
     void on_actionRole_assign_table_triggered();
     void on_actionMinimize_to_system_tray_triggered();
     void on_actionShow_Hide_Menu_triggered();

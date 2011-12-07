@@ -16,8 +16,7 @@
 
 class Jiuqi: public OneCardViewAsSkill{
 public:
-    Jiuqi():OneCardViewAsSkill("jiuqi"){
-    }
+    Jiuqi():OneCardViewAsSkill("jiuqi"){}
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return Schnapps::IsAvailable(player);
@@ -52,7 +51,7 @@ bool TianbaCard::targetFilter(const QList<const Player *> &targets, const Player
     if(to_select == Self)
         return false;
         
-    if(!Self->inMyAttackRange(to_select)) 
+    if(!Self->inMyAttackRange(to_select))
         return false;
 
     return true;
@@ -110,8 +109,7 @@ void TianbaCard::onEffect(const CardEffectStruct &effect) const{
 
 class TianbaViewAsSkill: public OneCardViewAsSkill{
 public:
-    TianbaViewAsSkill():OneCardViewAsSkill("tianba"){
-    }
+    TianbaViewAsSkill():OneCardViewAsSkill("tianba"){}
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
@@ -222,7 +220,7 @@ public:
 
         GoutongCard *card = new GoutongCard;
         card->addSubcards(cards);
-        card->setSkillName(objectName());
+        //card->setSkillName(objectName());
         return card;
     }
 };

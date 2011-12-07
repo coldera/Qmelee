@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StatOverview</class>
+ <widget class="QDialog" name="StatOverview">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>905</width>
+    <height>611</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Stat Overview</string>
+  </property>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>885</width>
+     <height>581</height>
+    </rect>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string>General</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Appearance</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Offensive</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Resistance</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Assist</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Obstruct</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Kill</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Death</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Win</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Lose</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Slash</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Miss</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Cure</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>HolyWater</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Total</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

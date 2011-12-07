@@ -365,7 +365,7 @@ function SmartAI:objectiveLevel(player)
 	
     if self.role=="lord" then
     
-        if #players == 1  then return 5 end 
+        if #players == 1 and player:getRole() ~= "loyalist" then return 5 end 
 		
         if not hasRebel then 
             local name=player:objectName()
@@ -864,6 +864,8 @@ function SmartAI:askForSuit(reason)
     
     local suit = math.random(1, 4)
     
+    self.room:writeToConsole("askforsuit------------"..suit_table[suit])
+    
 	if use_func then
 		return use_func(self) or suit_table[suit]
 	else
@@ -896,7 +898,7 @@ function SmartAI:slashIsEffective(slash, to)
     end
     
     --xinyan skill on
-    if to:hasSkill("xinyan") and not to:getWeapon() then
+    if to:hasSkill("xinyan") and not to:getWeapon() and self.player:getWeapon() then
         with_skill = false
     end
     

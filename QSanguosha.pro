@@ -25,6 +25,7 @@ SOURCES += src/main.cpp \
 	src/dialog/banpairdialog.cpp \
 	src/dialog/cardeditor.cpp \
 	src/dialog/cardoverview.cpp \
+	src/dialog/statoverview.cpp \
 	src/dialog/choosegeneraldialog.cpp \
 	src/dialog/configdialog.cpp \
 	src/dialog/connectiondialog.cpp \
@@ -56,6 +57,7 @@ SOURCES += src/main.cpp \
 	src/server/roomthread3v3.cpp \
 	src/server/server.cpp \
 	src/server/serverplayer.cpp \
+    src/server/stat.cpp \
 	src/ui/button.cpp \
 	src/ui/cardcontainer.cpp \
 	src/ui/carditem.cpp \
@@ -87,6 +89,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/banpairdialog.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
+	src/dialog/statoverview.h \
 	src/dialog/choosegeneraldialog.h \
 	src/dialog/configdialog.h \
 	src/dialog/connectiondialog.h \
@@ -119,6 +122,7 @@ HEADERS += src/client/aux-skills.h \
 	src/server/server.h \
 	src/server/serverplayer.h \
 	src/server/structs.h \
+	src/server/stat.h \
 	src/ui/button.h \
 	src/ui/cardcontainer.h \
 	src/ui/carditem.h \
@@ -141,6 +145,7 @@ FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
 	src/dialog/generaloverview.ui \
+	src/dialog/statoverview.ui \
 	src/dialog/mainwindow.ui 
 	
 INCLUDEPATH += include/lua

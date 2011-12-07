@@ -158,6 +158,10 @@ public:
     void detachSkill(const QString &skill_name);
 
     void askForAssign(const QString &);
+    
+    // modify by ce
+    void insertStat(const QString &stat_str);
+    void updateTotalStat(const QString &);
 
     // public fields
     bool refusable;
@@ -267,6 +271,10 @@ signals:
     void role_state_changed(const QString & state_str);
 
     void assign_asked();
+    
+    //modify by ce
+    void insert_stat(const QString &general_name, const QString &item, int value, bool is_total = false);
+    void update_total_stat();
 };
 
 extern Client *ClientInstance;

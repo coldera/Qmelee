@@ -62,6 +62,8 @@ sgs.ai_skill_choice.shtm = function(self, choices)
             return p:getGeneralName()
         end
     end
+    
+    return choices[1]
 end
       
 sgs.ai_skill_choice.air_bang = function(self, choices)

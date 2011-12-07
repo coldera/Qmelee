@@ -1301,9 +1301,9 @@ local xieyou_skill={}
 xieyou_skill.name="xieyou"
 table.insert(sgs.ai_skills,xieyou_skill)
 xieyou_skill.getTurnUseCard=function(self)
-    if self.player:getHandcardNum() < 3 then return end
+    if self.player:hasUsed("XieyouCard") or self.player:getHandcardNum() < 3 then return end
     
-    local spade, heart, club, diamond = 0
+    local spade, heart, club, diamond = 0,0,0,0
     
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards) 

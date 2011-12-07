@@ -279,8 +279,22 @@ private:
     void doLightboxAnimation(const QString &name, const QStringList &args);
     void doHuashen(const QString &name, const QStringList &args);
     void doIndicate(const QString &name, const QStringList &args);
+    
+    //modify by ce
+    QString fixGeneralName(const QString &general_name);
+    QHash<QString, int> getStat(const QString &general_name, bool is_total = false);
+    void setStat(const QString &general_name, QHash<QString, int> stat, bool is_total = false);
+    void loadStatFromFile();
+    void exportStatToFile(const QStringList &general_names);
+    
+    QHash<QString, QHash<QString, int> > total_stat;
+    QHash<QString, QHash<QString, int> > current_stat;
 
 private slots:
+    //modify by ce
+    void insertStat(const QString &general_name, const QString &item, int value, bool is_total = false);
+    void updateTotalStat();
+    
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateRoleComboBox(const QString &new_role);
@@ -349,7 +363,7 @@ private slots:
     void toggleArrange();
     void finishArrange();
     void changeGeneral(const QString &general);
-    void revealGeneral(bool self, const QString &general);
+    void revealGeneral(bool self, const QString &general);   
 
 signals:
     void restart();

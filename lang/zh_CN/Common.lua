@@ -30,6 +30,10 @@ return {
 	["yes"] = "是", 
 	["no"] = "否", 
     
+    ["#StatSaved"] = "<span style='color:#CCCCCC'>………………………………</span><br />\
+    <b style='color:#FF0066'>游戏统计记录保存成功！</b><br />\
+    <span style='color:#CCCCCC'>………………………………</span>",
+    
 	["#Murder"] = "%to [%arg] 挂了，凶手是 %from", 
 	["#Suicide"] = "%to [%arg] 自杀身亡", 
 	["#InvokeSkill"] = "%from 使用了技能<b style='color:yellow'>【%arg】</b>", 

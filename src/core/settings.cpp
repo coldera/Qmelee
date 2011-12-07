@@ -66,6 +66,7 @@ void Settings::init(){
     DisableChat = value("DisableChat", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
+    EnableStat = value("EnableStat", false).toBool(); //modify by ce
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();

@@ -5,6 +5,7 @@
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
+#include "statoverview.h"
 #include "ui_mainwindow.h"
 #include "scenario-overview.h"
 #include "gameinfomation.h"
@@ -73,8 +74,9 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            //<< ui->actionScenario_Overview modify by ce
+            //<< ui->actionScenario_Overview 
             << ui->actionGame_Infomation
+            
             << ui->actionAbout
             << ui->actionAcknowledgement;
 
@@ -499,9 +501,18 @@ void MainWindow::on_actionScenario_Overview_triggered()
     dialog->show();
 }
 
+//modify by ce
 void MainWindow::on_actionGame_Infomation_triggered() {
     GameInfomation *dialog = new GameInfomation(this);
     dialog->show();
+}
+
+//modify by ce
+void MainWindow::on_actionStat_Overview_triggered()
+{
+    StatOverview *overview = new StatOverview(this);
+    overview->loadAllStat();
+    overview->show();
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)

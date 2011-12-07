@@ -14,11 +14,13 @@ public:
     virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 
+protected:
+    QString getWinner(ServerPlayer *victim) const;
+    
 private:
     void onPhaseChange(ServerPlayer *player) const;
     void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
     void changeGeneral1v1(ServerPlayer *player) const;
-    QString getWinner(ServerPlayer *victim) const;
 };
 
 class BossMode : public GameRule{

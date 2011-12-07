@@ -1454,6 +1454,89 @@
     </message>
 </context>
 <context>
+    <name>StatOverview</name>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="17"/>
+        <source>Stat Overview</source>
+        <translation>统计一览</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="42"/>
+        <source>General</source>
+        <translation>武将</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Appearance</source>
+        <translation>登场</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Offensive</source>
+        <translation>输出</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Resistance</source>
+        <translation>承受</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Assist</source>
+        <translation>辅助</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Obstruct</source>
+        <translation>干扰</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Kill</source>
+        <translation>人头</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Death</source>
+        <translation>死亡</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Win</source>
+        <translation>胜利</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Lose</source>
+        <translation>失败</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Slash</source>
+        <translation>杀</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Miss</source>
+        <translation>杀MISS</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Cure</source>
+        <translation>治疗别人</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>HolyWater</source>
+        <translation>圣水</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/statoverview.ui" line="47"/>
+        <source>Total</source>
+        <translation>得分</translation>
+    </message>
+</context>
+<context>
     <name>GuhuoDialog</name>
     <message>
         <location filename="src/package/wind.cpp" line="714"/>
@@ -1714,6 +1797,11 @@
         <location filename="src/dialog/mainwindow.ui" line="260"/>
         <source>Game infomation</source>
         <translation>游戏说明</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="260"/>
+        <source>Stat overview</source>
+        <translation>统计一览</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="273"/>
@@ -2594,7 +2682,7 @@
     <message>
         <location filename="src/ui/roomscene.cpp" line="1860"/>
         <source>Please choose a player</source>
-        <translation>请选择一名玩家</translation>
+        <translation>请选择一名角色</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2299"/>
@@ -2715,9 +2803,44 @@
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="2586"/>
-        <source>Select skill</source>
-        <translation>选择技能</translation>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Kill</source>
+        <translation>人头</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Offensive</source>
+        <translation>输出</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Resistance</source>
+        <translation>承受</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Assist</source>
+        <translation>辅助</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Obstruct</source>
+        <translation>干扰</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Slash</source>
+        <translation>杀</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Miss</source>
+        <translation>杀Miss</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2468"/>
+        <source>Cure</source>
+        <translation>治疗别人</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2869"/>
@@ -2985,6 +3108,11 @@
         <location filename="src/server/server.cpp" line="158"/>
         <source>Enable Scene</source>
         <translation>启用场景模式</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="158"/>
+        <source>Enable Stat</source>
+        <translation>启用统计（常规8人局才有效）</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="162"/>

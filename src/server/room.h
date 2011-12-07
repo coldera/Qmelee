@@ -174,7 +174,11 @@ public:
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
-
+    
+    //modify by ce
+    void insertStat(const QString &general_name, const QString &item, int value, bool is_total = false);
+    void updateTotalStat();
+    
 protected:
     virtual void run();
 
@@ -233,7 +237,6 @@ private:
     //modify by ce
     void makeMp(const QStringList &texts);
     void detachSpecialSkill(ServerPlayer *player);
-    
 
 private slots:
     void reportDisconnection();

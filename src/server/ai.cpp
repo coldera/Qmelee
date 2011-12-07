@@ -182,7 +182,7 @@ bool TrustAI::useCard(const Card *card){
             
             foreach(ServerPlayer *target, room -> getServerPlayers()){
                 if(target->isDead()
-                && (self->getRole() == target->getRole() or (self->getRole() == "lord" && target->getRole() == "loyalist"))) {
+                && (self->getRole() == target->getRole() || (self->getRole() == "lord" && target->getRole() == "loyalist"))) {
                     return true;
                 }
             }

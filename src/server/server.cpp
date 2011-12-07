@@ -156,8 +156,8 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     second_general_checkbox = new QCheckBox(tr("Enable second general"));
 
-    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
-    //changjing
+    scene_checkbox  = new QCheckBox(tr("Enable Scene")); //changjing
+    stat_checkbox = new QCheckBox(tr("Enable Stat")); //modify by ce
 
     max_hp_scheme_combobox = new QComboBox;
     max_hp_scheme_combobox->addItem(tr("Sum - 3"));
@@ -170,6 +170,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
     scene_checkbox->setChecked(Config.EnableScene);	//changjing
+    stat_checkbox->setChecked(Config.EnableStat);	//modify by ce
 
     QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
     BanPairDialog *banpair_dialog = new BanPairDialog(this);
@@ -207,6 +208,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     //layout->addLayout(HLay(second_general_checkbox, banpair_button));
     //layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
     //layout->addWidget(scene_checkbox);		//changjing
+    layout->addWidget(stat_checkbox);		//modify by ce
     layout->addWidget(announce_ip_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
@@ -724,6 +726,7 @@ bool ServerDialog::config(){
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
+    Config.EnableStat = stat_checkbox->isChecked();		//modify by ce
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
@@ -752,6 +755,7 @@ bool ServerDialog::config(){
     Config.setValue("DisableChat", Config.DisableChat);
     //Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     //Config.setValue("EnableScene", Config.EnableScene);	//changjing
+    Config.setValue("EnableStat", Config.EnableStat);	//modify by ce
     //Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
