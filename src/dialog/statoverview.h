@@ -22,7 +22,7 @@ public:
 private:
     Ui::StatOverview *ui;
     
-    QTableWidgetItem *fillTableItem(const QString &item_name);
+    QTableWidgetItem *fillTableItem(int value);
 
 };
 

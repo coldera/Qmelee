@@ -2550,7 +2550,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     if(labels.isEmpty()) {
         labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
         
-        if(Config.EnableStat) {
+        if(Config.EnableStat && ServerInfo.GameMode == "08p") {
             labels << tr("Kill") << tr("Offensive") << tr("Resistance") << tr("Assist") << tr("Obstruct")  << tr("Slash") << tr("Miss") << tr("Cure");
         }
     }
@@ -2586,7 +2586,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         item->setText(Sanguosha->translate(player->getRole()));
         table->setItem(i, 3, item);
         
-        if(Config.EnableStat) {
+        if(Config.EnableStat && ServerInfo.GameMode == "08p") {
             
             QHash<QString, int> stat = getStat(player->getGeneralName());
         
@@ -3754,15 +3754,18 @@ void RoomScene::updateTotalStat() {
         hash.next();
         
         tem_stat = total_stat.value(hash.key());
-        if(tem_stat.isEmpty()) {
-            setStat(hash.key(), hash.value(), true);
-        }else {
-            
-            foreach(QString item, items) {
-                int value = tem_stat.value(item, 0);
-                insertStat(hash.key(), item, value, true);
+        
+        if(hash.value()["appearance"]) {
+            if(tem_stat.isEmpty()) {
+                setStat(hash.key(), hash.value(), true);
+            }else {
+                
+                foreach(QString item, items) {
+                    int value = tem_stat.value(item, 0);
+                    insertStat(hash.key(), item, value, true);
+                }
+                
             }
-            
         }
     }
     
@@ -3787,6 +3790,8 @@ void RoomScene::loadStatFromFile() {
         QHash<QString, int> stat;
         QStringList items = Sanguosha->getStatItems();
         
+        QRegExp rx("^\\w+$");
+
         while(!stream.atEnd()){
             QString general_name;
             stream >> general_name;
@@ -3800,7 +3805,9 @@ void RoomScene::loadStatFromFile() {
                 stat.insert(item, value);
             }
             
-            total_stat.insert(general_name, stat);
+            if(rx.exactMatch(general_name)){
+                total_stat.insert(general_name, stat);
+            }
         }
     }
     file.close();

@@ -2154,7 +2154,7 @@ void Room::startGame(){
     else if(Config.EnableScene)	
         game_rule = new SceneRule(this);	
     //modiby by ce
-    else if(Config.EnableStat) {
+    else if(Config.EnableStat && mode == "08p") {
         game_rule = new StatRule(this);
     }
     else

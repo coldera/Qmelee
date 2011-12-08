@@ -71,25 +71,21 @@ void StatOverview::loadAllStat(){
             if(hash["appearance"]) {
                 QTableWidgetItem *name_item = new QTableWidgetItem(name);
                 name_item->setTextAlignment(Qt::AlignCenter);
-                name_item->setData(Qt::UserRole, name);
-                
                 ui->tableWidget->setItem(j, 0, name_item);
                 
                 int k = 1;
                 foreach(const QString &item_name, table_items) {
-                    QString value = QString::number(hash[item_name]);
-                    
-                    QTableWidgetItem *item = fillTableItem(value);
+                    QTableWidgetItem *item = fillTableItem(hash[item_name]);
                     ui->tableWidget->setItem(j, k++, item);
                 }
                 
-                QString total = QString::number(
-                    (hash["offensive"] + hash["resistance"] +
-                    (hash["assist"] + hash["obstruct"]) * 2 +
-                    (hash["kill"] - hash["death"]) * 10 +
-                    (hash["win"] - hash["lose"]) * 10) / hash["appearance"]
-                );
-                QTableWidgetItem *total_item = new QTableWidgetItem(total);
+                int total = (hash["offensive"] + hash["resistance"] +
+                                (hash["assist"] + hash["obstruct"]) * 2 +
+                                (hash["kill"] - hash["death"]) * 10 +
+                                (hash["win"] - hash["lose"]) * 10) / hash["appearance"];
+                                    
+                QTableWidgetItem *total_item = new QTableWidgetItem();
+                total_item->setData(Qt::DisplayRole, total);
                 total_item->setTextAlignment(Qt::AlignCenter);
                 ui->tableWidget->setItem(j, k, total_item);
                 
@@ -107,8 +103,9 @@ void StatOverview::loadAllStat(){
     file.close();
 }
 
-QTableWidgetItem *StatOverview::fillTableItem(const QString &value) {
-    QTableWidgetItem *item = new QTableWidgetItem(value);
+QTableWidgetItem *StatOverview::fillTableItem(int value) {
+    QTableWidgetItem *item = new QTableWidgetItem();
+    item->setData(Qt::DisplayRole, value);
     item->setTextAlignment(Qt::AlignCenter);
     
     return item;

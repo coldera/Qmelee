@@ -2339,11 +2339,12 @@ void ShuangyueCard::use(Room *room, ServerPlayer *jubei, const QList<ServerPlaye
     
     room->setPlayerFlag(jubei, "changing_weapon");
 
+    weapon->onUninstall(jubei);
     jubei->addToPile("erdao_weapon", weapon->getEffectiveId(), false);
 
     int card_id =  jubei->getPile("erdao_weapon").first();
     const Card *new_weapon = Sanguosha->getCard(card_id);
-    room->moveCardTo(new_weapon, jubei, Player::Equip, false);
+    room->moveCardTo(new_weapon, jubei, Player::Equip, true);
     
     room->setPlayerFlag(jubei, "one_more_bang");
     room->setPlayerFlag(jubei, "-changing_weapon");
