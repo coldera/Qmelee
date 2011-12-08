@@ -3131,7 +3131,6 @@ public:
             basara->updateMp(-10);
             
             RecoverStruct recover;
-            recover.recover = dying.damage->damage - basara->getHp() + 1;
             room->recover(basara, recover);
             
             if(basara->getHandcardNum()>0) {

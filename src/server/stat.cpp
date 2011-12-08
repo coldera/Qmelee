@@ -123,7 +123,7 @@ bool StatRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         
         case GameOverJudge: {
         
-            room->insertStat(general_name, "death", 1);            
+            room->insertStat(general_name, "death", 1);
             DamageStar damage = data.value<DamageStar>();
             
             if(damage && damage->from && damage->from != player) {
@@ -132,6 +132,34 @@ bool StatRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         
             QString winner = getWinner(player);
             if(!winner.isNull()){
+
+                foreach(ServerPlayer *p, room->getServerPlayers()) {
+                    QString role = p->getRole();
+                    QString name = p->getGeneralName();
+
+                    if(winner == "rebel") {
+                        if(role == "rebel") {
+                            room->insertStat(name, "win", 1);
+                        }else {
+                            room->insertStat(name, "lose", 1);
+                        }
+
+                    }else if(winner == "lord+loyalist") {
+                        if(role == "lord" || role == "loyalist") {
+                            room->insertStat(name, "win", 1);
+                        }else {
+                            room->insertStat(name, "lose", 1);
+                        }
+
+                    }else {
+                        if(role == "renegade"){
+                            room->insertStat(name, "win", 1);
+                        }else {
+                            room->insertStat(name, "lose", 1);
+                        }
+                    }
+                }
+            
                 room->updateTotalStat();
                 
                 LogMessage log;

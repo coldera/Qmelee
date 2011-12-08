@@ -444,6 +444,8 @@ bool JifengCard::targetFilter(const QList<const Player *> &targets, const Player
 void JifengCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *ken = card_use.from;
     
+    room->playSkillEffect("jifeng");
+    
     CardUseStruct use;
     use.card = Sanguosha->getCard(getSubcards().first());
     use.from = ken;
@@ -517,7 +519,7 @@ public:
             }
             
             if(choice!="NoChoice") {
-                room->playSkillEffect(objectName());
+                // room->playSkillEffect(objectName());
             
                 while(room->askForUseCard(ken, "@@jifeng", "@jifeng") && choice!="JifengEffect1")
                     ;//Empty loop

@@ -124,8 +124,8 @@ sgs.ai_skill_invoke["boar"] = function(self, data)
 end
 
 sgs.ai_skill_invoke["chaoxiu"]=function(self, data)
-    local effect = data:toSlashEffect() 
-    return effect and not self:isFriend(effect.to)
+    local effect = data:toSlashEffect()
+    return effect and not self:isFriend(effect.to) and effect.to:getEquips():length()>2
 end
 
 -- snake_spear
