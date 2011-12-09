@@ -3111,7 +3111,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target);
+        return TriggerSkill::triggerable(target) && target->getHp()<1;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *basara, QVariant &data) const{
@@ -3131,6 +3131,7 @@ public:
             basara->updateMp(-10);
             
             RecoverStruct recover;
+            recover.recover = 1 - basara->getHp();
             room->recover(basara, recover);
             
             if(basara->getHandcardNum()>0) {
