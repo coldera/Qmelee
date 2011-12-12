@@ -864,12 +864,10 @@ function SmartAI:askForSuit(reason)
     
     local suit = math.random(1, 4)
     
-    self.room:writeToConsole("askforsuit------------"..suit.."----"..suit_table[suit])
-    
 	if use_func then
 		return use_func(self) or suit_table[suit]
 	else
-		return 0 --suit_table[suit]
+		return suit_table[suit]
 	end
 end
 
