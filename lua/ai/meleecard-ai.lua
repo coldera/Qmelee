@@ -125,7 +125,7 @@ end
 
 sgs.ai_skill_invoke["chaoxiu"]=function(self, data)
     local effect = data:toSlashEffect()
-    return effect and not self:isFriend(effect.to) and effect.to:getEquips():length()>2
+    return effect and not self:isFriend(effect.to) and effect.to:getEquips():length()>1
 end
 
 -- snake_spear

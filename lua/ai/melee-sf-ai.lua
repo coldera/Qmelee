@@ -180,6 +180,8 @@ sgs.ai_skill_use["@@jiqi"]=function(self,prompt)
     
     local num = self:getCardsNum("Slash");
     
+    self:updatePlayers();
+    
     for _,friend in ipairs(self.friends_noself) do
         if self:getCardsNum("BasicCard", friend)>1 then
             num = num+1

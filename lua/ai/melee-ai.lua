@@ -864,12 +864,12 @@ function SmartAI:askForSuit(reason)
     
     local suit = math.random(1, 4)
     
-    self.room:writeToConsole("askforsuit------------"..suit_table[suit])
+    self.room:writeToConsole("askforsuit------------"..suit.."----"..suit_table[suit])
     
 	if use_func then
 		return use_func(self) or suit_table[suit]
 	else
-		return suit_table[suit]
+		return 0 --suit_table[suit]
 	end
 end
 
@@ -1133,6 +1133,8 @@ function SmartAI:useBasicCard(card, use,no_distance)
                 if self.player:hasFlag("drank") then
                     self.room:writeToConsole("----------- drank and slash ? not slash_prohibit ")
                     self.room:writeToConsole("----------- drank and slash ? objectiveLevel: "..self:objectiveLevel(enemy))
+                    if self:slashIsEffective(card, enemy) then self.room:writeToConsole("----------- drank and slash ? slashIsEffective ") end
+                    if self.player:canSlash(enemy, not no_distance) then self.room:writeToConsole("----------- drank and slash ? canSlash ") end
                 end
                 
 				if ((self.player:canSlash(enemy, not no_distance)) or 
@@ -1688,6 +1690,12 @@ function SmartAI:useCardWoodElf(card, use)
 end
 
 function SmartAI:useCardPoisonMarish(card, use)
+	for _, friend in ipairs(self.friends) do
+		if friend:isChained() then
+			return
+		end
+	end
+    
 	if #self.friends <= #self.enemies then
 		use.card = card
 	end

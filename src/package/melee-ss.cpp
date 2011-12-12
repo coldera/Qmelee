@@ -3364,38 +3364,36 @@ void XieyouCard::onEffect(const CardEffectStruct &effect) const{
     
     Card::Suit suit1 = room->askForSuit(effect.to, "xieyou");
     
-    if(suit1) {
-        QString suit_str = Card::Suit2String(suit1);
-        QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
-        QString prompt = QString("@xieyou-card:::%1").arg(suit_str);
+    QString suit_str = Card::Suit2String(suit1);
+    QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+    QString prompt = QString("@xieyou-card:::%1").arg(suit_str);
+    
+    const Card *card = room->askForCard(amakusa, pattern, prompt);
+    
+    if(card) {
+    
+        room->playSkillEffect("xieyou", 2);
         
-        const Card *card = room->askForCard(amakusa, pattern, prompt);
+        room->loseHp(effect.to, 1);
+        amakusa->updateMp(2);
+    }else {
+        room->playSkillEffect("xieyou", 3);
         
-        if(card) {
+        if(!amakusa->getMp()) {
+            room->loseHp(amakusa, 1);
+            return;
+        }
         
-            room->playSkillEffect("xieyou", 2);
+        QStringList choices;
+        choices << "XieyouLoseHp" << "XieyouLoseMp";
+    
+        if(choices.length()) {
+            QString choice = room->askForChoice(amakusa, "xieyou", choices.join("+"));
             
-            room->loseHp(effect.to, 1);
-            amakusa->updateMp(2);
-        }else {
-            room->playSkillEffect("xieyou", 3);
-            
-            if(!amakusa->getMp()) {
+            if(choice == "XieyouLoseHp") {
                 room->loseHp(amakusa, 1);
-                return;
-            }
-            
-            QStringList choices;
-            choices << "XieyouLoseHp" << "XieyouLoseMp";
-        
-            if(choices.length()) {
-                QString choice = room->askForChoice(amakusa, "xieyou", choices.join("+"));
-                
-                if(choice == "XieyouLoseHp") {
-                    room->loseHp(amakusa, 1);
-                }else {
-                    amakusa->updateMp(-2);
-                }
+            }else {
+                amakusa->updateMp(-2);
             }
         }
     }

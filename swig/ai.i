@@ -110,7 +110,7 @@ Card::Suit LuaAI::askForSuit(const QString &reason) {
     if(lua_isnumber(L, -1)){
         int result = lua_tointeger(L, -1);
         lua_pop(L, 1);
-        return static_cast<Card::Suit>(result);
+        return Card::AllSuits[result];
     }else
 		return TrustAI::askForSuit(reason);
 

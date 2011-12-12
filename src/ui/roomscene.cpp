@@ -3721,11 +3721,15 @@ void RoomScene::insertStat(const QString &general_name, const QString &item, int
     QHash<QString, int> stat = is_total ? 
         total_stat.value(name):
         current_stat.value(name);
-
+        
     if(stat.isEmpty()) {
         stat.insert(item, value);
     }else {
-        stat.insert(item, stat.value(item) + value);
+        if(!is_total && item == "death" && stat.value(item) != 0) {
+            return;
+        }else {
+            stat.insert(item, stat.value(item) + value);
+        }
     }
     
     is_total ? total_stat.insert(name, stat) : current_stat.insert(name, stat);
@@ -3759,6 +3763,7 @@ void RoomScene::updateTotalStat() {
             if(tem_stat.isEmpty()) {
                 setStat(hash.key(), hash.value(), true);
             }else {
+                tem_stat = current_stat.value(hash.key());
                 
                 foreach(QString item, items) {
                     int value = tem_stat.value(item, 0);
